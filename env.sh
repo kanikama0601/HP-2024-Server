@@ -21,10 +21,10 @@ if command -v docker &> /dev/null; then
 
     case "$env" in
       dev)
-        $COMPOSE_CMD -f docker-compose-develop.yaml "$operation" "${args[@]}"
+        $COMPOSE_CMD -f docker-compose.yml "$operation" "${args[@]}"
         ;;
       pro)
-        $COMPOSE_CMD -f docker-compose-production.yaml "$operation" "${args[@]}"
+        $COMPOSE_CMD -f docker-compose-prod.yml "$operation" "${args[@]}"
         ;;
       *)
         $COMPOSE_CMD "$operation" "${args[@]}"
@@ -38,7 +38,7 @@ if command -v docker &> /dev/null; then
   down()  { action "$0" "$1" "${@:2}"; }
 
   # aliases for host machine, not in docker container
-  alias app="docker exec -it django-app"
+  alias app="docker exec -it django-backend"
   alias django="app python manage.py"
   alias pip="app pip"
   alias init="docker build -t django-setup -f docker/setup/Dockerfile . && docker run --name django-setup --volume .:/setup --rm django-setup python project_setup.py && docker rmi django-setup"

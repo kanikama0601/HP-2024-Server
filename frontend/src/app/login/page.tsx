@@ -1,0 +1,15 @@
+"use client";
+
+import React from 'react';
+import Login from '@/components/Login'
+
+export default function login() {
+
+  return (
+    <main>
+      <div>
+        <Login/>
+      </div>
+    </main>
+  );
+}

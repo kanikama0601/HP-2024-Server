@@ -1,0 +1,67 @@
+services:
+  web:
+    container_name: django-web
+    image: django-web:production
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    volumes:
+      - type: volume
+        source: socket
+        target: /var/run/gunicorn
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend
+
+  backend:
+    container_name: django-backend
+    image: django-backend:production
+    build:
+      context: ./backend
+      dockerfile: Dockerfile-prod
+    volumes:
+      - type: volume
+        source: socket
+        target: /var/run/gunicorn
+    env_file:
+      - ./backend/.env
+    command: gunicorn -w 3 --bind unix:/var/run/gunicorn/gunicorn.sock config.wsgi
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    container_name: next-frontend
+    image: next-frontend:production
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile-prod
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+  
+  db:
+    container_name: django-db
+    image: postgres:16
+    volumes:
+      - type: volume
+        source: db-volume
+        target: /var/lib/postgresql/data
+    env_file:
+      - ./database/.env
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER:-postgres}
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+volumes:
+  db-volume:
+    name: django-db-volume
+    driver: local
+  socket:
+    name: django-socket
+    driver: local

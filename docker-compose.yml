@@ -1,0 +1,59 @@
+services:
+  backend:
+    container_name: django-backend
+    image: django-backend:develop
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /app
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    container_name: next-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # 常にコンテナ側の高速なディスクを使用
+      - /app/.next        # 常にコンテナ側の高速なディスクを使用
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
+    tty: false
+    stdin_open: false
+    restart: on-failure
+  
+  db:
+    container_name: django-db
+    image: postgres:16
+    volumes:
+      - type: volume
+        source: db-volume
+        target: /var/lib/postgresql/data
+    env_file:
+      - ./database/.env
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER:-postgres}
+      interval: 2s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+
+volumes:
+  db-volume:
+    name: django-db-volume
+    driver: local
