@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from ..serializers import *
 from ..models import *
 from ..utils.constant import *
-import boto3, random, string, os
+import requests, random, string, os
 
 # Create your views here.
 
@@ -47,36 +47,47 @@ def saveImage(request):
     
     if request.method == 'POST':
         
-        s3 = boto3.client('s3', 
-                          aws_access_key_id=os.environ.get('AWS_ACCESS_KEY'),
-                          aws_secret_access_key=os.environ.get('AWS_SECRET_ACCESS_KEY')
-        )
-        
-        def randomString(n = 30):
-            return ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(n)])
-        
         image = request.FILES.get('file')
-        print(image)
-        
-        while True:
-            filename = randomString() + '.' + image.name.split('.')[-1]
-            print(filename)
-            if not ImageData.objects.filter(image=f'{os.environ.get('AWS_CLOUD_FRONT_URL')}/{filename}').exists():
-                break
+        if not image:
+            return JsonResponse({'error': 'No file provided'}, status=HTTP_RESPONSE_CODE_BAD_REQUEST)
         
         try:
-            s3.put_object(
-                Bucket=os.environ.get('AWS_S3_BUCKET'),
-                Key=filename,
-                Body=image.read(),
-                ContentType=image.content_type
-            )
+            # Send file to Flask storage server
+            storage_url = os.environ.get('STORAGE_SERVER_URL', 'http://storage:5000')
+            files = {'file': (image.name, image.read(), image.content_type)}
+            response = requests.post(f"{storage_url}/upload", files=files)
             
-            ImageData.objects.create(image=f'{os.environ.get('AWS_CLOUD_FRONT_URL')}/{filename}')
+            if response.status_code != 201:
+                return JsonResponse({'error': 'Failed to upload to storage server'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
-            return JsonResponse({'image': f'{os.environ.get("AWS_CLOUD_FRONT_URL")}/{filename}'})
+            filename = response.json()['filename']
+            # Store full URL in the database
+            image_url = f"{request.build_absolute_uri('/image/')}{filename}"
+            ImageData.objects.create(image=image_url)
+            
+            return JsonResponse({'image': image_url})
         
         except Exception as e:
+            print(f"DEBUG: Error in saveImage: {e}")
+            import traceback
+            traceback.print_exc()
             return JsonResponse({'error': str(e)}, status=HTTP_RESPONSE_CODE_BAD_REQUEST)
     
     return JsonResponse({'error': 'Method Not Allowed'}, status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def getImage(request, filename):
+    try:
+        storage_url = os.environ.get('STORAGE_SERVER_URL', 'http://storage:5000')
+        print(f"DEBUG: Fetching from {storage_url}/uploads/{filename}")
+        response = requests.get(f"{storage_url}/uploads/{filename}", stream=True)
+        
+        if response.status_code != 200:
+            print(f"DEBUG: Failed to fetch {filename}. Status: {response.status_code}")
+            return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+            
+        return HttpResponse(response.content, content_type=response.headers['Content-Type'])
+    except Exception as e:
+        print(f"DEBUG: Error in getImage: {e}")
+        return HttpResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

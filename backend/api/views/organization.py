@@ -78,7 +78,10 @@ def newOrganization(request):
     
     request.user.organization.add(organization)
     
-    return JsonResponse({'organization': list(organization.values('name', 'owner'))}, status=HTTP_RESPONSE_CODE_CREATED)
+    return JsonResponse({'organization': [{
+      'name': organization.name,
+      'owner': organization.owner.id
+    }]}, status=HTTP_RESPONSE_CODE_CREATED)
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 
@@ -374,7 +377,10 @@ def organizationPermission(request, id):
         organization=organization_permission
       )
       
-      return JsonResponse({'permission': list(organization_permission.values('permission_type', 'organization'))}, status=HTTP_RESPONSE_CODE_CREATED)
+      return JsonResponse({'permission': [{
+        'permission_type': organization_permission.permission_type,
+        'organization': organization_permission.organization.id
+      }]}, status=HTTP_RESPONSE_CODE_CREATED)
 
 
 @api_view(['GET', 'POST'])

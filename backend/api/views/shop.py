@@ -152,8 +152,12 @@ def oneOrganizationShop(request, id, shop_id):
               before_images.remove(image)
             if ShopImageData.objects.filter(shop=shop, image__image=image).exists() == False:
               add_photo = True
-              image_data = ImageData.objects.filter(image=image)
-              ShopImageData.objects.create(shop=shop, image=image_data.first())
+              image_data = ImageData.objects.filter(image=image).first()
+              if image_data:
+                ShopImageData.objects.create(shop=shop, image=image_data)
+              else:
+                # Log or handle missing image data
+                print(f"DEBUG: ImageData not found for image: {image}")
             if index == 0:
               shop.image = ShopImageData.objects.filter(shop=shop, image__image=image).first()
               shop.save()

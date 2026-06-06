@@ -31,6 +31,7 @@ urlpatterns = [
     path('healthcheck/', views.healthcheck),
     path('register/', views.UserRegistrationView.as_view()),
     path('image/', views.saveImage),
+    path('image/<str:filename>/', views.getImage),
     path('news/', viewsNews.allNews),
     path('news/<int:id>/', viewsNews.oneNews),
     path('event/', viewsEvent.allEvent),

@@ -1,4 +1,4 @@
-import boto3, os
+import os
 from .constant import *
 
 def subject_template(text):

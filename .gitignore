@@ -182,3 +182,6 @@ frontend/.pnp.js
 frontend/.yarn/
 frontend/coverage/
 frontend/*.tsbuildinfo
+
+# Storage Server
+storage_server/storage/**

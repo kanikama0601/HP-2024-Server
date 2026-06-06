@@ -62,9 +62,17 @@ class Command(createsuperuser.Command):
         # 権限付与ロジックを追加
         from api.models import OrganizationData, PermissionData
         for org in OrganizationData.objects.all():
+            # admin権限
             if not PermissionData.objects.filter(user=user, organization=org, permission_type='admin').exists():
                 PermissionData.objects.create(
                     user=user,
                     organization=org,
                     permission_type='admin'
+                )
+            # inspection権限
+            if not PermissionData.objects.filter(user=user, organization=org, permission_type='inspection').exists():
+                PermissionData.objects.create(
+                    user=user,
+                    organization=org,
+                    permission_type='inspection'
                 )
