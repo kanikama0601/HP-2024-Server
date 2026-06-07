@@ -25,5 +25,5 @@ export const GlobalLoading: React.FC = () => {
     setLoading(false);
   }, [pathname]);
 
-  return loading ? <Loading /> : null;
+  return loading ? <Loading fullPage={false} /> : null;
 };
