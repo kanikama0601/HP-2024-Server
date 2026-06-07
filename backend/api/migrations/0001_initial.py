@@ -253,7 +253,7 @@ class Migration(migrations.Migration):
             name='OrganizationPermissionData',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('permission_type', models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('post', 'post'), ('inspection', 'inspection')], max_length=20)),
+                ('permission_type', models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('inspection', 'inspection')], max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organization_permissions', to='api.organizationdata')),
@@ -273,46 +273,11 @@ class Migration(migrations.Migration):
             name='PermissionData',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('permission_type', models.CharField(choices=[('admin', 'admin'), ('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('post', 'post'), ('invite_user', 'invite_user'), ('inspection', 'inspection')], max_length=20)),
+                ('permission_type', models.CharField(choices=[('admin', 'admin'), ('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('invite_user', 'invite_user'), ('inspection', 'inspection')], max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='permissions', to='api.organizationdata')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='permissions', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='PostData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=100)),
-                ('detail', models.TextField()),
-                ('show', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('organization', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='posts', to='api.organizationdata')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='PostImageData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.URLField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='api.postdata')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='PostInspectionData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inspected', models.BooleanField(default=False)),
-                ('ai', models.BooleanField(default=False)),
-                ('deleted', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('post', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='post_inspection', to='api.postdata')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='post_inspections', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(

@@ -42,7 +42,6 @@ def inspection(request):
     if request.method == 'GET':
       
       news = list(NewsInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('news__title', 'news__detail', 'news__user__username', 'news__organization__name', 'news__id', 'news__updated_at'))
-      post = list(PostInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('post__title', 'post__detail', 'post__user__username', 'post__organization__name', 'post__id', 'post__updated_at'))
       shop = list(ShopInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('shop__name', 'shop__detail', 'shop__user__username', 'shop__organization__name', 'shop__id', 'shop__updated_at'))
       menu = list(MenuInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('menu__name', 'menu__shop__name', 'menu__id', 'menu__updated_at'))
       event = list(EventInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('event__title', 'event__detail', 'event__user__username', 'event__organization__name', 'event__id', 'event__updated_at'))
@@ -51,9 +50,9 @@ def inspection(request):
       band_song = list(BandSongInspectionData.objects.filter(ai=True, inspected=False, deleted=False).values('song__name', 'song__band__name', 'song__id'))
       organization_permission = list(OrganizationPermissionInspectionData.objects.filter(inspected=False, deleted=False).values('organization__permission_type', 'organization__organization__name', 'organization__id', 'organization__updated_at'))
       
-      count = len(news) + len(post) + len(shop) + len(menu) + len(event) + len(karaoke) + len(band) + len(band_song) + len(organization_permission)
+      count = len(news) + len(shop) + len(menu) + len(event) + len(karaoke) + len(band) + len(band_song) + len(organization_permission)
       
-      return JsonResponse({'count': count, 'news': news, 'post': post, 'shop': shop, 'menu': menu, 'event': event, 'karaoke': karaoke, 'band': band, 'band_song': band_song, 'organization_permission': organization_permission})
+      return JsonResponse({'count': count, 'news': news, 'shop': shop, 'menu': menu, 'event': event, 'karaoke': karaoke, 'band': band, 'band_song': band_song, 'organization_permission': organization_permission})
     
     return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
   else:
@@ -68,7 +67,6 @@ def allInspection(request):
         return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
     news = list(NewsInspectionData.objects.filter(inspected=False, deleted=False).values('news__title', 'news__organization__name', 'news__id', 'news__updated_at', 'ai', 'user__username'))
-    post = list(PostInspectionData.objects.filter(inspected=False, deleted=False).values('post__title', 'post__organization__name', 'post__id', 'post__updated_at', 'ai', 'user__username'))
     # Shopを取得し、それぞれのShopに紐づくMenuを結合する
     shops = list(ShopInspectionData.objects.filter(inspected=False, deleted=False).values('shop__name', 'shop__detail', 'shop__organization__name', 'shop__id', 'shop__updated_at', 'ai', 'shop__user__username'))
     for shop in shops:
@@ -86,7 +84,6 @@ def allInspection(request):
     
     return JsonResponse({
         'news': news,
-        'post': post,
         'shop': shops, # menusを含んだショップリスト
         'event': event,
         'karaoke': karaoke,
@@ -103,11 +100,10 @@ def inspect(request, category, item_id):
         return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
     if request.method == 'GET':
-      if not category in ['news', 'post', 'shop', 'menu', 'event', 'karaoke', 'band', 'band_song', 'organization_permission']:
+      if not category in ['news', 'shop', 'menu', 'event', 'karaoke', 'band', 'band_song', 'organization_permission']:
         return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
       
       news = list(NewsInspectionData.objects.filter(news__id=item_id).values('news__title', 'news__detail', 'news__user__username', 'news__organization__name', 'news__id', 'news__updated_at')) if category == 'news' else []
-      post = list(PostInspectionData.objects.filter(post__id=item_id).values('post__title', 'post__detail', 'post__user__username', 'post__organization__name', 'post__id', 'post__updated_at')) if category == 'post' else []
       shop = list(ShopInspectionData.objects.filter(shop__id=item_id).values('shop__name', 'shop__detail', 'shop__user__username', 'shop__organization__name', 'shop__id', 'shop__updated_at')) if category == 'shop' else []
       menu = list(MenuInspectionData.objects.filter(menu__id=item_id).values('menu__name', 'menu__shop__name', 'menu__id', 'menu__updated_at')) if category == 'menu' else []
       event = list(EventInspectionData.objects.filter(event__id=item_id).values('event__title', 'event__detail', 'event__user__username', 'event__organization__name', 'event__id', 'event__updated_at')) if category == 'event' else []
@@ -116,7 +112,7 @@ def inspect(request, category, item_id):
       band_song = list(BandSongInspectionData.objects.filter(song__id=item_id).values('song__name', 'song__band__name', 'song__id')) if category == 'band_song' else []
       organization_permission = list(OrganizationPermissionInspectionData.objects.filter(organization__id=item_id).values('organization__permission_type', 'organization__organization__name', 'organization__id', 'organization__updated_at')) if category == 'organization_permission' else []
       
-      count = len(news) + len(post) + len(shop) + len(menu) + len(event) + len(karaoke) + len(band) + len(band_song) + len(organization_permission)
+      count = len(news) + len(shop) + len(menu) + len(event) + len(karaoke) + len(band) + len(band_song) + len(organization_permission)
       
       if len(news) != 0:
         image = list(NewsImageData.objects.filter(news__id=item_id).values_list('image__image', flat=True))
@@ -127,7 +123,7 @@ def inspect(request, category, item_id):
       else:
         image = []
       
-      return JsonResponse({'count': count, 'news': news, 'post': post, 'shop': shop, 'menu': menu, 'event': event, 'karaoke': karaoke, 'band': band, 'band_song': band_song, 'organization_permission': organization_permission, 'image': image})
+      return JsonResponse({'count': count, 'news': news, 'shop': shop, 'menu': menu, 'event': event, 'karaoke': karaoke, 'band': band, 'band_song': band_song, 'organization_permission': organization_permission, 'image': image})
     
     elif request.method == 'POST':
       
@@ -149,17 +145,6 @@ def inspect(request, category, item_id):
             send_mail(news.first().news.user, '検証結果についてのお知らせ', INSPECTION_REJECT_MAIL(category, item_id))
           news.update(inspected=inspect_result, user=request.user, deleted=not inspect_result, ai=False)
           return JsonResponse({'message': 'ニュースが検査されました。'})
-        return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
-      
-      elif category == 'post':
-        post = PostInspectionData.objects.filter(post__id=item_id)
-        if post.exists():
-          if inspect_result:
-            send_mail(post.first().post.user, '検証結果についてのお知らせ', INSPECTION_APPROVE_MAIL(category, item_id))
-          else:
-            send_mail(post.first().post.user, '検証結果についてのお知らせ', INSPECTION_REJECT_MAIL(category, item_id))
-          post.update(inspected=inspect_result, user=request.user, deleted=not inspect_result, ai=False)
-          return JsonResponse({'message': '投稿が検査されました。'})
         return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
       
       elif category == 'shop':

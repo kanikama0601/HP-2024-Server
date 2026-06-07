@@ -4,8 +4,7 @@ from .models import (
     OrganizationPermissionInspectionData, PermissionData, NewsData,
     NewsImageData, NewsInspectionData, EventData, EventImageData,
     EventInspectionData, ShopData, ShopImageData, ShopInspectionData,
-    MenuData, MenuInspectionData, PostData, PostImageData,
-    PostInspectionData, BandData, BandInspectionData, BandSongData,
+    MenuData, MenuInspectionData, BandData, BandInspectionData, BandSongData,
     BandSongInspectionData, KaraokeData, KaraokeInspectionData, ImageData
 )
 
@@ -26,9 +25,6 @@ admin.site.register(ShopImageData)
 admin.site.register(ShopInspectionData)
 admin.site.register(MenuData)
 admin.site.register(MenuInspectionData)
-admin.site.register(PostData)
-admin.site.register(PostImageData)
-admin.site.register(PostInspectionData)
 admin.site.register(BandData)
 admin.site.register(BandInspectionData)
 admin.site.register(BandSongData)

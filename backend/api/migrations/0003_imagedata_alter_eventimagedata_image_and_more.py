@@ -31,11 +31,6 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='news_images', to='api.imagedata'),
         ),
         migrations.AlterField(
-            model_name='postimagedata',
-            name='image',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='post_images', to='api.imagedata'),
-        ),
-        migrations.AlterField(
             model_name='shopimagedata',
             name='image',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='shop_images', to='api.imagedata'),

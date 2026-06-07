@@ -15,7 +15,6 @@ class OrganizationPermissionData(models.Model):
         ('event', 'event'),
         ('band', 'band'),
         ('karaoke', 'karaoke'),
-        ('post', 'post'),
         ('inspection', 'inspection'),
     )
     organization = models.ForeignKey(OrganizationData, on_delete=models.CASCADE, related_name='organization_permissions')
@@ -38,7 +37,6 @@ class PermissionData(models.Model):
         ('event', 'event'),
         ('band', 'band'),
         ('karaoke', 'karaoke'),
-        ('post', 'post'),
         ('invite_user', 'invite_user'),
         ('inspection', 'inspection'),
     )
