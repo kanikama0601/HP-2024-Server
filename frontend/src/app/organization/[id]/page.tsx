@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper, faUserGroup, faShop, faCalendar, faCircleExclamation, faCircleCheck, faGear, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { notFound } from 'next/navigation';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
@@ -13,24 +14,37 @@ export default function News({ params }: { params: { id: string }}) {
   const [permissions, setPermissions] = useState<string[]>([]);
   const [owner, setOwner] = useState(false);
   const [organizationLoading, setOrganizationLoading] = useState(true);
+  const [errorStatus, setErrorStatus] = useState<number | null>(null);
+  
   const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`;
     
   useEffect(() => {
 		const fetchData = async () => {
 				try {
 						const data = await fetchWithAuth(url, 'GET');
-						setOrganizationData(data['organizations']);
-            setPermissions(data['permissions']);
-            setOwner(data['delete']);
-				} catch (error) {
+            if (!data['organizations'] || data['organizations'].length === 0) {
+              setErrorStatus(404);
+            } else {
+              setOrganizationData(data['organizations']);
+              setPermissions(data['permissions']);
+              setOwner(data['delete']);
+            }
+				} catch (error: any) {
 						console.error('データ取得エラー:', error);
+            if (error.status === 404) {
+              setErrorStatus(404);
+            }
 				} finally {
 						setOrganizationLoading(false);
 				}
 		};
 
 		fetchData();
-}, []);
+}, [params.id, url]);
+
+  if (errorStatus === 404) {
+    notFound();
+  }
 
     return (
         <main>
@@ -39,7 +53,7 @@ export default function News({ params }: { params: { id: string }}) {
                   <>
                     <div className="container mx-auto text-white text-center m-12">
                         <h2 className="text-3xl font-light text-shadow-md drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] m-3">
-                        <FontAwesomeIcon icon={faBuilding} /> {organizationData[0]['name']}
+                        <FontAwesomeIcon icon={faBuilding} /> {organizationData.length > 0 ? organizationData[0]['name'] : ''}
                         </h2>
                         <p className="text-sm mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
                             オーガナイゼーションメニュー

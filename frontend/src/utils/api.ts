@@ -34,7 +34,9 @@ export const fetchWithAuth = async (url: string, method: string, body_data?: any
         }
 
         if (!response.ok) {
-            throw new Error('データの取得に失敗しました');
+            const error = new Error('データの取得に失敗しました');
+            (error as any).status = response.status;
+            throw error;
         }
 
         const data = await response.json();

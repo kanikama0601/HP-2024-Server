@@ -36,7 +36,15 @@ def getOneOrganization(request, id):
     
     permissions = list(request.user.permissions.filter(organization_id=id).values_list('permission_type', flat=True))
     
-    delete = request.user.organization.filter(id=id).first().owner == request.user
+    org_query = request.user.organization.filter(id=id)
+    
+    if not org_query.exists():
+        if OrganizationData.objects.filter(id=id).exists():
+            return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
+        else:
+            return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
+            
+    delete = org_query.first().owner == request.user
     
     if len(organizations) == 0:
       
