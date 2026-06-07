@@ -2,7 +2,7 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faCalendar, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { fetchWithAuth } from '@/utils/api';
@@ -24,6 +24,7 @@ export default function Event({ params }: { params: { id: string }}) {
   const [sendLoading, setSendLoading] = useState(false);
   const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/event/new/`;
   const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<string[]>([]);
 
   type LoginDataType = {
     title: string;
@@ -32,9 +33,23 @@ export default function Event({ params }: { params: { id: string }}) {
     start: Date;
     end: Date;
     imageUrls: string[];
+    is_karaoke: boolean;
+    is_band: boolean;
   };
 
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`, 'GET');
+        setPermissions(data['permissions']);
+      } catch (error) {
+        console.error('Permission fetch error:', error);
+      }
+    };
+    fetchPermissions();
+  }, [params.id]);
 
   const { 
     register,
@@ -165,6 +180,22 @@ export default function Event({ params }: { params: { id: string }}) {
                   />
                   {errors.end?.message && <div>{errors.end.message}</div>}
                 </div>
+                {(permissions.includes('karaoke') || permissions.includes('inspection')) && (
+                  <div className='text-left inline-block w-11/12 m-4'>
+                    <label className='flex items-center space-x-2'>
+                      <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
+                      <span>カラオケ大会のイベントにする</span>
+                    </label>
+                  </div>
+                )}
+                {(permissions.includes('band') || permissions.includes('inspection')) && (
+                  <div className='text-left inline-block w-11/12 m-4'>
+                    <label className='flex items-center space-x-2'>
+                      <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
+                      <span>軽音楽（バンド）のイベントにする</span>
+                    </label>
+                  </div>
+                )}
                 <div>
                   <div className="image-previews">
                     {imageUrls.map((url, index) => (

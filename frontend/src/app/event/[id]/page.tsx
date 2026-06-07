@@ -25,6 +25,8 @@ export default function Event({ params }: { params: { id: string }}) {
     const [status, setStatus] = useState(0);
 	const [loading, setLoading] = useState(true);
     const [image, setImage] = useState<string[]>([]);
+    const [karaoke, setKaraoke] = useState<any[]>([]);
+    const [band, setBand] = useState<any[]>([]);
     const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/event/' + params.id + '/';
     const csrftoken = Cookies.get('csrftoken') || '';
@@ -43,6 +45,8 @@ export default function Event({ params }: { params: { id: string }}) {
             const data = await response.json();
             setData(data['event']);
             setImage(data['image']);
+            setKaraoke(data['karaoke'] || []);
+            setBand(data['band'] || []);
             setStatus(response.status);
             setNow(new Date(data['now']));
         }
@@ -91,7 +95,61 @@ export default function Event({ params }: { params: { id: string }}) {
                                     {image.map((img, index) => (
                                         <img key={index} src={img} className="w-full h-auto my-6" />
                                     ))}
-                                    <p className="text-xs my-1.5 text-gray-700"><FontAwesomeIcon icon={faUser} /> {data[0]['user__username']}　<FontAwesomeIcon icon={faBuilding} /> {data[0]['organization__name']}</p>
+
+                                    {karaoke.length > 0 && (
+                                        <div className='mt-10 border-t pt-10 text-left'>
+                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> カラオケ大会 楽曲リスト</h4>
+                                            <table className='w-full text-sm text-left text-gray-500'>
+                                                <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
+                                                    <tr>
+                                                        <th className='px-4 py-2'>順番</th>
+                                                        <th className='px-4 py-2'>曲名</th>
+                                                        <th className='px-4 py-2'>歌唱者</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {karaoke.map((song) => (
+                                                        <tr key={song.id} className='bg-white border-b'>
+                                                            <td className='px-4 py-2'>{song.order}</td>
+                                                            <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
+                                                            <td className='px-4 py-2'>{song.sing_user}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+
+                                    {band.length > 0 && (
+                                        <div className='mt-10 border-t pt-10 text-left'>
+                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> 軽音楽 バンド・楽曲リスト</h4>
+                                            {band.map((b) => (
+                                                <div key={b.id} className='bg-gray-100 p-4 my-4 rounded'>
+                                                    <h5 className='text-base font-bold mb-2'>[{b.order}] {b.name}</h5>
+                                                    <div className='pl-4 border-l-2 border-gray-300'>
+                                                        <table className='w-full text-xs text-left text-gray-500'>
+                                                            <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
+                                                                <tr>
+                                                                    <th className='px-2 py-1'>順番</th>
+                                                                    <th className='px-2 py-1'>曲名</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {b.songs.map((song: any) => (
+                                                                    <tr key={song.id} className='bg-white border-b'>
+                                                                        <td className='px-2 py-1'>{song.order}</td>
+                                                                        <td className='px-2 py-1'>{song.name}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <p className="text-xs my-1.5 text-gray-700 mt-6"><FontAwesomeIcon icon={faUser} /> {data[0]['user__username']}　<FontAwesomeIcon icon={faBuilding} /> {data[0]['organization__name']}</p>
                                 </>
                             ) : (
                                 <p className="text-xs my-1.5 text-gray-700">指定されたイベントが見つかりませんでした</p> // デフォルトメッセージ

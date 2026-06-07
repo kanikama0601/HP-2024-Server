@@ -10,6 +10,8 @@ class EventData(models.Model):
     end = models.DateTimeField()
     organization = models.ForeignKey(OrganizationData, on_delete=models.CASCADE, related_name='events')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='events')
+    is_karaoke = models.BooleanField(default=False)
+    is_band = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

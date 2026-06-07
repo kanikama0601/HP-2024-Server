@@ -29,7 +29,6 @@ def allEvent(request):
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 
-# GET /event/[id]
 @api_view(['GET'])
 def oneEvent(request, id):
   
@@ -37,12 +36,32 @@ def oneEvent(request, id):
   
   if request.method == 'GET':
     
-    event = list(EventData.objects.filter(event_inspection__inspected=True, event_inspection__deleted=False, id=id).values('id', 'title', 'place', 'detail', 'start', 'end', 'organization__name', 'user__username'))
+    event_obj = EventData.objects.filter(event_inspection__inspected=True, event_inspection__deleted=False, id=id).first()
+    if not event_obj:
+      return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
+    
+    event = list(EventData.objects.filter(id=id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'organization__name', 'user__username'))
     image = list(EventImageData.objects.filter(event__id=id).values_list('image__image', flat=True))
     
-    if len(event) == 0:
-      return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
-    return JsonResponse({'event': event, 'now': now, 'image': image})
+    karaoke = []
+    if event_obj.is_karaoke:
+      karaoke = list(KaraokeData.objects.filter(event=event_obj, karaoke_inspection__inspected=True).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order'))
+    
+    band = []
+    if event_obj.is_band:
+      bands = BandData.objects.filter(event=event_obj, band_inspection__inspected=True).order_by('order')
+      for b in bands:
+        b_data = {
+          'id': b.id,
+          'name': b.name,
+          'detail': b.detail,
+          'image': b.image,
+          'order': b.order,
+          'songs': list(BandSongData.objects.filter(band=b, song_inspection__inspected=True).order_by('order').values('id', 'name', 'spotify', 'image', 'order'))
+        }
+        band.append(b_data)
+
+    return JsonResponse({'event': event, 'now': now, 'image': image, 'karaoke': karaoke, 'band': band})
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 
@@ -80,7 +99,7 @@ def newEvent(request, id):
         
         organization = request.user.organization.filter(id=id)
         
-        event = EventData.objects.create(organization=organization.first(), user=request.user, title=data['title'], detail=data['detail'], place=data['place'], start=datetime.datetime.strptime(data['start'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST))
+        event = EventData.objects.create(organization=organization.first(), user=request.user, title=data['title'], detail=data['detail'], place=data['place'], start=datetime.datetime.strptime(data['start'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), is_karaoke=data.get('is_karaoke', False), is_band=data.get('is_band', False))
         
         EventInspectionData.objects.create(event=event)
         
@@ -107,7 +126,7 @@ def oneOrganizationEvent(request, id, event_id):
       
       organization = request.user.organization.filter(id=id)
       
-      event = list(EventData.objects.filter(organization=organization.first(), id=event_id).values('id', 'title', 'place', 'detail', 'start', 'end', 'organization__name', 'user__username', 'created_at', 'updated_at'))
+      event = list(EventData.objects.filter(organization=organization.first(), id=event_id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'organization__name', 'user__username', 'created_at', 'updated_at'))
       image = list(EventImageData.objects.filter(event__id=event_id).values_list('image__image', flat=True))
       
       if len(event) == 0:
@@ -139,6 +158,8 @@ def oneOrganizationEvent(request, id, event_id):
         event.place=data['place']
         event.start=datetime.datetime.strptime(data['start'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST)
         event.end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST)
+        event.is_karaoke=data.get('is_karaoke', False)
+        event.is_band=data.get('is_band', False)
         
         if event.start > event.end:
           return HttpResponse(status=HTTP_RESPONSE_CODE_BAD_REQUEST)
