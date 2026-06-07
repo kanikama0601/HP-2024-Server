@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faNewspaper, faUserGroup, faShop, faCalendar, faGuitar, faMusic, faCircleExclamation, faCircleCheck, faGear, faBuilding } from '@fortawesome/free-solid-svg-icons';
+import { faNewspaper, faUserGroup, faShop, faCalendar, faCircleExclamation, faCircleCheck, faGear, faBuilding } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Loading } from '@/components/Loading';
@@ -64,20 +64,6 @@ export default function News({ params }: { params: { id: string }}) {
                       <Link href={`/organization/${params.id}/event`}>
                         <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
                           <h3 className="text-base"><FontAwesomeIcon icon={faCalendar} /> イベント</h3>
-                        </div>
-                      </Link>
-                    )}
-                    {permissions.includes('band') && (
-                      <Link href={`/organization/${params.id}/band`}>
-                        <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                          <h3 className="text-base"><FontAwesomeIcon icon={faGuitar} /> 軽音楽</h3>
-                        </div>
-                      </Link>
-                    )}
-                    {permissions.includes('karaoke') && (
-                      <Link href={`/organization/${params.id}/karaoke`}>
-                        <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                          <h3 className="text-base"><FontAwesomeIcon icon={faMusic} /> カラオケ大会</h3>
                         </div>
                       </Link>
                     )}
