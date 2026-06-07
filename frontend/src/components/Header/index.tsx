@@ -54,7 +54,7 @@ export const Header: React.FC = () => {
 
     return (
         <div className="w-full sticky top-0 z-40">
-            <header className="glass-panel w-full px-4 py-4 md:px-8 flex items-center justify-between rounded-none">
+            <header className="glass-panel w-full px-4 py-4 md:px-8 flex items-center justify-between rounded-none" style={{ backgroundColor: 'rgba(175, 175, 175, 0.8)' }}>
                 <Link href={"/"}>
                     <h1 className="text-lg font-semibold tracking-[0.18em]">香川高専 電波祭</h1>
                 </Link>

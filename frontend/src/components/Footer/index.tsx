@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
 
     return (
         <div className="w-full">
-            <footer className="glass-panel w-full rounded-none px-4 py-6 md:px-8 md:py-8">
+            <footer className="glass-panel w-full rounded-none px-4 py-6 md:px-8 md:py-8" style={{ backgroundColor: 'rgba(175, 175, 175, 0.8)' }}>
                 <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 md:flex-row md:items-start md:justify-between">
                     <div>
                         <h2 className="text-3xl font-light tracking-[0.12em]">

@@ -38,7 +38,7 @@ export const ImportantNews = () => {
             <>
             {loading && <Loading />}
                 <div className="container mx-auto px-3 sticky top-16 z-30">
-                    <div className="glass-panel w-full m-auto px-4 py-4 rounded-2xl inline-block bg-yellow-400/45">
+                    <div className="glass-panel w-full m-auto px-4 py-4 rounded-2xl inline-block" style={{ backgroundColor: 'rgba(255, 231, 151, 0.6)' }}>
                         <p className="text-neutral-950 py-1 font-bold text-xs"><FontAwesomeIcon icon={faTriangleExclamation} /> 重要なお知らせ</p>
                         {data.map((news) => ( // 不要な波括弧を削除し、mapを正しく表示
                             <Link key={news['id']} href={`/news/${news['id']}`}>
