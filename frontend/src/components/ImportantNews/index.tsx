@@ -37,12 +37,12 @@ export const ImportantNews = () => {
         return (
             <>
             {loading && <Loading />}
-                <div className="container mx-auto px-3">
-                    <div className="w-full m-auto px-4 py-4 bg-yellow-50 rounded-lg inline-block">
-                        <p className="text-red-500 py-1 font-bold text-xs"><FontAwesomeIcon icon={faTriangleExclamation} /> 重要なお知らせ</p>
+                <div className="container mx-auto px-3 sticky top-16 z-30">
+                    <div className="glass-panel w-full m-auto px-4 py-4 rounded-2xl inline-block bg-yellow-400/45">
+                        <p className="text-neutral-950 py-1 font-bold text-xs"><FontAwesomeIcon icon={faTriangleExclamation} /> 重要なお知らせ</p>
                         {data.map((news) => ( // 不要な波括弧を削除し、mapを正しく表示
                             <Link key={news['id']} href={`/news/${news['id']}`}>
-                                <p className="py-1">{news['title']}</p>
+                                <p className="py-1 text-neutral-700 hover:text-neutral-950 transition-colors">{news['title']}</p>
                             </Link>
                         ))}
                     </div>

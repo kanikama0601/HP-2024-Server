@@ -139,7 +139,13 @@ export default function Login() {
                   />
                   {errors.password2?.message && <div>{errors.password2.message}</div>}
                 </div>
-                <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faUserPlus} /> 登録</button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className='m-6 p-4 border rounded-lg bg-gray-600 text-white disabled:opacity-60 disabled:cursor-not-allowed'
+                >
+                  <FontAwesomeIcon icon={faUserPlus} /> 登録
+                </button>
               </form>
             </div>
           </div>

@@ -71,9 +71,10 @@ export default function Shop({ params }: { params: { id: string }}) {
     } catch (error) {
       alert('エラー:' + error);
       setSendLoading(false);
+      return;
     } finally {
-      router.push(`/organization/${params.id}/shop`);
     }
+    router.push(`/organization/${params.id}/shop`);
   };
 
   const handleImageUpload = async (Shop: React.ChangeEvent<HTMLInputElement>) => {

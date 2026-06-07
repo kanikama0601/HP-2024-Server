@@ -17,15 +17,17 @@ export default function Event({ params }: { params: { id: string, event_id: stri
   const fetchData = async () => {
     try {
         const data = await fetchWithAuth(url, 'POST', { 'delete': true });
+        if (status === 201) {
+          alert('削除しました');
+        } else if (status === 403) {
+          alert('権限がありません');
+        }
+        router.push(`/organization/${params.id}/event`);
     } catch (error) {
         console.error('データ取得エラー:', error);
+        setLoading(false);
+        return;
     } finally {
-      if (status === 201) {
-        alert('削除しました');
-      } else if (status === 403) {
-        alert('権限がありません');
-      }
-      router.push(`/organization/${params.id}/event`);
     }
   };
 

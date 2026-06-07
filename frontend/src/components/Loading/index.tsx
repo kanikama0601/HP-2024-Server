@@ -4,11 +4,13 @@ import React from 'react';
 
 export const Loading = () => {
   return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800-opacity">
-            <div className="w-fit m-auto px-4 py-4 rounded-lg inline-block text-center bg-white">
-              <p className="text-sm m-4"><FontAwesomeIcon icon={faSpinner} className='text-5xl fa-spin-pulse' /></p>
-              <p className="text-sm m-4">Loading...</p>
-            </div>
-        </div>
+    <div className="fixed inset-0 z-50 flex h-screen w-screen items-center justify-center px-4 pointer-events-none isolate">
+      <div className="glass-panel box-border flex h-40 w-56 flex-col items-center justify-center rounded-2xl text-center text-base leading-none shadow-xl transform-none scale-100">
+        <p className="m-4 text-neutral-900">
+          <FontAwesomeIcon icon={faSpinner} className="text-5xl fa-spin-pulse" />
+        </p>
+        <p className="m-4 text-neutral-600">Loading...</p>
+      </div>
+    </div>
       );
 };

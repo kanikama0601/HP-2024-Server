@@ -18,10 +18,12 @@ export default function News({ params }: { params: { id: string }}) {
   const fetchData = async () => {
     try {
         const data = await fetchWithAuth(url, 'POST', { 'username': user });
+        router.push(`/organization/${params.id}/member`);
     } catch (error) {
         console.error('データ取得エラー:', error);
+        setLoading(false);
+        return;
     } finally {
-      router.push(`/organization/${params.id}/member`);
     }
   };
 

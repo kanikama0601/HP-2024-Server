@@ -38,10 +38,10 @@ export default function News({ params }: { params: { id: string }}) {
 								{organizationLoading ? (<Loading />) : (
                   <>
                     <div className="container mx-auto text-white text-center m-12">
-                        <h2 className="text-3xl font-light text-shadow-md m-3">
+                        <h2 className="text-3xl font-light text-shadow-md drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] m-3">
                         <FontAwesomeIcon icon={faBuilding} /> {organizationData[0]['name']}
                         </h2>
-                        <p className="text-sm mb-4">
+                        <p className="text-sm mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
                             オーガナイゼーションメニュー
                         </p>
                     </div>
@@ -104,7 +104,7 @@ export default function News({ params }: { params: { id: string }}) {
                   </>
                 )}
                 <Link href={`/organization`} className='text-center'>
-                  <p className='text-white'>オーガナイゼーション選択へ戻る</p>
+                  <p className='text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]'>オーガナイゼーション選択へ戻る</p>
                 </Link>
             </div>
         </main>

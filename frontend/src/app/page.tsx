@@ -1,13 +1,13 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPalette, faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCircleStop, faCirclePlay, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCircleStop, faCirclePlay, faClock } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { useState, useEffect } from "react";
 import { Loading } from "@/components/Loading";
 import Link from "next/link";
 import Cookies from 'js-cookie';
-import { set } from "react-hook-form";
+import { fetchJsonCached } from "@/utils/api";
 
 export default function Top() {
 	const [now, setNow] = useState(new Date());
@@ -20,148 +20,157 @@ export default function Top() {
 	const csrftoken = Cookies.get('csrftoken') || '';
 
 	const fetchNews = async () => {
-			const response = await fetch(newsApiUrl, {
+		try {
+			const data = await fetchJsonCached(newsApiUrl, {
 					method: 'GET',
 					headers: {
 							'Content-Type': 'application/json'
 					},
 			});
-			const contentType = response.headers.get('content-type');
-			if (contentType && contentType.includes('application/json')) {
-					const data = await response.json();
-					setNewsData(data['news']);
-			}
+			setNewsData(data['news']);
+		} catch (error) {
+			console.error('News load error:', error);
+			setNewsData([]);
+		} finally {
 			setNewsLoading(false);
+		}
 	};
 	const fetchEvent = async () => {
-		const response = await fetch(eventApiUrl, {
-				method: 'GET',
-				headers: {
-						'Content-Type': 'application/json',
-						'X-CSRFToken': csrftoken,
-				},
-		});
-		const contentType = response.headers.get('content-type');
-		if (contentType && contentType.includes('application/json')) {
-				const data = await response.json();
-				setEventData(data['event']);
-				setNow(new Date(data['now']));
+		try {
+			const data = await fetchJsonCached(eventApiUrl, {
+					method: 'GET',
+					headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': csrftoken,
+					},
+			});
+			setEventData(data['event']);
+			setNow(new Date(data['now']));
+		} catch (error) {
+			console.error('Event load error:', error);
+			setEventData([]);
+		} finally {
+			setEventLoading(false);
 		}
-		setEventLoading(false);
-};
+	};
 
 	useEffect(() => {
 			fetchNews(); // 関数を呼び出す
 			fetchEvent();
 	}, []); // コンポーネントのマウント時に実行
 
+	if (newsLoading || eventLoading) {
+		return <Loading />;
+	}
+
 	return (
-			<main>
-				<ImportantNews />
-				<h1 className="text-white font-bold text-center my-20 text-xl text-shadow-md mb-32 h-96f">
-					<p className="my-5">香川高等専門学校</p>
-					<p className="my-5">詫間キャンパス</p>
-					<p className="my-20 text-6xl">電波祭</p>
-					<p className="my-5">2024年11月2日-3日</p>
-				</h1>
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 container mx-auto">
-					<div className="mx-3.5 my-10">
-						<div className="container mx-auto text-white">
-							<h2 className="text-3xl font-light text-shadow-md">
-							<FontAwesomeIcon icon={faPalette} /> Theme
+		<main className="pb-12">
+			<ImportantNews />
+
+			<section className="container mx-auto px-3 py-10 md:py-24">
+				<div className="min-h-[58vh] flex items-center justify-center">
+					<h1 className="text-center text-white font-bold text-xl md:text-2xl drop-shadow-[0_4px_14px_rgba(0,0,0,0.85)]">
+						<p className="my-5 drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">香川高等専門学校</p>
+						<p className="my-5 drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">詫間キャンパス</p>
+						<p className="my-20 text-6xl tracking-[0.18em] md:text-7xl drop-shadow-[0_4px_16px_rgba(0,0,0,0.95)]">電波祭</p>
+						<p className="my-5 drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">2024年11月2日-3日</p>
+					</h1>
+				</div>
+			</section>
+
+			<section className="container mx-auto px-3 pb-10">
+				<div className="glass-panel rounded-[2rem] p-6 md:p-8">
+					<div className="flex items-end justify-between gap-4">
+						<div>
+							<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+								<FontAwesomeIcon icon={faNewspaper} /> News
 							</h2>
-							<p className="text-xs mb-4 mt-1">
-							今年のテーマ
-							</p>
+							<p className="mt-1 text-xs text-neutral-500">運営からのお知らせ</p>
 						</div>
-						<div className="container mx-auto text-base">
-							<div className="w-full p-4 bg-white flex justify-between rounded-lg">
-								<p>電波事変</p>
-							</div>
-						</div>
-					</div>
-					<div className="mx-3.5 my-10">
-						<div className="container mx-auto text-white">
-							<h2 className="text-3xl font-light text-shadow-md">
-							<FontAwesomeIcon icon={faNewspaper} /> News
-							</h2>
-							<p className="text-xs mb-4 mt-1">
-							運営からのお知らせ
-							</p>
-						</div>
-						<div className="container mx-auto text-xl">
-							{newsLoading ? <Loading /> :
-							newsData.length > 0 ?
-							newsData.map((news) => (
-							<Link key={news['id']} href={`/news/${news['id']}`}>
-								<div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-									<p className="text-xs my-1.5 text-gray-700">{new Date(news['created_at']).toLocaleDateString('ja-JP')}</p>
-									<h3 className="text-base">{news['title']}</h3>
-									<p className="text-xs my-1.5 text-gray-700"><FontAwesomeIcon icon={faUser} /> {news['user__username']}　<FontAwesomeIcon icon={faUserGroup} /> {news['organization__name']}</p>
-								</div>
-							</Link>
-							))
-							: <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-								<p className="text-base">お知らせはありません</p>
-								</div>
-							}
-						</div>
-						<Link href={"/news"}>
-							<p className="text-center text-white hover:text-gray-200 transition duration-100">お知らせ一覧 <FontAwesomeIcon icon={faChevronRight} /></p>
+						<Link href="/news" className="text-sm text-neutral-500 transition hover:text-neutral-950">
+							一覧へ <FontAwesomeIcon icon={faChevronRight} />
 						</Link>
 					</div>
-					<div className="mx-3.5 my-10">
-						<div className="container mx-auto text-white">
-							<h2 className="text-3xl font-light text-shadow-md">
-							<FontAwesomeIcon icon={faShop} /> Shop
-							</h2>
-							<p className="text-xs mb-4 mt-1">
-							模擬店情報
-							</p>
-						</div>
-						<div className="container mx-auto text-xl">	
-							<div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-								<p className="text-base">模擬店情報は下記リンクよりご覧ください</p>
-							</div>
-						</div>
-						<Link href={"/shop"}>
-							<p className="text-center text-white hover:text-gray-200 transition duration-100">模擬店一覧 <FontAwesomeIcon icon={faChevronRight} /></p>
-						</Link>
-					</div>
-					<div className="mx-3.5 my-10">
-						<div className="container mx-auto text-white">
-							<h2 className="text-3xl font-light text-shadow-md">
-							<FontAwesomeIcon icon={faCalendar} /> Event
-							</h2>
-							<p className="text-xs mb-4 mt-1">
-							イベント情報
-							</p>
-						</div>
-						<div className="container mx-auto text-xl">	
-							{eventLoading ? <Loading /> :
-							eventData.length > 0 ?
-							eventData.map((event) => (
-							<Link key={event['id']} href={`/event/${event['id']}`}>
-								<div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-									<p className="text-xs my-1.5 text-gray-700">
-										{new Date(event['start']).toLocaleDateString('ja-JP')} {new Date(event['start']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})} ~ {new Date(event['end']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}
-										{new Date(event['start']) < now && now < new Date(event['end']) && <span className="text-green-600">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
-										{now < new Date(event['start']) && now < new Date(event['end']) && <span className="text-gray-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
-										{new Date(event['start']) < now && new Date(event['end']) < now && <span className="text-red-600">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
+					<div className="mt-5 space-y-4">
+						{newsData.length > 0 ?
+						newsData.map((news) => (
+							<Link key={news['id']} href={`/news/${news['id']}`} className="block">
+								<div className="rounded-2xl border border-white/60 bg-white/40 backdrop-blur-md p-5 transition hover:-translate-y-0.5 hover:bg-white/60 hover:shadow-sm">
+									<p className="text-xs text-neutral-500">{new Date(news['created_at']).toLocaleDateString('ja-JP')}</p>
+									<h3 className="mt-2 text-base font-medium text-neutral-950">{news['title']}</h3>
+									<p className="mt-2 text-xs text-neutral-600">
+										<FontAwesomeIcon icon={faUser} /> {news['user__username']}　<FontAwesomeIcon icon={faUserGroup} /> {news['organization__name']}
 									</p>
-									<h3 className="text-base">{event['title']} <span className="text-gray-600">@{event['place']}</span></h3>
 								</div>
 							</Link>
-							)): <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-								<p className="text-base">イベント情報はありません</p>
-								</div>
-							}
+						))
+						: <div className="rounded-2xl border border-white/60 bg-white/40 p-5">
+							<p className="text-sm text-neutral-600">お知らせはありません</p>
 						</div>
-						<Link href={"/event"}>
-							<p className="text-center text-white hover:text-gray-200 transition duration-100">イベント一覧 <FontAwesomeIcon icon={faChevronRight} /></p>
-						</Link>
+						}
 					</div>
 				</div>
-			</main>
+			</section>
+
+			<section className="container mx-auto px-3 pb-10">
+				<div className="grid gap-6 md:grid-cols-2">
+					<div className="glass-panel rounded-[2rem] p-6 md:p-8">
+						<div className="flex items-end justify-between gap-4">
+							<div>
+								<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+									<FontAwesomeIcon icon={faShop} /> Shop
+								</h2>
+								<p className="mt-1 text-xs text-neutral-500">模擬店情報</p>
+							</div>
+							<Link href="/shop" className="text-sm text-neutral-500 transition hover:text-neutral-950">
+								一覧へ <FontAwesomeIcon icon={faChevronRight} />
+							</Link>
+						</div>
+						<div className="mt-5 rounded-2xl border border-white/60 bg-white/40 p-5">
+							<p className="text-base font-medium text-neutral-950">模擬店情報は下記リンクよりご覧ください</p>
+							<p className="mt-2 text-sm leading-7 text-neutral-600">
+								出店内容や場所を一覧で確認しやすいように整理しています。
+							</p>
+						</div>
+					</div>
+
+					<div className="glass-panel rounded-[2rem] p-6 md:p-8">
+						<div className="flex items-end justify-between gap-4">
+							<div>
+								<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+									<FontAwesomeIcon icon={faCalendar} /> Event
+								</h2>
+								<p className="mt-1 text-xs text-neutral-500">イベント情報</p>
+							</div>
+							<Link href="/event" className="text-sm text-neutral-500 transition hover:text-neutral-950">
+								一覧へ <FontAwesomeIcon icon={faChevronRight} />
+							</Link>
+						</div>
+						<div className="mt-5 space-y-4">
+							{eventData.length > 0 ?
+							eventData.map((event) => (
+								<Link key={event['id']} href={`/event/${event['id']}`} className="block">
+									<div className="rounded-2xl border border-white/60 bg-white/40 backdrop-blur-md p-5 transition hover:-translate-y-0.5 hover:bg-white/60 hover:shadow-sm">
+										<p className="text-xs text-neutral-500">
+											{new Date(event['start']).toLocaleDateString('ja-JP')} {new Date(event['start']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})} ~ {new Date(event['end']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}
+											{new Date(event['start']) < now && now < new Date(event['end']) && <span className="text-neutral-800">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
+											{now < new Date(event['start']) && now < new Date(event['end']) && <span className="text-neutral-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
+											{new Date(event['start']) < now && new Date(event['end']) < now && <span className="text-neutral-800">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
+										</p>
+										<h3 className="mt-2 text-base font-medium text-neutral-950">
+											{event['title']} <span className="text-neutral-600">@{event['place']}</span>
+										</h3>
+									</div>
+								</Link>
+							))
+							: <div className="rounded-2xl border border-white/60 bg-white/40 p-5">
+								<p className="text-sm text-neutral-600">イベント情報はありません</p>
+							</div>
+							}
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
 	);
 }

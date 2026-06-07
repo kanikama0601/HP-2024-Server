@@ -18,10 +18,11 @@ export default function News({ params }: { params: { id: string, user_id: string
     try {
         const data = await fetchWithAuth(url, 'POST', { 'delete': true });
     } catch (error) {
-        console.error('データ取得エラー:', error);
-    } finally {
-      router.push(`/organization`);
+      console.error('データ取得エラー:', error);
+      setLoading(false);
+      return;
     }
+    router.push(`/organization`);
   };
 
   const handleSubmit = (event: React.FormEvent) => {

@@ -14,6 +14,8 @@ export default function Login() {
   const logout = async () => {
       Cookies.remove('access');
       Cookies.remove('refresh');
+      Cookies.remove('username');
+      window.dispatchEvent(new Event('auth-changed'));
       setLoading(false);
       router.push('/login');
   };

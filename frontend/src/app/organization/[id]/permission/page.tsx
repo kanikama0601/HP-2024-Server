@@ -47,10 +47,12 @@ export default function News({ params }: { params: { id: string }}) {
         if (permission !== '') {
           const data = await fetchWithAuth(url, 'POST', { 'permission': permission });
         }
+        router.push(`/organization/${params.id}`);
     } catch (error) {
         console.error('データ取得エラー:', error);
+        setSendLoading(false);
+        return;
     } finally {
-      router.push(`/organization/${params.id}`);
     }
   };
 

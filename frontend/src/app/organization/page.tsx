@@ -14,10 +14,10 @@ export default function Top() {
 			<main>
 				<div className="mx-3.5 my-10">
 					<div className="container mx-auto text-white text-center m-12">
-						<h2 className="text-3xl font-light text-shadow-md m-3">
+						<h2 className="text-3xl font-light text-shadow-md drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] m-3">
 						<FontAwesomeIcon icon={faBuilding} /> Organization
 						</h2>
-						<p className="text-sm mb-4">
+						<p className="text-sm mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
 						オーガナイゼーション
 						</p>
 					</div>
@@ -25,7 +25,7 @@ export default function Top() {
 					<div className="container mx-auto text-xl md:w-6/12 w-full">
 					<SearchParamsComponent />
 						<Link href={"/organization/new"}>
-								<p className="text-center text-white hover:text-gray-200 transition duration-100 text-base"><FontAwesomeIcon icon={faPlus} /> 新規作成</p>
+								<p className="text-center text-white hover:text-gray-200 transition duration-100 text-base drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"><FontAwesomeIcon icon={faPlus} /> 新規作成</p>
 						</Link>
 					</div>
 				</Suspense>

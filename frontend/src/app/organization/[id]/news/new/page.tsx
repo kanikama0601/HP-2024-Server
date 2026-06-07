@@ -79,9 +79,10 @@ export default function News({ params }: { params: { id: string, news_id: string
     } catch (error) {
       console.error('エラー:', error);
       alert('エラー:' + error);
-    } finally {
-      router.push(`/organization/${params.id}/news`);
+      setLoading(false);
+      return;
     }
+    router.push(`/organization/${params.id}/news`);
   };
 
   return (

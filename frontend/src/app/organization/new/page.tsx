@@ -27,7 +27,7 @@ export default function Top() {
     setOrganization(event.target.value);
   }
 
-	const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     setLoading(true);
     event.preventDefault();
     fetchData();
@@ -55,7 +55,13 @@ export default function Top() {
                   className='w-11/12 m-4 p-4 border-2 rounded-lg'
                 />
               </div>
-              <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faPaperPlane} /> 作成</button>
+              <button
+                type="submit"
+                disabled={loading}
+                className='m-6 p-4 border rounded-lg bg-gray-600 text-white disabled:opacity-60 disabled:cursor-not-allowed'
+              >
+                <FontAwesomeIcon icon={faPaperPlane} /> 作成
+              </button>
             </form>
           </div>
         </div>
