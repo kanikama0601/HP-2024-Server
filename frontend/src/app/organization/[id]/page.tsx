@@ -33,6 +33,8 @@ export default function News({ params }: { params: { id: string }}) {
 						console.error('データ取得エラー:', error);
             if (error.status === 404) {
               setErrorStatus(404);
+            } else if (error.status === 403) {
+              setErrorStatus(403);
             }
 				} finally {
 						setOrganizationLoading(false);
@@ -44,6 +46,24 @@ export default function News({ params }: { params: { id: string }}) {
 
   if (errorStatus === 404) {
     notFound();
+  } else if (errorStatus === 403) {
+    return (
+        <main>
+            <div className="mx-3.5 my-10">
+                <div className="container mx-auto text-white text-center m-12">
+                    <h2 className="text-3xl font-light text-shadow-md drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] m-3">
+                    403 Forbidden
+                    </h2>
+                    <p className="text-sm mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                        このページへのアクセス権限がありません。
+                    </p>
+                </div>
+                <Link href={`/organization`} className='text-center'>
+                  <p className='text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]'>オーガナイゼーション選択へ戻る</p>
+                </Link>
+            </div>
+        </main>
+      )
   }
 
     return (
