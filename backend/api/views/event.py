@@ -40,12 +40,16 @@ def oneEvent(request, id):
     if not event_obj:
       return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
     
-    event = list(EventData.objects.filter(id=id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'organization__name', 'user__username'))
+    event = list(EventData.objects.filter(id=id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'is_brassband', 'organization__name', 'user__username'))
     image = list(EventImageData.objects.filter(event__id=id).values_list('image__image', flat=True))
     
     karaoke = []
     if event_obj.is_karaoke:
       karaoke = list(KaraokeData.objects.filter(event=event_obj, karaoke_inspection__inspected=True).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order'))
+    
+    brassband = []
+    if event_obj.is_brassband:
+      brassband = list(BrassBandData.objects.filter(event=event_obj, brassband_inspection__inspected=True).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order'))
     
     band = []
     if event_obj.is_band:
@@ -61,7 +65,7 @@ def oneEvent(request, id):
         }
         band.append(b_data)
 
-    return JsonResponse({'event': event, 'now': now, 'image': image, 'karaoke': karaoke, 'band': band})
+    return JsonResponse({'event': event, 'now': now, 'image': image, 'karaoke': karaoke, 'band': band, 'brassband': brassband})
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 
@@ -99,7 +103,7 @@ def newEvent(request, id):
         
         organization = request.user.organization.filter(id=id)
         
-        event = EventData.objects.create(organization=organization.first(), user=request.user, title=data['title'], detail=data['detail'], place=data['place'], start=datetime.datetime.strptime(data['start'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), is_karaoke=data.get('is_karaoke', False), is_band=data.get('is_band', False))
+        event = EventData.objects.create(organization=organization.first(), user=request.user, title=data['title'], detail=data['detail'], place=data['place'], start=datetime.datetime.strptime(data['start'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST), is_karaoke=data.get('is_karaoke', False), is_band=data.get('is_band', False), is_brassband=data.get('is_brassband', False))
         
         EventInspectionData.objects.create(event=event)
         
@@ -126,7 +130,7 @@ def oneOrganizationEvent(request, id, event_id):
       
       organization = request.user.organization.filter(id=id)
       
-      event = list(EventData.objects.filter(organization=organization.first(), id=event_id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'organization__name', 'user__username', 'created_at', 'updated_at'))
+      event = list(EventData.objects.filter(organization=organization.first(), id=event_id).values('id', 'title', 'place', 'detail', 'start', 'end', 'is_karaoke', 'is_band', 'is_brassband', 'organization__name', 'user__username', 'created_at', 'updated_at'))
       image = list(EventImageData.objects.filter(event__id=event_id).values_list('image__image', flat=True))
       
       if len(event) == 0:
@@ -160,6 +164,7 @@ def oneOrganizationEvent(request, id, event_id):
         event.end=datetime.datetime.strptime(data['end'] + ':00', '%Y-%m-%dT%H:%M:%S').replace(tzinfo=JST)
         event.is_karaoke=data.get('is_karaoke', False)
         event.is_band=data.get('is_band', False)
+        event.is_brassband=data.get('is_brassband', False)
         
         if event.start > event.end:
           return HttpResponse(status=HTTP_RESPONSE_CODE_BAD_REQUEST)

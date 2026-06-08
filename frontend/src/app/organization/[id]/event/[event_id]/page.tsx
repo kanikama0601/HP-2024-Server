@@ -18,6 +18,7 @@ interface Event {
   start: string;
   end: string;
   is_karaoke: boolean;
+  is_brassband: boolean;
   is_band: boolean;
   organization__name: string;
   user__username: string;
@@ -30,10 +31,12 @@ export default function Event({ params }: { params: { id: string, event_id: stri
   const [loading, setLoading] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
   const [karaokeSongs, setKaraokeSongs] = useState<any[]>([]);
+  const [brassbandSongs, setBrassbandSongs] = useState<any[]>([]);
   const [bands, setBands] = useState<any[]>([]);
   const [logs, setLogs] = useState<{message: string, type: 'success' | 'error'}[]>([]);
-  const [modalOpen, setModalOpen] = useState<'karaoke' | 'band' | 'bandSong' | null>(null);
+  const [modalOpen, setModalOpen] = useState<'karaoke' | 'brassband' | 'band' | 'bandSong' | null>(null);
   const [modalData, setModalData] = useState<any>({});
   const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/event/${params.event_id}/`;
 
@@ -49,6 +52,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
     end: Date;
     imageUrls: string;
     is_karaoke: boolean;
+    is_brassband: boolean;
     is_band: boolean;
   };
 
@@ -92,10 +96,14 @@ export default function Event({ params }: { params: { id: string, event_id: stri
             }
             if (data['event'][0]) {
               setValue('is_karaoke', data['event'][0]['is_karaoke']);
+              setValue('is_brassband', data['event'][0]['is_brassband']);
               setValue('is_band', data['event'][0]['is_band']);
               
               if (data['event'][0]['is_karaoke']) {
                 fetchWithAuth(apiUrl + 'karaoke/', 'GET').then(kData => setKaraokeSongs(kData['karaoke']));
+              }
+              if (data['event'][0]['is_brassband']) {
+                fetchWithAuth(apiUrl + 'brassband/', 'GET').then(kData => setBrassbandSongs(kData['brassband']));
               }
               if (data['event'][0]['is_band']) {
                 fetchWithAuth(apiUrl + 'band/', 'GET').then(bData => setBands(bData['band']));
@@ -112,6 +120,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
       try {
         const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`, 'GET');
         setPermissions(data['permissions']);
+        setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
         console.error('Permission fetch error:', error);
       }
@@ -168,6 +177,38 @@ export default function Event({ params }: { params: { id: string, event_id: stri
         addLog(`削除しました。(${song?.name})`);
         const kData = await fetchWithAuth(apiUrl + 'karaoke/', 'GET');
         setKaraokeSongs(kData['karaoke']);
+      } catch (error) {
+        addLog(`エラー: ${error}`, 'error');
+      } finally {
+        setSendLoading(false);
+      }
+    }
+  };
+
+  const handleAddBrassBand = async (data: {name: string, sing_user: string, order: number}) => {
+    setSendLoading(true);
+    try {
+      await fetchWithAuth(apiUrl + 'brassband/new/', 'POST', data);
+      addLog(`更新しました。(${data.name})`);
+      const kData = await fetchWithAuth(apiUrl + 'brassband/', 'GET');
+      setBrassbandSongs(kData['brassband']);
+      setModalOpen(null);
+    } catch (error) {
+      addLog(`エラー: ${error}`, 'error');
+    } finally {
+      setSendLoading(false);
+    }
+  };
+
+  const handleDeleteBrassBand = async (brassband_id: number) => {
+    if (confirm('削除しますか？')) {
+      const song = brassbandSongs.find(s => s.id === brassband_id);
+      setSendLoading(true);
+      try {
+        await fetchWithAuth(apiUrl + `brassband/${brassband_id}/delete/`, 'POST');
+        addLog(`削除しました。(${song?.name})`);
+        const kData = await fetchWithAuth(apiUrl + 'brassband/', 'GET');
+        setBrassbandSongs(kData['brassband']);
       } catch (error) {
         addLog(`エラー: ${error}`, 'error');
       } finally {
@@ -341,7 +382,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   />
                   {errors.end?.message && <div>{errors.end.message}</div>}
                 </div>
-                {(permissions.includes('karaoke') || permissions.includes('inspection')) && (
+                 {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
                   <div className='text-left inline-block w-11/12 m-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
@@ -349,7 +390,15 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     </label>
                   </div>
                 )}
-                {(permissions.includes('band') || permissions.includes('inspection')) && (
+                {organizationPermissions.includes('brassband') && permissions.includes('brassband') && (
+                  <div className='text-left inline-block w-11/12 m-4'>
+                    <label className='flex items-center space-x-2'>
+                      <input type="checkbox" {...register('is_brassband')} className='w-6 h-6' />
+                      <span>吹奏楽のイベントにする</span>
+                    </label>
+                  </div>
+                )}
+                {organizationPermissions.includes('band') && (permissions.includes('band') || permissions.includes('inspection')) && (
                   <div className='text-left inline-block w-11/12 m-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
@@ -399,7 +448,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     <tbody>
                       {karaokeSongs.map((song) => (
                         <tr key={song.id} className='bg-white border-b'>
-                          <td className='px-4 py-2'>{song.order}</td>
+                           <td className='px-4 py-2'>{song.order}</td>
                           <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
                           <td className='px-4 py-2'>{song.sing_user}</td>
                           <td className='px-4 py-2'>
@@ -414,6 +463,50 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     setModalData({order: nextOrder});
                     setModalOpen('karaoke');
                   }} className='mt-4 p-2 bg-blue-500 text-white text-base rounded'>楽曲追加</button>
+                  <div className='mt-4 text-left'>
+                    {logs.map((log, i) => (
+                      <p key={i} className={`text-sm ${log.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>{log.message}</p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {eventData[0]['is_brassband'] && (
+                <div className='mt-10 border-t pt-10'>
+                  <h3 className='text-xl mb-4'>吹奏楽 楽曲管理</h3>
+                  <table className='w-full text-sm text-left text-gray-500'>
+                    <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
+                      <tr>
+                        <th className='px-4 py-2'>順番</th>
+                        <th className='px-4 py-2'>曲名</th>
+                        <th className='px-4 py-2'>演奏者</th>
+                        {permissions.includes('brassband') && (
+                          <th className='px-4 py-2'>操作</th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {brassbandSongs.map((song) => (
+                        <tr key={song.id} className='bg-white border-b'>
+                          <td className='px-4 py-2'>{song.order}</td>
+                          <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
+                          <td className='px-4 py-2'>{song.sing_user}</td>
+                          {permissions.includes('brassband') && (
+                            <td className='px-4 py-2'>
+                              <button onClick={() => handleDeleteBrassBand(song.id)} className='text-red-500'>削除</button>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {permissions.includes('brassband') && (
+                    <button type="button" onClick={() => {
+                      const nextOrder = brassbandSongs.length > 0 ? Math.max(...brassbandSongs.map(s => s.order)) + 1 : 1;
+                      setModalData({order: nextOrder});
+                      setModalOpen('brassband');
+                    }} className='mt-4 p-2 bg-blue-500 text-white text-base rounded'>楽曲追加</button>
+                  )}
                   <div className='mt-4 text-left'>
                     {logs.map((log, i) => (
                       <p key={i} className={`text-sm ${log.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>{log.message}</p>
@@ -480,7 +573,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
                 <h3 className="text-xl mb-4 font-bold">
-                  {modalOpen === 'karaoke' ? 'カラオケ楽曲追加' : modalOpen === 'band' ? 'バンド追加' : '楽曲追加'}
+                  {modalOpen === 'karaoke' ? 'カラオケ楽曲追加' : modalOpen === 'brassband' ? '吹奏楽曲追加' : modalOpen === 'band' ? 'バンド追加' : '楽曲追加'}
                 </h3>
                 <div className="space-y-4">
                   <div>
@@ -501,9 +594,9 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                     />
                   </div>
-                  {modalOpen === 'karaoke' && (
+                  {(modalOpen === 'karaoke' || modalOpen === 'brassband') && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">歌唱者</label>
+                      <label className="block text-sm font-medium text-gray-700">{modalOpen === 'karaoke' ? '歌唱者' : '演奏者'}</label>
                       <input
                         type="text"
                         value={modalData.sing_user || ''}
@@ -523,6 +616,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   <button
                     onClick={() => {
                       if (modalOpen === 'karaoke') handleAddKaraoke(modalData);
+                      else if (modalOpen === 'brassband') handleAddBrassBand(modalData);
                       else if (modalOpen === 'band') handleAddBand(modalData);
                       else if (modalOpen === 'bandSong') handleAddBandSong(modalData);
                     }}

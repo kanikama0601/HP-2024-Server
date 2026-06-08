@@ -5,7 +5,7 @@ from .models import (
     NewsImageData, NewsInspectionData, EventData, EventImageData,
     EventInspectionData, ShopData, ShopImageData, ShopInspectionData,
     MenuData, MenuInspectionData, BandData, BandInspectionData, BandSongData,
-    BandSongInspectionData, KaraokeData, KaraokeInspectionData, ImageData
+    BandSongInspectionData, KaraokeData, KaraokeInspectionData, BrassBandData, BrassBandInspectionData, ImageData
 )
 
 # 各モデルを管理サイトに登録
@@ -31,4 +31,6 @@ admin.site.register(BandSongData)
 admin.site.register(BandSongInspectionData)
 admin.site.register(KaraokeData)
 admin.site.register(KaraokeInspectionData)
+admin.site.register(BrassBandData)
+admin.site.register(BrassBandInspectionData)
 admin.site.register(ImageData)

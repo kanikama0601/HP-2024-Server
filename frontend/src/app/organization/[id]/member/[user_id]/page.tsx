@@ -155,6 +155,18 @@ export default function News({ params }: { params: { id: string, user_id: string
                     <label> Karaoke</label>
                   </div>
                   )}
+                  {organizationPermissions.includes('brassband') && (
+                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
+                    <input 
+                      type="checkbox"
+                      id="brassband"
+                      defaultChecked={permissions.includes('brassband')}
+                      onChange={handleInputChange}
+                      disabled={!addData}
+                    />
+                    <label> Brass Band</label>
+                  </div>
+                  )}
                   {organizationPermissions.includes('inspection') && (
                   <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
                     <input 

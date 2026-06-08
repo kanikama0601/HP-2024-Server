@@ -26,6 +26,7 @@ export default function Event({ params }: { params: { id: string }}) {
 	const [loading, setLoading] = useState(true);
     const [image, setImage] = useState<string[]>([]);
     const [karaoke, setKaraoke] = useState<any[]>([]);
+    const [brassband, setBrassband] = useState<any[]>([]);
     const [band, setBand] = useState<any[]>([]);
     const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/event/' + params.id + '/';
@@ -46,6 +47,7 @@ export default function Event({ params }: { params: { id: string }}) {
             setData(data['event']);
             setImage(data['image']);
             setKaraoke(data['karaoke'] || []);
+            setBrassband(data['brassband'] || []);
             setBand(data['band'] || []);
             setStatus(response.status);
             setNow(new Date(data['now']));
@@ -109,6 +111,30 @@ export default function Event({ params }: { params: { id: string }}) {
                                                 </thead>
                                                 <tbody>
                                                     {karaoke.map((song) => (
+                                                        <tr key={song.id} className='bg-white border-b'>
+                                                            <td className='px-4 py-2'>{song.order}</td>
+                                                            <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
+                                                            <td className='px-4 py-2'>{song.sing_user}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+
+                                    {brassband.length > 0 && (
+                                        <div className='mt-10 border-t pt-10 text-left'>
+                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> 吹奏楽 楽曲リスト</h4>
+                                            <table className='w-full text-sm text-left text-gray-500'>
+                                                <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
+                                                    <tr>
+                                                        <th className='px-4 py-2'>順番</th>
+                                                        <th className='px-4 py-2'>曲名</th>
+                                                        <th className='px-4 py-2'>演奏者</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {brassband.map((song) => (
                                                         <tr key={song.id} className='bg-white border-b'>
                                                             <td className='px-4 py-2'>{song.order}</td>
                                                             <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>

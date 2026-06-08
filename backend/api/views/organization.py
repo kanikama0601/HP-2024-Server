@@ -45,6 +45,7 @@ def getOneOrganization(request, id):
             return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
             
     delete = org_query.first().owner == request.user
+    organization_permissions = list(org_query.first().organization_permissions.filter(organization_permission_inspection__inspected=True).values_list('permission_type', flat=True))
     
     if len(organizations) == 0:
       
@@ -56,7 +57,7 @@ def getOneOrganization(request, id):
         
         return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
     
-    return JsonResponse({'organizations': organizations, 'permissions': permissions, 'delete': delete})
+    return JsonResponse({'organizations': organizations, 'permissions': permissions, 'organization_permissions': organization_permissions, 'delete': delete})
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 

@@ -25,6 +25,7 @@ export default function Event({ params }: { params: { id: string }}) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/event/new/`;
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
 
   type LoginDataType = {
     title: string;
@@ -35,6 +36,7 @@ export default function Event({ params }: { params: { id: string }}) {
     imageUrls: string[];
     is_karaoke: boolean;
     is_band: boolean;
+    is_brassband: boolean;
   };
 
   const router = useRouter();
@@ -44,6 +46,7 @@ export default function Event({ params }: { params: { id: string }}) {
       try {
         const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`, 'GET');
         setPermissions(data['permissions']);
+        setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
         console.error('Permission fetch error:', error);
       }
@@ -180,7 +183,7 @@ export default function Event({ params }: { params: { id: string }}) {
                   />
                   {errors.end?.message && <div>{errors.end.message}</div>}
                 </div>
-                {(permissions.includes('karaoke') || permissions.includes('inspection')) && (
+                 {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
                   <div className='text-left inline-block w-11/12 m-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
@@ -188,11 +191,19 @@ export default function Event({ params }: { params: { id: string }}) {
                     </label>
                   </div>
                 )}
-                {(permissions.includes('band') || permissions.includes('inspection')) && (
+                {organizationPermissions.includes('band') && (permissions.includes('band') || permissions.includes('inspection')) && (
                   <div className='text-left inline-block w-11/12 m-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
                       <span>軽音楽（バンド）のイベントにする</span>
+                    </label>
+                  </div>
+                )}
+                {organizationPermissions.includes('brassband') && permissions.includes('brassband') && (
+                  <div className='text-left inline-block w-11/12 m-4'>
+                    <label className='flex items-center space-x-2'>
+                      <input type="checkbox" {...register('is_brassband')} className='w-6 h-6' />
+                      <span>吹奏楽のイベントにする</span>
                     </label>
                   </div>
                 )}

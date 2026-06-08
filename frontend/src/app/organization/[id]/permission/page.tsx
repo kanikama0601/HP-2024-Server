@@ -90,6 +90,7 @@ export default function News({ params }: { params: { id: string }}) {
                             {!havePermission.includes('event') && <option value={"event"}>event</option>}
                             {!havePermission.includes('band') && <option value={"band"}>band</option>}
                             {!havePermission.includes('karaoke') && <option value={"karaoke"}>karaoke</option>}
+                            {!havePermission.includes('brassband') && <option value={"brassband"}>brassband</option>}
                           </select>
                         </div>
                         <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faPaperPlane} /> 申請</button>

@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path, include
-from ..views import base as views, login, news as viewsNews, organization as viewsOrganization, inspection as viewsInspection, event as viewsEvent, shop as viewsShop, karaoke as viewsKaraoke, band as viewsBand
+from ..views import base as views, login, news as viewsNews, organization as viewsOrganization, inspection as viewsInspection, event as viewsEvent, shop as viewsShop, karaoke as viewsKaraoke, band as viewsBand, brassband as viewsBrassBand
 from rest_framework.routers import DefaultRouter
 from ..views.login import LoginViewSet
 
@@ -56,6 +56,9 @@ urlpatterns = [
     path('organization/<int:id>/event/<int:event_id>/karaoke/', viewsKaraoke.eventKaraoke),
     path('organization/<int:id>/event/<int:event_id>/karaoke/new/', viewsKaraoke.newKaraoke),
     path('organization/<int:id>/event/<int:event_id>/karaoke/<int:karaoke_id>/delete/', viewsKaraoke.deleteKaraoke),
+    path('organization/<int:id>/event/<int:event_id>/brassband/', viewsBrassBand.eventBrassBand),
+    path('organization/<int:id>/event/<int:event_id>/brassband/new/', viewsBrassBand.newBrassBand),
+    path('organization/<int:id>/event/<int:event_id>/brassband/<int:brassband_id>/delete/', viewsBrassBand.deleteBrassBand),
     path('organization/<int:id>/event/<int:event_id>/band/', viewsBand.eventBand),
     path('organization/<int:id>/event/<int:event_id>/band/new/', viewsBand.newBand),
     path('organization/<int:id>/event/<int:event_id>/band/<int:band_id>/delete/', viewsBand.deleteBand),

@@ -123,8 +123,8 @@ export const Header: React.FC = () => {
                 <nav
                     className={
                     openMenu
-                        ? 'text-left fixed glass-panel right-0 top-0 w-72 h-screen flex flex-col justify-start pt-8 px-4 duration-300 ease-linear rounded-none rounded-l-3xl md:hidden'
-                        : 'fixed right-[-100%] duration-300 ease-linear md:hidden'
+                        ? 'text-left fixed glass-panel right-0 top-0 w-72 h-screen flex flex-col justify-start pt-8 px-4 duration-500 ease-in-out rounded-none rounded-l-3xl md:hidden translate-x-0'
+                        : 'text-left fixed glass-panel right-0 top-0 w-72 h-screen flex flex-col justify-start pt-8 px-4 duration-500 ease-in-out rounded-none rounded-l-3xl md:hidden translate-x-full'
                     }
                 >
                     <ul className="mt-6 px-5">
