@@ -130,15 +130,17 @@ export default function Event({ params }: { params: { id: string }}) {
                                                     <tr>
                                                         <th className='px-4 py-2'>順番</th>
                                                         <th className='px-4 py-2'>曲名</th>
-                                                        <th className='px-4 py-2'>演奏者</th>
+                                                        <th className='px-4 py-2'>アーティスト</th>
+                                                        <th className='px-4 py-2'>演奏開始時刻</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {brassband.map((song) => (
                                                         <tr key={song.id} className='bg-white border-b'>
-                                                            <td className='px-4 py-2'>{song.order}</td>
+                                                            <td className='px-2 py-2'>{song.order}</td>
                                                             <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
-                                                            <td className='px-4 py-2'>{song.sing_user}</td>
+                                                            <td className='px-4 py-2'>{song.artist}</td>
+                                                            <td className='px-4 py-2'>{song.performance_time ? song.performance_time.slice(0, 5) : '-'}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>

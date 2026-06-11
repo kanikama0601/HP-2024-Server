@@ -19,10 +19,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100)),
-                ('sing_user', models.CharField(max_length=100)),
-                ('spotify', models.URLField(blank=True)),
-                ('image', models.URLField(blank=True)),
+                ('artist', models.CharField(max_length=100)),
                 ('order', models.IntegerField(default=0)),
+                ('performance_time', models.TimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('event', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='brassbands', to='api.eventdata')),

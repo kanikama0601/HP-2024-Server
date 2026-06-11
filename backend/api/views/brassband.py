@@ -11,7 +11,7 @@ import json
 @permission_classes([IsAuthenticated])
 def eventBrassBand(request, id, event_id):
     if checkPermission(request.user, id, [PERMISSION_EVENT, PERMISSION_BRASSBAND]):
-        brassbands = list(BrassBandData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order', 'user__username', 'updated_at'))
+        brassbands = list(BrassBandData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'artist', 'order', 'performance_time', 'user__username', 'updated_at'))
         return JsonResponse({'brassband': brassbands})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
@@ -41,13 +41,12 @@ def newBrassBand(request, id, event_id):
 
         brassband = BrassBandData.objects.create(
             name=data['name'],
-            sing_user=data['sing_user'],
-            spotify=data.get('spotify', ''),
-            image=data.get('image', ''),
+            artist=data['artist'],
             order=new_order,
+            performance_time=data.get('performance_time') or None,
+            event=event,
             organization=organization,
-            user=request.user,
-            event=event
+            user=request.user
         )
         # 楽曲情報の編集に関しては管理者への申請は不要
         BrassBandInspectionData.objects.create(brassband=brassband, inspected=True, ai=False, deleted=False, user=request.user)

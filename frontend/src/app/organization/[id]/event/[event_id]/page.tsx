@@ -185,7 +185,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
     }
   };
 
-  const handleAddBrassBand = async (data: {name: string, sing_user: string, order: number}) => {
+  const handleAddBrassBand = async (data: {name: string, artist: string, order: number, performance_time?: string}) => {
     setSendLoading(true);
     try {
       await fetchWithAuth(apiUrl + 'brassband/new/', 'POST', data);
@@ -479,7 +479,8 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                       <tr>
                         <th className='px-4 py-2'>順番</th>
                         <th className='px-4 py-2'>曲名</th>
-                        <th className='px-4 py-2'>演奏者</th>
+                        <th className='px-4 py-2'>アーティスト</th>
+                        <th className='px-4 py-2'>演奏開始時刻</th>
                         {permissions.includes('brassband') && (
                           <th className='px-4 py-2'>操作</th>
                         )}
@@ -490,7 +491,8 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                         <tr key={song.id} className='bg-white border-b'>
                           <td className='px-4 py-2'>{song.order}</td>
                           <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
-                          <td className='px-4 py-2'>{song.sing_user}</td>
+                          <td className='px-4 py-2'>{song.artist}</td>
+                          <td className='px-4 py-2'>{song.performance_time ? song.performance_time.slice(0, 5) : '-'}</td>
                           {permissions.includes('brassband') && (
                             <td className='px-4 py-2'>
                               <button onClick={() => handleDeleteBrassBand(song.id)} className='text-red-500'>削除</button>
@@ -594,13 +596,35 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                       className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                     />
                   </div>
-                  {(modalOpen === 'karaoke' || modalOpen === 'brassband') && (
+                  {modalOpen === 'karaoke' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">{modalOpen === 'karaoke' ? '歌唱者' : '演奏者'}</label>
+                      <label className="block text-sm font-medium text-gray-700">歌唱者</label>
                       <input
                         type="text"
                         value={modalData.sing_user || ''}
                         onChange={(e) => setModalData({...modalData, sing_user: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  )}
+                  {modalOpen === 'brassband' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">アーティスト</label>
+                      <input
+                        type="text"
+                        value={modalData.artist || ''}
+                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  )}
+                  {modalOpen === 'brassband' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
+                      <input
+                        type="time"
+                        value={modalData.performance_time || ''}
+                        onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                       />
                     </div>

@@ -49,7 +49,7 @@ def oneEvent(request, id):
     
     brassband = []
     if event_obj.is_brassband:
-      brassband = list(BrassBandData.objects.filter(event=event_obj, brassband_inspection__inspected=True).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order'))
+      brassband = list(BrassBandData.objects.filter(event=event_obj, brassband_inspection__inspected=True).order_by('order').values('id', 'name', 'artist', 'order', 'performance_time'))
     
     band = []
     if event_obj.is_band:
