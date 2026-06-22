@@ -153,7 +153,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
     setImageUrls(prevUrls => prevUrls.filter((_, i) => i !== index));
   };
 
-  const handleAddKaraoke = async (data: {name: string, sing_user: string, order: number}) => {
+  const handleAddKaraoke = async (data: {name: string, artist?: string, sing_user: string, order: number}) => {
     setSendLoading(true);
     try {
       await fetchWithAuth(apiUrl + 'karaoke/new/', 'POST', data);
@@ -217,7 +217,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
     }
   };
 
-  const handleAddBand = async (data: {name: string, order: number}) => {
+  const handleAddBand = async (data: {name: string, order: number, performance_time?: string}) => {
     setSendLoading(true);
     try {
       await fetchWithAuth(apiUrl + 'band/new/', 'POST', data);
@@ -249,10 +249,10 @@ export default function Event({ params }: { params: { id: string, event_id: stri
     }
   };
 
-  const handleAddBandSong = async (data: {name: string, order: number, band_id: number}) => {
+  const handleAddBandSong = async (data: {name: string, artist?: string, order: number, band_id: number}) => {
     setSendLoading(true);
     try {
-      await fetchWithAuth(apiUrl + `band/${data.band_id}/song/new/`, 'POST', {name: data.name, order: data.order});
+      await fetchWithAuth(apiUrl + `band/${data.band_id}/song/new/`, 'POST', {name: data.name, artist: data.artist || '', order: data.order});
       addLog(`更新しました。(${data.name})`);
       const bData = await fetchWithAuth(apiUrl + 'band/', 'GET');
       setBands(bData['band']);
@@ -441,6 +441,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                       <tr>
                         <th className='px-4 py-2'>順番</th>
                         <th className='px-4 py-2'>曲名</th>
+                        <th className='px-4 py-2'>アーティスト</th>
                         <th className='px-4 py-2'>歌唱者</th>
                         <th className='px-4 py-2'>操作</th>
                       </tr>
@@ -448,8 +449,9 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     <tbody>
                       {karaokeSongs.map((song) => (
                         <tr key={song.id} className='bg-white border-b'>
-                           <td className='px-4 py-2'>{song.order}</td>
+                          <td className='px-4 py-2'>{song.order}</td>
                           <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
+                          <td className='px-4 py-2'>{song.artist || '-'}</td>
                           <td className='px-4 py-2'>{song.sing_user}</td>
                           <td className='px-4 py-2'>
                             <button onClick={() => handleDeleteKaraoke(song.id)} className='text-red-500'>削除</button>
@@ -523,7 +525,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   {bands.map((band) => (
                     <div key={band.id} className='bg-gray-100 p-4 my-4 rounded text-left'>
                       <div className='flex justify-between items-center mb-2'>
-                        <h4 className='text-lg font-bold'>[{band.order}] {band.name}</h4>
+                        <h4 className='text-lg font-bold'>[{band.order}] {band.name}{band.performance_time ? <span className='ml-2 text-sm font-normal text-gray-600'>開始: {band.performance_time}</span> : ''}</h4>
                         <button type="button" onClick={() => handleDeleteBand(band.id)} className='text-red-500 text-sm'>バンド削除</button>
                       </div>
                       <div className='pl-4 border-l-2'>
@@ -532,6 +534,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                             <tr>
                               <th className='px-2 py-1'>順番</th>
                               <th className='px-2 py-1'>曲名</th>
+                              <th className='px-2 py-1'>アーティスト</th>
                               <th className='px-2 py-1'>操作</th>
                             </tr>
                           </thead>
@@ -539,7 +542,8 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                             {band.songs.map((song: any) => (
                               <tr key={song.id} className='bg-white border-b'>
                                 <td className='px-2 py-1'>{song.order}</td>
-                                <td className='px-2 py-1'>{song.name}</td>
+                                <td className='px-2 py-1 font-bold text-gray-900'>{song.name}</td>
+                                <td className='px-2 py-1'>{song.artist || '-'}</td>
                                 <td className='px-2 py-1'>
                                   <button type="button" onClick={() => handleDeleteBandSong(band.id, song.id)} className='text-red-500'>削除</button>
                                 </td>
@@ -598,6 +602,17 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   </div>
                   {modalOpen === 'karaoke' && (
                     <div>
+                      <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
+                      <input
+                        type="text"
+                        value={modalData.artist || ''}
+                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  )}
+                  {modalOpen === 'karaoke' && (
+                    <div>
                       <label className="block text-sm font-medium text-gray-700">歌唱者</label>
                       <input
                         type="text"
@@ -625,6 +640,28 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                         type="time"
                         value={modalData.performance_time || ''}
                         onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  )}
+                  {modalOpen === 'band' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
+                      <input
+                        type="time"
+                        value={modalData.performance_time || ''}
+                        onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                  )}
+                  {modalOpen === 'bandSong' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
+                      <input
+                        type="text"
+                        value={modalData.artist || ''}
+                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                       />
                     </div>

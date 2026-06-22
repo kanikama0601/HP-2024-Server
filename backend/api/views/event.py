@@ -45,7 +45,7 @@ def oneEvent(request, id):
     
     karaoke = []
     if event_obj.is_karaoke:
-      karaoke = list(KaraokeData.objects.filter(event=event_obj, karaoke_inspection__inspected=True).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order'))
+      karaoke = list(KaraokeData.objects.filter(event=event_obj, karaoke_inspection__inspected=True).order_by('order').values('id', 'name', 'artist', 'sing_user', 'spotify', 'image', 'order'))
     
     brassband = []
     if event_obj.is_brassband:
@@ -61,7 +61,8 @@ def oneEvent(request, id):
           'detail': b.detail,
           'image': b.image,
           'order': b.order,
-          'songs': list(BandSongData.objects.filter(band=b, song_inspection__inspected=True).order_by('order').values('id', 'name', 'spotify', 'image', 'order'))
+          'performance_time': b.performance_time.strftime('%H:%M') if b.performance_time else None,
+          'songs': list(BandSongData.objects.filter(band=b, song_inspection__inspected=True).order_by('order').values('id', 'name', 'artist', 'spotify', 'image', 'order'))
         }
         band.append(b_data)
 

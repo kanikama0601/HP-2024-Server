@@ -11,9 +11,11 @@ import json
 @permission_classes([IsAuthenticated])
 def eventBand(request, id, event_id):
     if checkPermission(request.user, id, [PERMISSION_EVENT, PERMISSION_BAND]):
-        bands = list(BandData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'detail', 'image', 'order', 'user__username', 'updated_at'))
+        bands = list(BandData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'detail', 'image', 'order', 'performance_time', 'user__username', 'updated_at'))
         for band in bands:
-            band['songs'] = list(BandSongData.objects.filter(band_id=band['id']).order_by('order').values('id', 'name', 'spotify', 'image', 'order'))
+            if band['performance_time'] is not None:
+                band['performance_time'] = band['performance_time'].strftime('%H:%M')
+            band['songs'] = list(BandSongData.objects.filter(band_id=band['id']).order_by('order').values('id', 'name', 'artist', 'spotify', 'image', 'order'))
         return JsonResponse({'band': bands})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
@@ -45,6 +47,7 @@ def newBand(request, id, event_id):
             detail=data.get('detail', ''),
             image=data.get('image', ''),
             order=new_order,
+            performance_time=data.get('performance_time') or None,
             organization=organization,
             user=request.user,
             event=event
@@ -94,6 +97,7 @@ def newBandSong(request, id, event_id, band_id):
 
         song = BandSongData.objects.create(
             name=data['name'],
+            artist=data.get('artist', ''),
             band=band,
             spotify=data.get('spotify', ''),
             image=data.get('image', ''),

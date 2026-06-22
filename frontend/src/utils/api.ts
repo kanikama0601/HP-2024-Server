@@ -39,7 +39,9 @@ export const fetchWithAuth = async (url: string, method: string, body_data?: any
             throw error;
         }
 
-        const data = await response.json();
+        const text = await response.text();
+        if (!text) return null;
+        const data = JSON.parse(text);
         return data;
     } catch (error) {
         console.error('エラー:', error);

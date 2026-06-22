@@ -106,6 +106,7 @@ export default function Event({ params }: { params: { id: string }}) {
                                                     <tr>
                                                         <th className='px-4 py-2'>順番</th>
                                                         <th className='px-4 py-2'>曲名</th>
+                                                        <th className='px-4 py-2'>アーティスト</th>
                                                         <th className='px-4 py-2'>歌唱者</th>
                                                     </tr>
                                                 </thead>
@@ -114,6 +115,7 @@ export default function Event({ params }: { params: { id: string }}) {
                                                         <tr key={song.id} className='bg-white border-b'>
                                                             <td className='px-4 py-2'>{song.order}</td>
                                                             <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
+                                                            <td className='px-4 py-2'>{song.artist || '-'}</td>
                                                             <td className='px-4 py-2'>{song.sing_user}</td>
                                                         </tr>
                                                     ))}
@@ -153,20 +155,22 @@ export default function Event({ params }: { params: { id: string }}) {
                                             <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> 軽音楽 バンド・楽曲リスト</h4>
                                             {band.map((b) => (
                                                 <div key={b.id} className='bg-gray-100 p-4 my-4 rounded'>
-                                                    <h5 className='text-base font-bold mb-2'>[{b.order}] {b.name}</h5>
+                                                    <h5 className='text-base font-bold mb-2'>[{b.order}] {b.name}{b.performance_time ? <span className='ml-2 text-sm font-normal text-gray-600'>開始: {b.performance_time}</span> : ''}</h5>
                                                     <div className='pl-4 border-l-2 border-gray-300'>
                                                         <table className='w-full text-xs text-left text-gray-500'>
                                                             <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
                                                                 <tr>
                                                                     <th className='px-2 py-1'>順番</th>
                                                                     <th className='px-2 py-1'>曲名</th>
+                                                                    <th className='px-2 py-1'>アーティスト</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 {b.songs.map((song: any) => (
                                                                     <tr key={song.id} className='bg-white border-b'>
                                                                         <td className='px-2 py-1'>{song.order}</td>
-                                                                        <td className='px-2 py-1'>{song.name}</td>
+                                                                        <td className='px-2 py-1 font-bold text-gray-900'>{song.name}</td>
+                                                                        <td className='px-2 py-1'>{song.artist || '-'}</td>
                                                                     </tr>
                                                                 ))}
                                                             </tbody>

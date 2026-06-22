@@ -5,6 +5,7 @@ from .event import EventData
 
 class KaraokeData(models.Model):
     name = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100, blank=True)
     sing_user = models.CharField(max_length=100)
     spotify = models.URLField(blank=True)
     image = models.URLField(blank=True)

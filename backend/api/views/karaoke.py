@@ -11,7 +11,7 @@ import json
 @permission_classes([IsAuthenticated])
 def eventKaraoke(request, id, event_id):
     if checkPermission(request.user, id, [PERMISSION_EVENT, PERMISSION_KARAOKE]):
-        karaokes = list(KaraokeData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'sing_user', 'spotify', 'image', 'order', 'user__username', 'updated_at'))
+        karaokes = list(KaraokeData.objects.filter(event_id=event_id).order_by('order').values('id', 'name', 'artist', 'sing_user', 'spotify', 'image', 'order', 'user__username', 'updated_at'))
         return JsonResponse({'karaoke': karaokes})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
@@ -41,6 +41,7 @@ def newKaraoke(request, id, event_id):
 
         karaoke = KaraokeData.objects.create(
             name=data['name'],
+            artist=data.get('artist', ''),
             sing_user=data['sing_user'],
             spotify=data.get('spotify', ''),
             image=data.get('image', ''),

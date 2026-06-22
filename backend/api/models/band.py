@@ -11,6 +11,7 @@ class BandData(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='bands')
     event = models.ForeignKey(EventData, on_delete=models.CASCADE, related_name='bands', null=True, blank=True)
     order = models.IntegerField(default=0)
+    performance_time = models.TimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -24,6 +25,7 @@ class BandInspectionData(models.Model):
 
 class BandSongData(models.Model):
     name = models.CharField(max_length=100)
+    artist = models.CharField(max_length=100, blank=True)
     band = models.ForeignKey(BandData, on_delete=models.CASCADE, related_name='songs')
     spotify = models.URLField(blank=True)
     image = models.URLField(blank=True)

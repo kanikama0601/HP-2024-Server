@@ -5,7 +5,7 @@ from django.conf import settings
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_banddata_order_bandsongdata_order_karaokedata_order'),
+        ('api', '0007_karaoke_event'),
     ]
 
     operations = [
