@@ -11,13 +11,16 @@ import json
 
 # GET /shop
 def allShop(request):
-  
+
   if request.method == 'GET':
-    
-    shop = list(ShopData.objects.filter(shop_inspection__inspected=True, shop_inspection__deleted=False).order_by('-updated_at').values('id', 'name', 'address', 'image__image__image', 'organization__name', 'user__username'))
-    
+
+    if 'top' in request.GET:
+      shop = list(ShopData.objects.filter(shop_inspection__inspected=True, shop_inspection__deleted=False).order_by('?').values('id', 'name', 'address', 'image__image__image', 'organization__name', 'user__username')[:3])
+    else:
+      shop = list(ShopData.objects.filter(shop_inspection__inspected=True, shop_inspection__deleted=False).order_by('-updated_at').values('id', 'name', 'address', 'image__image__image', 'organization__name', 'user__username'))
+
     return JsonResponse({'shop': shop})
-  
+
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)
 
 # GET /shop/[id]

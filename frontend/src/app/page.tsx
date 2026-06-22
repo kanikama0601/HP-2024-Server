@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCircleStop, faCirclePlay, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCirclePlay, faClock } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { useState, useEffect } from "react";
 import { Loading } from "@/components/Loading";
@@ -13,10 +13,13 @@ export default function Top() {
 	const [now, setNow] = useState(new Date());
 	const [newsData, setNewsData] = useState([]);
 	const [eventData, setEventData] = useState([]);
+	const [shopData, setShopData] = useState([]);
 	const [newsLoading, setNewsLoading] = useState(true);
 	const [eventLoading, setEventLoading] = useState(true);
+	const [shopLoading, setShopLoading] = useState(true);
 	const newsApiUrl = process.env.NEXT_PUBLIC_API_URL + '/news/?top=true';
 	const eventApiUrl = process.env.NEXT_PUBLIC_API_URL + '/event/?top=true';
+	const shopApiUrl = process.env.NEXT_PUBLIC_API_URL + '/shop/?top=true';
 	const csrftoken = Cookies.get('csrftoken') || '';
 
 	const fetchNews = async () => {
@@ -54,12 +57,31 @@ export default function Top() {
 		}
 	};
 
+	const fetchShop = async () => {
+		try {
+			const res = await fetch(shopApiUrl, {
+					method: 'GET',
+					headers: {
+							'Content-Type': 'application/json',
+					},
+			});
+			const data = await res.json();
+			setShopData(data['shop']);
+		} catch (error) {
+			console.error('Shop load error:', error);
+			setShopData([]);
+		} finally {
+			setShopLoading(false);
+		}
+	};
+
 	useEffect(() => {
-			fetchNews(); // 関数を呼び出す
+			fetchNews();
 			fetchEvent();
+			fetchShop();
 	}, []); // コンポーネントのマウント時に実行
 
-	if (newsLoading || eventLoading) {
+	if (newsLoading || eventLoading || shopLoading) {
 		return <Loading />;
 	}
 
@@ -126,11 +148,24 @@ export default function Top() {
 								一覧へ <FontAwesomeIcon icon={faChevronRight} />
 							</Link>
 						</div>
-						<div className="mt-5 rounded-2xl border border-white/60 bg-white/40 p-5">
-							<p className="text-base font-medium text-neutral-950">模擬店情報は下記リンクよりご覧ください</p>
-							<p className="mt-2 text-sm leading-7 text-neutral-600">
-								出店内容や場所を一覧で確認しやすいように整理しています。
-							</p>
+						<div className="mt-5 space-y-4">
+							{shopData.length > 0 ?
+							shopData.map((shop) => (
+								<Link key={shop['id']} href={`/shop/${shop['id']}`} className="block">
+									<div className="rounded-2xl border border-white/60 bg-white/40 backdrop-blur-md p-5 transition hover:-translate-y-0.5 hover:bg-white/60 hover:shadow-sm">
+										{shop['image__image__image'] && (
+											<img src={shop['image__image__image']} alt={shop['name']} className="w-full h-32 object-cover rounded-xl mb-3" />
+										)}
+										<h3 className="text-base font-medium text-neutral-950">{shop['name']}</h3>
+										<p className="mt-1 text-xs text-neutral-600">@{shop['address']}</p>
+										<p className="mt-1 text-xs text-neutral-500">{shop['organization__name']}</p>
+									</div>
+								</Link>
+							))
+							: <div className="rounded-2xl border border-white/60 bg-white/40 p-5">
+								<p className="text-sm text-neutral-600">模擬店情報はありません</p>
+							</div>
+							}
 						</div>
 					</div>
 
@@ -153,9 +188,9 @@ export default function Top() {
 									<div className="rounded-2xl border border-white/60 bg-white/40 backdrop-blur-md p-5 transition hover:-translate-y-0.5 hover:bg-white/60 hover:shadow-sm">
 										<p className="text-xs text-neutral-500">
 											{new Date(event['start']).toLocaleDateString('ja-JP')} {new Date(event['start']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})} ~ {new Date(event['end']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}
-											{new Date(event['start']) < now && now < new Date(event['end']) && <span className="text-neutral-800">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
-											{now < new Date(event['start']) && now < new Date(event['end']) && <span className="text-neutral-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
-											{new Date(event['start']) < now && new Date(event['end']) < now && <span className="text-neutral-800">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
+											{new Date(event['start']) <= now && now < new Date(event['end']) && <span className="text-green-700">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
+											{now < new Date(event['start']) && new Date(event['start']) <= new Date(now.getTime() + 60 * 60 * 1000) && <span className="text-orange-600">　<FontAwesomeIcon icon={faClock} /> まもなく開始</span>}
+											{now < new Date(event['start']) && new Date(event['start']) > new Date(now.getTime() + 60 * 60 * 1000) && <span className="text-neutral-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
 										</p>
 										<h3 className="mt-2 text-base font-medium text-neutral-950">
 											{event['title']} <span className="text-neutral-600">@{event['place']}</span>

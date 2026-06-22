@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendar, faCirclePlay, faClock, faCircleStop } from "@fortawesome/free-solid-svg-icons";
+import { faCalendar, faCirclePlay, faClock, faCircleStop, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { Loading } from "@/components/Loading";
 import { useState, useEffect } from "react";
@@ -48,14 +48,20 @@ const NewsPage = () => {
 				</div>
 				<div className="container mx-auto text-xl md:w-6/12 w-full">
 				{loading && <Loading />}
-				{data.map((event) => (	
+				{[...data].sort((a, b) => {
+					const aEnded = new Date(a['end']) <= now;
+					const bEnded = new Date(b['end']) <= now;
+					if (aEnded !== bEnded) return aEnded ? 1 : -1;
+					return new Date(a['start']).getTime() - new Date(b['start']).getTime();
+				}).map((event) => (
 					<Link key={event['id']} href={`/event/${event['id']}`}>
 						<div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
 							<p className="text-xs my-1.5 text-gray-700">
 								{new Date(event['start']).toLocaleDateString('ja-JP')} {new Date(event['start']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})} ~ {new Date(event['end']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}
-								{new Date(event['start']) < now && now < new Date(event['end']) && <span className="text-green-600">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
-								{now < new Date(event['start']) && now < new Date(event['end']) && <span className="text-gray-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
-								{new Date(event['start']) < now && new Date(event['end']) < now && <span className="text-red-600">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
+								{new Date(event['start']) <= now && now < new Date(event['end']) && <span className="text-green-600">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
+								{now < new Date(event['start']) && new Date(event['start']) <= new Date(now.getTime() + 60 * 60 * 1000) && <span className="text-orange-500">　<FontAwesomeIcon icon={faClock} /> まもなく開始</span>}
+								{now < new Date(event['start']) && new Date(event['start']) > new Date(now.getTime() + 60 * 60 * 1000) && <span className="text-gray-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
+								{new Date(event['end']) <= now && <span className="text-red-600">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
 							</p>
 							<h3 className="text-base">{event['title']}</h3>
 							<p className="text-xs my-1.5 text-gray-700">@{event['place']}</p>

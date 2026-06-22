@@ -18,11 +18,33 @@ def allEvent(request):
     now = datetime.datetime.now(JST)
     
     if 'top' in request.GET:
-      
-      event = list(EventData.objects.filter(event_inspection__inspected=True, event_inspection__deleted=False).order_by('start').values('id', 'title', 'place', 'start', 'end', 'organization__name', 'user__username'))
-    
+
+      one_hour_later = now + datetime.timedelta(hours=1)
+
+      # 終了済みを除いた全イベント（開始順）
+      not_ended = EventData.objects.filter(
+        event_inspection__inspected=True,
+        event_inspection__deleted=False,
+        end__gt=now,
+      ).order_by('start')
+
+      # 開催中 + 1時間以内に開始するイベント
+      featured = list(not_ended.filter(start__lte=one_hour_later).values('id', 'title', 'place', 'start', 'end', 'organization__name', 'user__username'))
+
+      # 3件に満たない場合、次に開始するイベントで補う
+      if len(featured) < 3:
+        featured_ids = [e['id'] for e in featured]
+        remaining = list(
+          not_ended.exclude(id__in=featured_ids)
+          .values('id', 'title', 'place', 'start', 'end', 'organization__name', 'user__username')
+          [:3 - len(featured)]
+        )
+        featured = featured + remaining
+
+      event = featured
+
     else:
-      
+
       event = list(EventData.objects.filter(event_inspection__inspected=True, event_inspection__deleted=False).order_by('start').values('id', 'title', 'place', 'start', 'end', 'organization__name', 'user__username'))
     
     return JsonResponse({'event': event, 'now': now})
