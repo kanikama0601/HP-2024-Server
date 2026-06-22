@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCirclePlay, faClock } from "@fortawesome/free-solid-svg-icons";
+import { faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight, faCirclePlay, faClock, faCircleInfo, faTriangleExclamation, faLocationDot, faRecycle, faMap, faFlag, faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { useState, useEffect } from "react";
 import { Loading } from "@/components/Loading";
@@ -204,6 +204,80 @@ export default function Top() {
 							}
 						</div>
 					</div>
+				</div>
+			</section>
+
+			<section className="container mx-auto px-3 pb-10">
+				<div className="flex flex-col gap-6">
+
+					{/* ご案内 */}
+					<div className="glass-panel rounded-[2rem] p-6 md:p-8">
+						<div className="flex items-end justify-between gap-4 mb-5">
+							<div>
+								<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+									<FontAwesomeIcon icon={faCircleInfo} /> Information
+								</h2>
+								<p className="mt-1 text-xs text-neutral-500">ご案内</p>
+							</div>
+						</div>
+						<div className="grid gap-3 sm:grid-cols-2">
+							{[
+								{ href: '/information/caution',  icon: faTriangleExclamation, label: 'ご来場の注意',    sub: '来場前にご確認ください' },
+								{ href: '/information/guide',    icon: faLocationDot,         label: '案内所・落とし物', sub: 'お気軽にお立ち寄りください' },
+								{ href: '/information/recycle',  icon: faRecycle,             label: '分別について',    sub: 'ゴミの正しい分け方' },
+								{ href: '/information/access',   icon: faMap,                 label: 'アクセスマップ',  sub: '会場へのアクセス方法' },
+							].map(({ href, icon, label, sub }) => (
+								<Link key={href} href={href} className="block">
+									<div className="rounded-2xl border border-white/60 bg-white/40 backdrop-blur-md p-5 transition hover:-translate-y-0.5 hover:bg-white/60 hover:shadow-sm flex items-center gap-4">
+										<span className="text-2xl text-neutral-700 w-8 text-center">
+											<FontAwesomeIcon icon={icon} />
+										</span>
+										<div>
+											<p className="text-base font-medium text-neutral-950">{label}</p>
+											<p className="text-xs text-neutral-500 mt-0.5">{sub}</p>
+										</div>
+										<FontAwesomeIcon icon={faChevronRight} className="ml-auto text-neutral-400 text-xs" />
+									</div>
+								</Link>
+							))}
+						</div>
+					</div>
+
+					{/* テーマ */}
+					<Link href="/theme" className="block">
+						<div className="glass-panel rounded-[2rem] p-6 md:p-8 transition hover:shadow-lg">
+							<div className="flex items-end justify-between gap-4 mb-6">
+								<div>
+									<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+										<FontAwesomeIcon icon={faFlag} /> Theme
+									</h2>
+									<p className="mt-1 text-xs text-neutral-500">第43回電波祭テーマ</p>
+								</div>
+								<FontAwesomeIcon icon={faChevronRight} className="text-neutral-400" />
+							</div>
+							<p className="text-6xl font-bold text-neutral-950 tracking-widest text-center my-6">繋</p>
+							<p className="text-center text-sm text-neutral-600 tracking-widest">— つなぐ、ひろがる、でんぱさい —</p>
+						</div>
+					</Link>
+
+					{/* 電波祭について */}
+					<div className="glass-panel rounded-[2rem] p-6 md:p-8">
+						<div className="flex items-end justify-between gap-4 mb-4">
+							<div>
+								<h2 className="text-2xl md:text-3xl font-light tracking-[0.12em] text-neutral-950">
+									<FontAwesomeIcon icon={faGraduationCap} /> About
+								</h2>
+								<p className="mt-1 text-xs text-neutral-500">電波祭について</p>
+							</div>
+							<Link href="/about" className="text-sm text-neutral-500 transition hover:text-neutral-950">
+								詳しく見る <FontAwesomeIcon icon={faChevronRight} />
+							</Link>
+						</div>
+						<p className="text-sm text-neutral-700 leading-7">
+							電波祭は、香川高等専門学校 詫間キャンパスが毎年秋に開催する文化祭です。
+						</p>
+					</div>
+
 				</div>
 			</section>
 		</main>
