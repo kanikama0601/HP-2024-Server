@@ -40,6 +40,54 @@ const Triangle = ({ cls }: { cls: string }) => (
   </svg>
 );
 
+/* ── 斜め背景 ── */
+const DiagBg = ({ color }: { color: string }) => (
+  <div className={`absolute inset-0 ${color} -skew-y-1 origin-top-left`} />
+);
+
+/* ── 波形セクション区切り ── */
+const WaveTop = ({ fill, bg }: { fill: string; bg: string }) => (
+  <div className={`w-full overflow-hidden leading-[0] ${bg}`}>
+    <svg viewBox="0 0 1440 56" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
+      className="w-full h-10 md:h-14 block">
+      <path d="M0,28 C240,56 480,0 720,28 C960,56 1200,0 1440,28 L1440,0 L0,0 Z" fill={fill} />
+    </svg>
+  </div>
+);
+
+const WaveBottom = ({ fill, bg }: { fill: string; bg: string }) => (
+  <div className={`w-full overflow-hidden leading-[0] ${bg}`}>
+    <svg viewBox="0 0 1440 56" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"
+      className="w-full h-10 md:h-14 block">
+      <path d="M0,28 C240,0 480,56 720,28 C960,0 1200,56 1440,28 L1440,56 L0,56 Z" fill={fill} />
+    </svg>
+  </div>
+);
+
+/* ── Festival badge header ── */
+function FestBadge({
+  icon, title, sub, href, hrefLabel = '一覧へ', color,
+}: {
+  icon: any; title: string; sub: string; href?: string; hrefLabel?: string; color: string;
+}) {
+  return (
+    <div className="flex items-end justify-between gap-4">
+      <div>
+        <span className={`inline-flex items-center gap-1.5 ${color} text-white text-xs font-bold px-3 py-1.5 rounded-full tracking-[0.1em] mb-2`}>
+          <FontAwesomeIcon icon={icon} className="text-[10px]" />
+          {title}
+        </span>
+        <p className="text-xs text-slate-500">{sub}</p>
+      </div>
+      {href && (
+        <Link href={href} className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-700 transition-colors shrink-0">
+          {hrefLabel} <FontAwesomeIcon icon={faChevronRight} />
+        </Link>
+      )}
+    </div>
+  );
+}
+
 export default function Top() {
   /* Random hero image — chosen once on mount, changes every reload */
   const [heroImage] = useState<string>(
@@ -130,7 +178,7 @@ export default function Top() {
             第54回
           </p>
           <p className="text-sm text-white/70 tracking-[0.2em] drop-shadow">
-            2024年11月2日（土）・3日（日）
+            2026年10月31日（土）・11月1日（日）
           </p>
         </div>
 
@@ -288,7 +336,7 @@ export default function Top() {
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-2 mb-0.5">
               <span className="w-1 h-5 rounded-full bg-blue-600" />
-              <h2 className="text-xl font-bold tracking-[0.08em] text-blue-900">
+              <h2 className="text-xl font-bold tracking-[0.08em] text-white">
                 <FontAwesomeIcon icon={faFlag} className="mr-2 text-blue-500" />
                 Theme
               </h2>
@@ -313,9 +361,59 @@ export default function Top() {
       </section>
 
       {/* ══════════════════════════════════════════════
+          OVERVIEW — full-width stripe
+      ══════════════════════════════════════════════ */}
+      <section className="bg-[#f4f8ff] border-b border-slate-100 py-16 px-5 md:px-10">
+        <AnimatedSection delay={60}>
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader icon={faCalendar} title="Overview" sub="開催概要" />
+            <table className="mt-6 w-full border-collapse text-sm">
+              <tbody>
+                {[
+                  { label: '名称', value: '第54回 電波祭' },
+                  { label: '日程', value: '2026年10月31日（土）・11月1日（日）' },
+                  { label: '時間', value: '9:30 〜 16:30' },
+                  { label: '入場', value: '無料' },
+                ].map(({ label, value }) => (
+                  <tr key={label} className="border-b border-slate-200 last:border-0">
+                    <th className="w-1/3 py-3 px-6 text-left text-xs font-medium text-slate-400 whitespace-nowrap align-top">
+                      {label}
+                    </th>
+                    <td className="py-3 px-6 text-slate-700">{value}</td>
+                  </tr>
+                ))}
+                <tr className="border-b border-slate-200">
+                  <th className="w-1/3 py-3 px-6 text-left text-xs font-medium text-slate-400 whitespace-nowrap align-top">
+                    会場
+                  </th>
+                  <td className="py-3 px-6 text-slate-700">
+                    <span>香川高等専門学校 詫間キャンパス</span>
+                    <a
+                      href="https://maps.app.goo.gl/mT7rGErfvYvPBacF7"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 inline-flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 transition-colors"
+                    >
+                      <FontAwesomeIcon icon={faLocationDot} />
+                      地図
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </AnimatedSection>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          TIMETABLE — full-width stripe
+      ══════════════════════════════════════════════ */}
+      <TimetableSection />
+
+      {/* ══════════════════════════════════════════════
           ABOUT — full-width stripe
       ══════════════════════════════════════════════ */}
-      <section className="bg-white py-16 px-5 md:px-10">
+      <section className="bg-[#f4f8ff] py-16 px-5 md:px-10">
         <AnimatedSection delay={60}>
           <div className="max-w-5xl mx-auto">
             <SectionHeader icon={faGraduationCap} title="About" sub="電波祭について" href="/about" hrefLabel="詳しく見る" />
@@ -363,5 +461,93 @@ function EmptyState({ text }: { text: string }) {
     <div className="rounded-xl border border-slate-100 bg-slate-50 p-5 text-center">
       <p className="text-sm text-slate-400">{text}</p>
     </div>
+  );
+}
+
+const TIMETABLE: Record<1 | 2, { time: string; label: string; type: 'ceremony' | 'stage' | 'exhibition' | 'activity' | 'break' }[]> = {
+  1: [
+    { time: '9:30',  label: '開会式',       type: 'ceremony'   },
+    { time: '10:00', label: '研究・制作発表', type: 'exhibition' },
+    { time: '11:00', label: 'ステージイベント', type: 'stage'   },
+    { time: '12:00', label: '昼休憩',        type: 'break'      },
+    { time: '13:00', label: '軽音楽演奏',    type: 'stage'      },
+    { time: '14:30', label: '吹奏楽演奏',    type: 'stage'      },
+    { time: '16:00', label: 'フィナーレ',    type: 'ceremony'   },
+    { time: '16:30', label: '閉場',          type: 'break'      },
+  ],
+  2: [
+    { time: '9:30',  label: '開場',          type: 'break'      },
+    { time: '10:00', label: '研究・制作発表', type: 'exhibition' },
+    { time: '11:30', label: 'ステージイベント', type: 'stage'   },
+    { time: '12:00', label: '昼休憩',        type: 'break'      },
+    { time: '13:00', label: 'スタンプラリー', type: 'activity'  },
+    { time: '14:00', label: '体験コーナー',  type: 'activity'   },
+    { time: '15:30', label: '閉会式',        type: 'ceremony'   },
+    { time: '16:30', label: '閉場',          type: 'break'      },
+  ],
+};
+
+const TYPE_STYLE: Record<string, string> = {
+  ceremony:   'bg-blue-100   text-blue-700',
+  stage:      'bg-purple-100 text-purple-700',
+  exhibition: 'bg-green-100  text-green-700',
+  activity:   'bg-orange-100 text-orange-700',
+  break:      'bg-slate-100  text-slate-500',
+};
+
+const DAY_LABELS: Record<1 | 2, string> = {
+  1: '10月31日（土）',
+  2: '11月1日（日）',
+};
+
+function DayColumn({ day }: { day: 1 | 2 }) {
+  return (
+    <div>
+      <p className="text-xs font-semibold text-blue-700 mb-3">{DAY_LABELS[day]}</p>
+      <div className="space-y-2">
+        {TIMETABLE[day].map(({ time, label, type }) => (
+          <div key={time} className="flex items-center gap-4">
+            <span className="w-12 shrink-0 text-xs text-slate-400 font-mono">{time}</span>
+            <div className="w-px h-4 bg-slate-200 shrink-0" />
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${TYPE_STYLE[type]}`}>{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TimetableSection() {
+  const [day, setDay] = useState<1 | 2>(1);
+  return (
+    <section className="bg-white border-b border-slate-100 py-16 px-5 md:px-10">
+      <AnimatedSection delay={60}>
+        <div className="max-w-5xl mx-auto">
+          <SectionHeader icon={faClock} title="Timetable" sub="公式イベント　タイムテーブル" />
+
+          {/* モバイル: タブ切り替え */}
+          <div className="md:hidden">
+            <div className="mt-6 flex gap-2">
+              {([1, 2] as const).map((d) => (
+                <button key={d} onClick={() => setDay(d)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors
+                    ${day === d ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                  {DAY_LABELS[d]}
+                </button>
+              ))}
+            </div>
+            <div className="mt-5">
+              <DayColumn day={day} />
+            </div>
+          </div>
+
+          {/* デスクトップ: 2カラム並列 */}
+          <div className="hidden md:grid md:grid-cols-2 gap-10 mt-6">
+            <DayColumn day={1} />
+            <DayColumn day={2} />
+          </div>
+        </div>
+      </AnimatedSection>
+    </section>
   );
 }

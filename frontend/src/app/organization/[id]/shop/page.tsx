@@ -1,9 +1,9 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShop, faPlus, faUser, faCircleCheck, faCircleExclamation, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faShop, faPlus, faUser, faCircleCheck, faCircleExclamation, faCircleXmark, faSpinner, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
@@ -20,12 +20,13 @@ interface Shop {
   created_at: string;
 }
 
-export default function News({ params }: { params: { id: string }}) {
+export default function News({ params }: { params: Promise<{ id: string }>}) {
+  const { id } = use(params);
 
   const [shopData, setShopData] = useState<Shop[]>([]);
   const [loading, setLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/shop/`;
-    
+  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/shop/`;
+
   useEffect(() => {
 		const fetchData = async () => {
 				try {
@@ -41,55 +42,61 @@ export default function News({ params }: { params: { id: string }}) {
 		fetchData();
 }, []);
 
-    return (
-        <main>
-            <div className="mx-3.5 my-10">
-                <div className="container mx-auto text-white text-center m-12">
-                <h2 className="text-3xl font-light text-shadow-md m-3">
-                <FontAwesomeIcon icon={faShop} /> Organization Shop
-                </h2>
-                <p className="text-sm mb-4">
-                模擬店管理
-                </p>
+  return (
+    <main className="pb-16">
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="pointer-events-none absolute right-1/4 top-8 w-6 h-6 rotate-45 bg-blue-500/25" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faShop} className="mr-2 text-blue-300" />Organization Shop
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">模擬店管理</p>
+        </div>
+      </div>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        {loading ? (<Loading />) : (
+          <>
+            {shopData && shopData.map((shop) => (
+              <Link key={shop['id']} href={`/organization/${id}/shop/${shop['id']}`}>
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <p className="text-xs mb-1 text-slate-500">{new Date(shop['created_at']).toLocaleDateString('ja-JP')}</p>
+                  <h3 className="text-base font-medium text-slate-800">{shop['name']}</h3>
+                  <p className="text-xs mt-1 text-slate-500"><FontAwesomeIcon icon={faUser} className="mr-1" />{shop['user__username']}</p>
+                  {shop['shop_inspection__deleted'] ? (
+                    <p className="text-xs mt-1.5 text-red-600"><FontAwesomeIcon icon={faCircleXmark} className="mr-1" />検証によって削除済み</p>
+                  ) : (
+                  shop['shop_inspection__ai'] ? (
+                    shop['shop_inspection__inspected'] ? (
+                      <p className="text-xs mt-1.5 text-green-600"><FontAwesomeIcon icon={faCircleCheck} className="mr-1" />AI自動検証によって承認済み</p>
+                    ) : (
+                      <p className="text-xs mt-1.5 text-yellow-600"><FontAwesomeIcon icon={faCircleExclamation} className="mr-1" />AI自動検証によって保留、人間による検証を待機中</p>
+                    )
+                  ) : (
+                    shop['shop_inspection__inspected'] ? (
+                      <p className="text-xs mt-1.5 text-green-600"><FontAwesomeIcon icon={faCircleCheck} className="mr-1" />人間によって承認済み</p>
+                    ) : (
+                      <p className="text-xs mt-1.5 text-slate-500"><FontAwesomeIcon icon={faSpinner} className="mr-1" />AI自動検証を待機しています...</p>
+                    )
+                  ))}
                 </div>
-								{loading ? (<Loading />) : (
-                  <>
-                    <div className="container mx-auto text-xl md:w-6/12 w-full">
-                    {shopData && shopData.map((shop) => (
-                      <Link key={shop['id']} href={`/organization/${params.id}/shop/${shop['id']}`}>
-                        <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                          <p className="text-xs my-1.5 text-gray-700">{new Date(shop['created_at']).toLocaleDateString('ja-JP')}</p>
-                          <h3 className="text-base">{shop['name']}</h3>
-                          <p className="text-xs my-1.5 text-gray-700"><FontAwesomeIcon icon={faUser} /> {shop['user__username']}</p>
-                          {shop['shop_inspection__deleted'] ? (
-                            <p className="text-xs my-1.5 text-red-600"><FontAwesomeIcon icon={faCircleXmark} /> 検証によって削除済み</p>
-                          ) : (
-                          shop['shop_inspection__ai'] ? (
-                            shop['shop_inspection__inspected'] ? (
-                              <p className="text-xs my-1.5 text-green-600"><FontAwesomeIcon icon={faCircleCheck} /> AI自動検証によって承認済み</p>
-                            ) : (
-                              <p className="text-xs my-1.5 text-yellow-600"><FontAwesomeIcon icon={faCircleExclamation} /> AI自動検証によって保留、人間による検証を待機中</p>
-                            )
-                          ) : (
-                            shop['shop_inspection__inspected'] ? (
-                              <p className="text-xs my-1.5 text-green-600"><FontAwesomeIcon icon={faCircleCheck} /> 人間によって承認済み</p>
-                            ) : (
-                              <p className="text-xs my-1.5 text-gray-700"><FontAwesomeIcon icon={faSpinner} /> AI自動検証を待機しています...</p>
-                            )
-                          ))}
-                        </div>
-                      </Link>
-                    ))}
-                    </div>
-                  </>
-                )}
-                <Link href={`/organization/${params.id}/shop/new`}>
-                    <p className="text-center text-white hover:text-gray-200 transition duration-100 text-base"><FontAwesomeIcon icon={faPlus} /> 模擬店の追加</p>
-                </Link>
-            </div>
-            <Link href={`/organization/${params.id}`} className='text-center'>
-              <p className='text-white'>オーガナイゼーションメニューへ戻る</p>
-            </Link>
-        </main>
-    );
+              </Link>
+            ))}
+          </>
+        )}
+        <Link href={`/organization/${id}/shop/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faPlus} /> 模擬店の追加
+        </Link>
+        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
+        </Link>
+      </div>
+    </main>
+  );
 }

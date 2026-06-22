@@ -1,8 +1,8 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendar, faPaperPlane, faTrashCan } from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect } from 'react';
+import { faCalendar, faPaperPlane, faTrashCan, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { useState, useEffect, use } from 'react';
 import { set, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
@@ -24,7 +24,8 @@ interface Event {
   user__username: string;
 }
 
-export default function Event({ params }: { params: { id: string, event_id: string }}) {
+export default function Event({ params }: { params: Promise<{ id: string, event_id: string }>}) {
+  const { id, event_id } = use(params);
 
   const [sendLoading, setSendLoading] = useState(false);
   const [eventData, setEventData] = useState<Event[]>([]);
@@ -38,7 +39,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
   const [logs, setLogs] = useState<{message: string, type: 'success' | 'error'}[]>([]);
   const [modalOpen, setModalOpen] = useState<'karaoke' | 'brassband' | 'band' | 'bandSong' | null>(null);
   const [modalData, setModalData] = useState<any>({});
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/event/${params.event_id}/`;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/${event_id}/`;
 
   const addLog = (message: string, type: 'success' | 'error' = 'success') => {
     setLogs(prev => [{message, type}, ...prev].slice(0, 5));
@@ -58,7 +59,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
 
   const router = useRouter();
 
-  const { 
+  const {
     register,
     handleSubmit,
     setValue,
@@ -72,11 +73,11 @@ export default function Event({ params }: { params: { id: string, event_id: stri
   const onSubmit = async (data: any) => {
     setSendLoading(true);
     const csrftoken = Cookies.get('csrftoken') || '';
-    
+
     try {
       const send_data = { ...data, imageUrls: imageUrls };
       const response = await fetchWithAuth(apiUrl, 'POST', send_data);
-      router.push(`/organization/${params.id}/event`);
+      router.push(`/organization/${id}/event`);
     } catch (error) {
       alert('エラー:' + error);
       setSendLoading(false);
@@ -98,7 +99,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
               setValue('is_karaoke', data['event'][0]['is_karaoke']);
               setValue('is_brassband', data['event'][0]['is_brassband']);
               setValue('is_band', data['event'][0]['is_band']);
-              
+
               if (data['event'][0]['is_karaoke']) {
                 fetchWithAuth(apiUrl + 'karaoke/', 'GET').then(kData => setKaraokeSongs(kData['karaoke']));
               }
@@ -118,7 +119,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
 
     const fetchPermissions = async () => {
       try {
-        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`, 'GET');
+        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/`, 'GET');
         setPermissions(data['permissions']);
         setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
@@ -128,7 +129,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
 
 		fetchData();
     fetchPermissions();
-}, [apiUrl, params.id, setValue]);
+}, [apiUrl, id, setValue]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setSendLoading(true);
@@ -283,69 +284,77 @@ export default function Event({ params }: { params: { id: string, event_id: stri
   };
 
   return (
-    <main>
+    <main className="pb-16">
       {sendLoading && <Loading />}
-      <div className="mx-3.5 my-10">
-        <div className="container mx-auto text-white text-center m-12">
-          <h2 className="text-3xl font-light text-shadow-md m-3">
-          <FontAwesomeIcon icon={faCalendar} />  Edit Event
-          </h2>
-          <p className="text-sm mb-4">
-          イベント編集
-          </p>
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="pointer-events-none absolute right-1/4 top-8 w-6 h-6 rotate-45 bg-blue-500/25" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faCalendar} className="mr-2 text-blue-300" />Edit Event
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">イベント編集</p>
         </div>
-          {loading ? <Loading /> : (
-          <div className="container mx-auto text-xl md:w-6/12 w-full">
-            <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition dulation-100 text-center">
+      </div>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        {loading ? <Loading /> : (
+          <>
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
               <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
+                <div className="mb-4">
                   <input
                     placeholder="タイトル"
                     defaultValue={eventData[0]['title']}
                     {...register('title', {
                       required: {
-                        value: true, 
+                        value: true,
                         message: 'タイトルを入力してください',
                       },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
+                    })}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
-                  {errors.title?.message && <div>{errors.title.message}</div>}
+                  {errors.title?.message && <div className="text-red-500 text-sm mt-1">{errors.title.message}</div>}
                 </div>
-                <div>
+                <div className="mb-4">
                   <input
                     placeholder="場所"
                     defaultValue={eventData[0]['place']}
                     {...register('place', {
                       required: {
-                        value: true, 
+                        value: true,
                         message: '場所を入力してください',
                       },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
+                    })}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
-                  {errors.place?.message && <div>{errors.place.message}</div>}
+                  {errors.place?.message && <div className="text-red-500 text-sm mt-1">{errors.place.message}</div>}
                 </div>
-                <div>
+                <div className="mb-4">
                   <textarea
                     placeholder="詳細"
                     defaultValue={eventData[0]['detail']}
                     {...register('detail', {
                       required: {
-                        value: true, 
+                        value: true,
                         message: '詳細を入力してください',
                       },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg h-64'
+                    })}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 h-64"
                   />
-                  {errors.detail?.message && <div>{errors.detail.message}</div>}
+                  {errors.detail?.message && <div className="text-red-500 text-sm mt-1">{errors.detail.message}</div>}
                 </div>
-                <div className='text-left inline-block w-11/12'>
-                  <p>開始日時</p>
+                <div className="mb-4">
+                  <p className="text-sm text-slate-600 mb-1">開始日時</p>
                   <input
                     type="datetime-local"
                     defaultValue={
-                      eventData[0] && eventData[0]['start'] 
+                      eventData[0] && eventData[0]['start']
                         ? new Date(new Date(eventData[0]['start']).getTime() + 9 * 60 * 60 * 1000)
                             .toISOString()
                             .slice(0, 16)
@@ -353,20 +362,20 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     }
                     {...register('start', {
                       required: {
-                        value: true, 
+                        value: true,
                         message: '開始日時を入力してください',
                       },
-                    })} 
-                    className='my-4 p-4 border-2 rounded-lg w-full'
+                    })}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
-                  {errors.start?.message && <div>{errors.start.message}</div>}
+                  {errors.start?.message && <div className="text-red-500 text-sm mt-1">{errors.start.message}</div>}
                 </div>
-                <div className='text-left inline-block w-11/12'>
-                  <p>終了日時</p>
+                <div className="mb-4">
+                  <p className="text-sm text-slate-600 mb-1">終了日時</p>
                   <input
                     type="datetime-local"
                     defaultValue={
-                      eventData[0] && eventData[0]['end'] 
+                      eventData[0] && eventData[0]['end']
                         ? new Date(new Date(eventData[0]['end']).getTime() + 9 * 60 * 60 * 1000)
                             .toISOString()
                             .slice(0, 16)
@@ -374,16 +383,16 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     }
                     {...register('end', {
                       required: {
-                        value: true, 
+                        value: true,
                         message: '終了日時を入力してください',
                       },
-                    })} 
-                    className='my-4 p-4 border-2 rounded-lg w-full'
+                    })}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
-                  {errors.end?.message && <div>{errors.end.message}</div>}
+                  {errors.end?.message && <div className="text-red-500 text-sm mt-1">{errors.end.message}</div>}
                 </div>
-                 {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
-                  <div className='text-left inline-block w-11/12 m-4'>
+                {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
+                  <div className='mb-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
                       <span>カラオケ大会のイベントにする</span>
@@ -391,7 +400,7 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   </div>
                 )}
                 {organizationPermissions.includes('brassband') && permissions.includes('brassband') && (
-                  <div className='text-left inline-block w-11/12 m-4'>
+                  <div className='mb-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_brassband')} className='w-6 h-6' />
                       <span>吹奏楽のイベントにする</span>
@@ -399,24 +408,24 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                   </div>
                 )}
                 {organizationPermissions.includes('band') && (permissions.includes('band') || permissions.includes('inspection')) && (
-                  <div className='text-left inline-block w-11/12 m-4'>
+                  <div className='mb-4'>
                     <label className='flex items-center space-x-2'>
                       <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
                       <span>軽音楽（バンド）のイベントにする</span>
                     </label>
                   </div>
                 )}
-                <div>
+                <div className="mb-4">
                   <div className="image-previews">
                     {imageUrls.map((url, index) => (
                       <>
-                        <img key={index} src={url} alt={`Preview ${index}`} className="w-11/12 m-2" />
+                        <img key={index} src={url} alt={`Preview ${index}`} className="w-full mb-2 rounded-lg" />
                         <button
                             type='button'
                             onClick={() => handleRemoveImage(index)}
-                            className="m-4 p-2 border rounded-lg bg-red-600 text-white text-base"
+                            className="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors mb-2"
                           >
-                            <FontAwesomeIcon icon={faTrashCan} /> 画像削除
+                            <FontAwesomeIcon icon={faTrashCan} className="mr-1" /> 画像削除
                         </button>
                       </>
                     ))}
@@ -426,11 +435,13 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                     accept="image/*"
                     multiple
                     onChange={handleImageUpload}
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
+                    className="w-full p-3 border border-slate-200 rounded-xl"
                   />
                   <input type="hidden" value={JSON.stringify(imageUrls)} {...register('imageUrls')} />
                 </div>
-                <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faPaperPlane} /> 編集</button>
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+                  <FontAwesomeIcon icon={faPaperPlane} /> 編集
+                </button>
               </form>
 
               {eventData[0]['is_karaoke'] && (
@@ -572,127 +583,131 @@ export default function Event({ params }: { params: { id: string, event_id: stri
                 </div>
               )}
             </div>
-          </div>
-          )}
 
-          {modalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
-                <h3 className="text-xl mb-4 font-bold">
-                  {modalOpen === 'karaoke' ? 'カラオケ楽曲追加' : modalOpen === 'brassband' ? '吹奏楽曲追加' : modalOpen === 'band' ? 'バンド追加' : '楽曲追加'}
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">順番</label>
-                    <input
-                      type="number"
-                      value={modalData.order || ''}
-                      onChange={(e) => setModalData({...modalData, order: parseInt(e.target.value)})}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    />
+            {modalOpen && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/3">
+                  <h3 className="text-xl mb-4 font-bold">
+                    {modalOpen === 'karaoke' ? 'カラオケ楽曲追加' : modalOpen === 'brassband' ? '吹奏楽曲追加' : modalOpen === 'band' ? 'バンド追加' : '楽曲追加'}
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">順番</label>
+                      <input
+                        type="number"
+                        value={modalData.order || ''}
+                        onChange={(e) => setModalData({...modalData, order: parseInt(e.target.value)})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">{modalOpen === 'band' ? 'バンド名' : '曲名'}</label>
+                      <input
+                        type="text"
+                        value={modalData.name || ''}
+                        onChange={(e) => setModalData({...modalData, name: e.target.value})}
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      />
+                    </div>
+                    {modalOpen === 'karaoke' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
+                        <input
+                          type="text"
+                          value={modalData.artist || ''}
+                          onChange={(e) => setModalData({...modalData, artist: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
+                    {modalOpen === 'karaoke' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">歌唱者</label>
+                        <input
+                          type="text"
+                          value={modalData.sing_user || ''}
+                          onChange={(e) => setModalData({...modalData, sing_user: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
+                    {modalOpen === 'brassband' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">アーティスト</label>
+                        <input
+                          type="text"
+                          value={modalData.artist || ''}
+                          onChange={(e) => setModalData({...modalData, artist: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
+                    {modalOpen === 'brassband' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
+                        <input
+                          type="time"
+                          value={modalData.performance_time || ''}
+                          onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
+                    {modalOpen === 'band' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
+                        <input
+                          type="time"
+                          value={modalData.performance_time || ''}
+                          onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
+                    {modalOpen === 'bandSong' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
+                        <input
+                          type="text"
+                          value={modalData.artist || ''}
+                          onChange={(e) => setModalData({...modalData, artist: e.target.value})}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">{modalOpen === 'band' ? 'バンド名' : '曲名'}</label>
-                    <input
-                      type="text"
-                      value={modalData.name || ''}
-                      onChange={(e) => setModalData({...modalData, name: e.target.value})}
-                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    />
+                  <div className="mt-6 flex justify-end space-x-3">
+                    <button
+                      onClick={() => setModalOpen(null)}
+                      className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    >
+                      キャンセル
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (modalOpen === 'karaoke') handleAddKaraoke(modalData);
+                        else if (modalOpen === 'brassband') handleAddBrassBand(modalData);
+                        else if (modalOpen === 'band') handleAddBand(modalData);
+                        else if (modalOpen === 'bandSong') handleAddBandSong(modalData);
+                      }}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    >
+                      追加
+                    </button>
                   </div>
-                  {modalOpen === 'karaoke' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
-                      <input
-                        type="text"
-                        value={modalData.artist || ''}
-                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                  {modalOpen === 'karaoke' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">歌唱者</label>
-                      <input
-                        type="text"
-                        value={modalData.sing_user || ''}
-                        onChange={(e) => setModalData({...modalData, sing_user: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                  {modalOpen === 'brassband' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">アーティスト</label>
-                      <input
-                        type="text"
-                        value={modalData.artist || ''}
-                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                  {modalOpen === 'brassband' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
-                      <input
-                        type="time"
-                        value={modalData.performance_time || ''}
-                        onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                  {modalOpen === 'band' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">演奏開始時刻</label>
-                      <input
-                        type="time"
-                        value={modalData.performance_time || ''}
-                        onChange={(e) => setModalData({...modalData, performance_time: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                  {modalOpen === 'bandSong' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">アーティスト名</label>
-                      <input
-                        type="text"
-                        value={modalData.artist || ''}
-                        onChange={(e) => setModalData({...modalData, artist: e.target.value})}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="mt-6 flex justify-end space-x-3">
-                  <button
-                    onClick={() => setModalOpen(null)}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                  >
-                    キャンセル
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (modalOpen === 'karaoke') handleAddKaraoke(modalData);
-                      else if (modalOpen === 'brassband') handleAddBrassBand(modalData);
-                      else if (modalOpen === 'band') handleAddBand(modalData);
-                      else if (modalOpen === 'bandSong') handleAddBandSong(modalData);
-                    }}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                  >
-                    追加
-                  </button>
                 </div>
               </div>
-            </div>
-          )}
-          <Link href={`/organization/${params.id}/event/${params.event_id}/delete`} className='bg-white-100'>
-            <p className='text-center text-red-400 text-lg my-4'><FontAwesomeIcon icon={faTrashCan} /> イベントを削除</p>
-          </Link>
-        </div>
-      </main>
+            )}
+
+            <Link href={`/organization/${id}/event/${event_id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+              <FontAwesomeIcon icon={faTrashCan} /> イベントを削除
+            </Link>
+            <Link href={`/organization/${id}/event`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+              <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧へ戻る
+            </Link>
+          </>
+        )}
+      </div>
+    </main>
   );
 }

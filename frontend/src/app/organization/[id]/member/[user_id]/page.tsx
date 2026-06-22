@@ -1,15 +1,16 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCrown, faTrashCan, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCrown, faTrashCan, faRotate, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
 
-export default function News({ params }: { params: { id: string, user_id: string }}) {
+export default function News({ params }: { params: Promise<{ id: string, user_id: string }>}) {
+  const { id, user_id } = use(params);
 
   const [sendLoading, setSendLoading] = useState(false);
   const [addData, setAddData] = useState(false);
@@ -19,13 +20,13 @@ export default function News({ params }: { params: { id: string, user_id: string
   const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
   const [owner, setOwner] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/member/${params.user_id}/`;
+  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/member/${user_id}/`;
   const router = useRouter();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = event.target;
     setPermissions(prev => {
-      const updatedPermissions = checked 
+      const updatedPermissions = checked
           ? [...prev, id]
           : prev.filter(permission => permission !== id);
       return updatedPermissions;
@@ -38,7 +39,7 @@ export default function News({ params }: { params: { id: string, user_id: string
     } catch (error) {
         console.error('データ取得エラー:', error);
     } finally {
-      router.push(`/organization/${params.id}/member`);
+      router.push(`/organization/${id}/member`);
     }
 };
 
@@ -47,7 +48,7 @@ export default function News({ params }: { params: { id: string, user_id: string
     event.preventDefault();
     fetchData();
   };
-    
+
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -69,149 +70,190 @@ export default function News({ params }: { params: { id: string, user_id: string
   }, []);
 
   return (
-    <main>
+    <main className="pb-16">
       {sendLoading && <Loading />}
-        <div className="mx-3.5 my-10">
-            {organizationLoading ? (<Loading />) : (
-              <>
-                <div className="container mx-auto text-white text-center m-12">
-                    <h2 className="text-3xl font-light text-shadow-md m-3">
-                    <FontAwesomeIcon icon={faUser} /> {memberData[0]['username']}
-                    </h2>
-                    <p className="text-sm mb-4">
-                        メンバー管理
-                    </p>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  {organizationPermissions.includes('news') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="pointer-events-none absolute right-1/4 top-8 w-6 h-6 rotate-45 bg-blue-500/25" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faUser} className="mr-2 text-blue-300" />
+              {!organizationLoading && memberData[0] ? memberData[0]['username'] : 'Member'}
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">メンバー管理</p>
+        </div>
+      </div>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        {organizationLoading ? (<Loading />) : (
+          <>
+            <form onSubmit={handleSubmit}>
+              {organizationPermissions.includes('news') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="news"
                       defaultChecked={permissions.includes('news')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> News</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('shop') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">News</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('shop') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="shop"
                       defaultChecked={permissions.includes('shop')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Shop</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('menu') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Shop</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('menu') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="menu"
                       defaultChecked={permissions.includes('menu')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Menu</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('event') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Menu</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('event') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="event"
                       defaultChecked={permissions.includes('event')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Event</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('band') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Event</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('band') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="band"
                       defaultChecked={permissions.includes('band')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Band</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('karaoke') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Band</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('karaoke') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="karaoke"
                       defaultChecked={permissions.includes('karaoke')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Karaoke</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('brassband') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Karaoke</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('brassband') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="brassband"
                       defaultChecked={permissions.includes('brassband')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Brass Band</label>
-                  </div>
-                  )}
-                  {organizationPermissions.includes('inspection') && (
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
+                    <span className="text-slate-700">Brass Band</span>
+                  </label>
+                </div>
+              )}
+              {organizationPermissions.includes('inspection') && (
+                <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                  <label className="flex items-center gap-3">
+                    <input
                       type="checkbox"
                       id="inspection"
                       defaultChecked={permissions.includes('inspection')}
                       onChange={handleInputChange}
                       disabled={!addData}
+                      className="w-5 h-5"
                     />
-                    <label> Inspection</label>
-                  </div>
-                  )}
-                  <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition duration-100">
-                    <input 
-                      type="checkbox"
-                      id="invite_user"
-                      defaultChecked={permissions.includes('invite_user')}
-                      onChange={handleInputChange}
-                      disabled={!addData}
-                    />
-                    <label> Invite User</label>
-                  </div>
-                  {addData && (
-                    <div className='text-center'>
-                      <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faRotate} /> 更新</button>
-                    </div>
-                  )}
-                </form>
-                {addData && !isOwner && (
-                  <Link href={`/organization/${params.id}/member/${params.user_id}/delete`} className='bg-white-100'>
-                    <p className='text-center text-red-400 text-lg my-4'><FontAwesomeIcon icon={faTrashCan} /> オーガナイゼーションから退会</p>
-                  </Link>
-                )}
-                {owner && !isOwner && (
-                  <Link href={`/organization/${params.id}/member/${params.user_id}/change_owner`} className='bg-white-100'>
-                    <p className='text-center text-red-400 text-lg my-4'><FontAwesomeIcon icon={faCrown} /> オーナーの譲渡</p>
-                  </Link>
-                )}
-                {addData && isOwner && <p className='text-white text-center'><FontAwesomeIcon icon={faCrown} /> オーナーは退会できません</p>}
-              </>
+                    <span className="text-slate-700">Inspection</span>
+                  </label>
+                </div>
+              )}
+              <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="invite_user"
+                    defaultChecked={permissions.includes('invite_user')}
+                    onChange={handleInputChange}
+                    disabled={!addData}
+                    className="w-5 h-5"
+                  />
+                  <span className="text-slate-700">Invite User</span>
+                </label>
+              </div>
+              {addData && (
+                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 mb-4">
+                  <FontAwesomeIcon icon={faRotate} /> 更新
+                </button>
+              )}
+            </form>
+
+            {addData && !isOwner && (
+              <Link href={`/organization/${id}/member/${user_id}/delete`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+                <FontAwesomeIcon icon={faTrashCan} /> オーガナイゼーションから退会
+              </Link>
             )}
-        </div>
-      <Link href={`/organization/${params.id}/member`} className='text-center'>
-        <p className='text-white'>メンバー管理へ戻る</p>
-      </Link>
+            {owner && !isOwner && (
+              <Link href={`/organization/${id}/member/${user_id}/change_owner`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+                <FontAwesomeIcon icon={faCrown} /> オーナーの譲渡
+              </Link>
+            )}
+            {addData && isOwner && (
+              <p className="text-center text-slate-500 text-sm mt-4">
+                <FontAwesomeIcon icon={faCrown} className="mr-1" />オーナーは退会できません
+              </p>
+            )}
+          </>
+        )}
+        <Link href={`/organization/${id}/member`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> メンバー管理へ戻る
+        </Link>
+      </div>
     </main>
-);
+  );
 }

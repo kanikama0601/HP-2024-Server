@@ -16,11 +16,7 @@ def getOrganization(request):
   if request.method == 'GET':
     
     organizations = list(request.user.organization.all().values('id', 'name', 'owner__username'))
-    
-    if len(organizations) == 0:
-      
-      return HttpResponse(status=HTTP_RESPONSE_CODE_NOT_FOUND)
-    
+
     return JsonResponse({'organizations': organizations})
   
   return HttpResponse(status=HTTP_RESPONSE_CODE_METHOD_NOT_ALLOWED)

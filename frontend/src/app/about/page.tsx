@@ -44,26 +44,6 @@ export default function About() {
 
         <AnimatedSection delay={60}>
           <div className="card-panel rounded-2xl p-6 md:p-8">
-            <SectionHeading>開催概要</SectionHeading>
-            <dl className="mt-4 divide-y divide-slate-50">
-              {[
-                { dt: '名称', dd: '第54回 電波祭' },
-                { dt: '日程', dd: '2024年11月2日（土）・3日（日）' },
-                { dt: '時間', dd: '9:30 〜 16:30' },
-                { dt: '会場', dd: '香川高等専門学校 詫間キャンパス' },
-                { dt: '入場', dd: '無料' },
-              ].map(({ dt, dd }) => (
-                <div key={dt} className="flex gap-4 py-3">
-                  <dt className="w-16 shrink-0 text-xs text-slate-400 pt-0.5">{dt}</dt>
-                  <dd className="text-sm text-slate-700">{dd}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </AnimatedSection>
-
-        <AnimatedSection delay={120}>
-          <div className="card-panel rounded-2xl p-6 md:p-8">
             <SectionHeading>実行委員長の挨拶</SectionHeading>
             <p className="text-sm text-slate-700 leading-8 mt-4">
               皆さん、こんにちは。第54回電波祭実行委員長を務めます〇〇と申します。<br /><br />

@@ -1,12 +1,13 @@
 "use client";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faCalendar, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { faTrashCan, faCalendar, faPaperPlane, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
+import Link from 'next/link';
 
 interface Event {
   id: number;
@@ -19,10 +20,11 @@ interface Event {
   user__username: string;
 }
 
-export default function Event({ params }: { params: { id: string }}) {
+export default function Event({ params }: { params: Promise<{ id: string }>}) {
+  const { id } = use(params);
 
   const [sendLoading, setSendLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/event/new/`;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/new/`;
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
@@ -44,7 +46,7 @@ export default function Event({ params }: { params: { id: string }}) {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${params.id}/`, 'GET');
+        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/`, 'GET');
         setPermissions(data['permissions']);
         setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
@@ -52,9 +54,9 @@ export default function Event({ params }: { params: { id: string }}) {
       }
     };
     fetchPermissions();
-  }, [params.id]);
+  }, [id]);
 
-  const { 
+  const {
     register,
     handleSubmit,
     formState: { errors },
@@ -66,7 +68,7 @@ export default function Event({ params }: { params: { id: string }}) {
 
   const onSubmit = async (data: any) => {
     setSendLoading(true);
-    
+
     try {
       const send_data = { ...data, imageUrls: imageUrls };
       const response = await fetchWithAuth(apiUrl, 'POST', send_data);
@@ -74,7 +76,7 @@ export default function Event({ params }: { params: { id: string }}) {
       alert('エラー:' + error);
       setSendLoading(false);
     } finally {
-      router.push(`/organization/${params.id}/event`);
+      router.push(`/organization/${id}/event`);
     }
   };
 
@@ -102,139 +104,150 @@ export default function Event({ params }: { params: { id: string }}) {
   };
 
   return (
-    <main>
+    <main className="pb-16">
       {sendLoading && <Loading />}
-      <div className="mx-3.5 my-10">
-        <div className="container mx-auto text-white text-center m-12">
-          <h2 className="text-3xl font-light text-shadow-md m-3">
-          <FontAwesomeIcon icon={faCalendar} />  New Event
-          </h2>
-          <p className="text-sm mb-4">
-          イベント作成
-          </p>
-        </div>
-          <div className="container mx-auto text-xl md:w-6/12 w-full">
-            <div className="w-full p-4 bg-white rounded-lg py-6 my-4 hover:text-gray-600 transition dulation-100 text-center">
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div>
-                  <input
-                    placeholder="タイトル"
-                    {...register('title', {
-                      required: {
-                        value: true, 
-                        message: 'タイトルを入力してください',
-                      },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
-                  />
-                  {errors.title?.message && <div>{errors.title.message}</div>}
-                </div>
-                <div>
-                  <input
-                    placeholder="場所"
-                    {...register('place', {
-                      required: {
-                        value: true, 
-                        message: '場所を入力してください',
-                      },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
-                  />
-                  {errors.place?.message && <div>{errors.place.message}</div>}
-                </div>
-                <div>
-                  <textarea
-                    placeholder="詳細"
-                    {...register('detail', {
-                      required: {
-                        value: true, 
-                        message: '詳細を入力してください',
-                      },
-                    })} 
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg h-64'
-                  />
-                  {errors.detail?.message && <div>{errors.detail.message}</div>}
-                </div>
-                <div className='text-left inline-block w-11/12'>
-                  <p>開始日時</p>
-                  <input
-                    type="datetime-local"
-                    {...register('start', {
-                      required: {
-                        value: true, 
-                        message: '開始日時を入力してください',
-                      },
-                    })} 
-                    className='my-4 p-4 border-2 rounded-lg w-full'
-                  />
-                  {errors.start?.message && <div>{errors.start.message}</div>}
-                </div>
-                <div className='text-left inline-block w-11/12'>
-                  <p>終了日時</p>
-                  <input
-                    type="datetime-local"
-                    {...register('end', {
-                      required: {
-                        value: true, 
-                        message: '終了日時を入力してください',
-                      },
-                    })} 
-                    className='my-4 p-4 border-2 rounded-lg w-full'
-                  />
-                  {errors.end?.message && <div>{errors.end.message}</div>}
-                </div>
-                 {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
-                  <div className='text-left inline-block w-11/12 m-4'>
-                    <label className='flex items-center space-x-2'>
-                      <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
-                      <span>カラオケ大会のイベントにする</span>
-                    </label>
-                  </div>
-                )}
-                {organizationPermissions.includes('band') && (permissions.includes('band') || permissions.includes('inspection')) && (
-                  <div className='text-left inline-block w-11/12 m-4'>
-                    <label className='flex items-center space-x-2'>
-                      <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
-                      <span>軽音楽（バンド）のイベントにする</span>
-                    </label>
-                  </div>
-                )}
-                {organizationPermissions.includes('brassband') && permissions.includes('brassband') && (
-                  <div className='text-left inline-block w-11/12 m-4'>
-                    <label className='flex items-center space-x-2'>
-                      <input type="checkbox" {...register('is_brassband')} className='w-6 h-6' />
-                      <span>吹奏楽のイベントにする</span>
-                    </label>
-                  </div>
-                )}
-                <div>
-                  <div className="image-previews">
-                    {imageUrls.map((url, index) => (
-                      <>
-                        <img key={index} src={url} alt={`Preview ${index}`} className="w-11/12 m-2" />
-                        <button
-                            onClick={() => handleRemoveImage(index)}
-                            className="m-4 p-2 border rounded-lg bg-red-600 text-white text-base"
-                          >
-                            <FontAwesomeIcon icon={faTrashCan} /> 画像削除
-                        </button>
-                      </>
-                    ))}
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className='w-11/12 m-4 p-4 border-2 rounded-lg'
-                  />
-                  <input type="hidden" value={JSON.stringify(imageUrls)} {...register('imageUrls')} />
-                </div>
-                <button type="submit" className='m-6 p-4 border rounded-lg bg-gray-600 text-white'><FontAwesomeIcon icon={faPaperPlane} /> 作成</button>
-              </form>
-            </div>
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="pointer-events-none absolute right-1/4 top-8 w-6 h-6 rotate-45 bg-blue-500/25" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faCalendar} className="mr-2 text-blue-300" />New Event
+            </h1>
           </div>
+          <p className="text-sm text-blue-300 tracking-widest">イベント作成</p>
         </div>
-      </main>
+      </div>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-100 shadow-sm">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="mb-4">
+              <input
+                placeholder="タイトル"
+                {...register('title', {
+                  required: {
+                    value: true,
+                    message: 'タイトルを入力してください',
+                  },
+                })}
+                className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              {errors.title?.message && <div className="text-red-500 text-sm mt-1">{errors.title.message}</div>}
+            </div>
+            <div className="mb-4">
+              <input
+                placeholder="場所"
+                {...register('place', {
+                  required: {
+                    value: true,
+                    message: '場所を入力してください',
+                  },
+                })}
+                className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              {errors.place?.message && <div className="text-red-500 text-sm mt-1">{errors.place.message}</div>}
+            </div>
+            <div className="mb-4">
+              <textarea
+                placeholder="詳細"
+                {...register('detail', {
+                  required: {
+                    value: true,
+                    message: '詳細を入力してください',
+                  },
+                })}
+                className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300 h-64"
+              />
+              {errors.detail?.message && <div className="text-red-500 text-sm mt-1">{errors.detail.message}</div>}
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-slate-600 mb-1">開始日時</p>
+              <input
+                type="datetime-local"
+                {...register('start', {
+                  required: {
+                    value: true,
+                    message: '開始日時を入力してください',
+                  },
+                })}
+                className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              {errors.start?.message && <div className="text-red-500 text-sm mt-1">{errors.start.message}</div>}
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-slate-600 mb-1">終了日時</p>
+              <input
+                type="datetime-local"
+                {...register('end', {
+                  required: {
+                    value: true,
+                    message: '終了日時を入力してください',
+                  },
+                })}
+                className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+              {errors.end?.message && <div className="text-red-500 text-sm mt-1">{errors.end.message}</div>}
+            </div>
+            {organizationPermissions.includes('karaoke') && (permissions.includes('karaoke') || permissions.includes('inspection')) && (
+              <div className='mb-4'>
+                <label className='flex items-center space-x-2'>
+                  <input type="checkbox" {...register('is_karaoke')} className='w-6 h-6' />
+                  <span>カラオケ大会のイベントにする</span>
+                </label>
+              </div>
+            )}
+            {organizationPermissions.includes('band') && (permissions.includes('band') || permissions.includes('inspection')) && (
+              <div className='mb-4'>
+                <label className='flex items-center space-x-2'>
+                  <input type="checkbox" {...register('is_band')} className='w-6 h-6' />
+                  <span>軽音楽（バンド）のイベントにする</span>
+                </label>
+              </div>
+            )}
+            {organizationPermissions.includes('brassband') && permissions.includes('brassband') && (
+              <div className='mb-4'>
+                <label className='flex items-center space-x-2'>
+                  <input type="checkbox" {...register('is_brassband')} className='w-6 h-6' />
+                  <span>吹奏楽のイベントにする</span>
+                </label>
+              </div>
+            )}
+            <div className="mb-4">
+              <div className="image-previews">
+                {imageUrls.map((url, index) => (
+                  <>
+                    <img key={index} src={url} alt={`Preview ${index}`} className="w-full mb-2 rounded-lg" />
+                    <button
+                        onClick={() => handleRemoveImage(index)}
+                        className="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-xl transition-colors mb-2"
+                      >
+                        <FontAwesomeIcon icon={faTrashCan} className="mr-1" /> 画像削除
+                    </button>
+                  </>
+                ))}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                className="w-full p-3 border border-slate-200 rounded-xl"
+              />
+              <input type="hidden" value={JSON.stringify(imageUrls)} {...register('imageUrls')} />
+            </div>
+            <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2">
+              <FontAwesomeIcon icon={faPaperPlane} /> 作成
+            </button>
+          </form>
+        </div>
+        <Link href={`/organization/${id}/event`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧へ戻る
+        </Link>
+      </div>
+    </main>
   );
 }
