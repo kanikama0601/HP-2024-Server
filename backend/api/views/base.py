@@ -80,7 +80,6 @@ def saveImage(request):
 def getImage(request, filename):
     try:
         storage_url = os.environ.get('STORAGE_SERVER_URL', 'http://storage:5000')
-        print(f"DEBUG: Fetching from {storage_url}/uploads/{filename}")
         response = requests.get(f"{storage_url}/uploads/{filename}", stream=True)
         
         if response.status_code != 200:

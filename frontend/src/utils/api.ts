@@ -26,11 +26,9 @@ export const fetchWithAuth = async (url: string, method: string, body_data?: any
 
         // アクセストークンが無効な場合
         if (response.status === 401) {
-            // アクセストークンをリフレッシュ
-            accessToken = await refreshAccessToken();
-
-            // 再度リクエスト
-            response = await fetchWithAuth(url, method, body_data);
+            // アクセストークンをリフレッシュして再度リクエスト
+            await refreshAccessToken();
+            return await fetchWithAuth(url, method, body_data);
         }
 
         if (!response.ok) {
