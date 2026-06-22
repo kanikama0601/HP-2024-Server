@@ -2,85 +2,95 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { AnimatedSection } from "@/components/AnimatedSection";
 import Link from "next/link";
 
 export default function About() {
   return (
-    <main>
-      <div className="mx-3.5 my-10">
-
-        {/* ヘッダー */}
-        <div className="container mx-auto text-white text-center my-12">
-          <p className="text-sm mb-2 tracking-widest opacity-80">香川高等専門学校 詫間キャンパス</p>
-          <h1 className="text-4xl font-light tracking-widest drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] my-6">
-            <FontAwesomeIcon icon={faGraduationCap} /> About
-          </h1>
-          <p className="text-lg tracking-[0.15em] drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-            電波祭について
+    <main className="pb-16">
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="pointer-events-none absolute right-1/4 top-8 w-6 h-6 rotate-45 bg-blue-500/25" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <p className="text-xs font-medium tracking-[0.3em] text-blue-300 uppercase mb-3">
+            香川高等専門学校 詫間キャンパス
           </p>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faGraduationCap} className="mr-2 text-blue-300" />About
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">電波祭について</p>
         </div>
+      </div>
 
-        <div className="container mx-auto md:w-6/12 w-full space-y-4">
+      <div className="container mx-auto px-4 py-10 max-w-2xl space-y-5">
 
-          {/* 電波祭とは */}
-          <div className="w-full p-6 bg-white rounded-lg">
-            <h2 className="text-base font-bold text-gray-800 mb-3">電波祭とは</h2>
-            <p className="text-sm text-gray-700 leading-8">
+        <AnimatedSection>
+          <div className="card-panel rounded-2xl p-6 md:p-8">
+            <SectionHeading>電波祭とは</SectionHeading>
+            <p className="text-sm text-slate-700 leading-8">
               電波祭は、香川高等専門学校 詫間キャンパスが毎年秋に開催する文化祭です。<br /><br />
-              各学科の研究・制作発表をはじめ、模擬店、ステージイベント、軽音楽演奏、カラオケ大会など多彩なプログラムをご用意しています。<br /><br />
+              各学科の研究・制作発表をはじめ、模擬店、ステージイベント、軽音楽演奏、カラオケ大会など
+              多彩なプログラムをご用意しています。<br /><br />
               在学生・卒業生・地域の皆さまが一堂に会し、学びと交流の場として長年親しまれてきました。<br /><br />
               当日はスタンプラリーや各種体験コーナーも設けておりますので、お子様連れのご家族でもお楽しみいただけます。
             </p>
           </div>
+        </AnimatedSection>
 
-          {/* 開催概要 */}
-          <div className="w-full p-6 bg-white rounded-lg">
-            <h2 className="text-base font-bold text-gray-800 mb-3">開催概要</h2>
-            <table className="w-full text-sm text-gray-700 leading-8">
-              <tbody>
-                <tr className="border-b border-gray-100">
-                  <td className="py-1.5 pr-4 text-gray-500 whitespace-nowrap">名称</td>
-                  <td className="py-1.5">第43回 電波祭</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-1.5 pr-4 text-gray-500 whitespace-nowrap">日程</td>
-                  <td className="py-1.5">2024年11月2日（土）・3日（日）</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-1.5 pr-4 text-gray-500 whitespace-nowrap">時間</td>
-                  <td className="py-1.5">9:30 〜 16:30</td>
-                </tr>
-                <tr className="border-b border-gray-100">
-                  <td className="py-1.5 pr-4 text-gray-500 whitespace-nowrap">会場</td>
-                  <td className="py-1.5">香川高等専門学校 詫間キャンパス</td>
-                </tr>
-                <tr>
-                  <td className="py-1.5 pr-4 text-gray-500 whitespace-nowrap">入場</td>
-                  <td className="py-1.5">無料</td>
-                </tr>
-              </tbody>
-            </table>
+        <AnimatedSection delay={60}>
+          <div className="card-panel rounded-2xl p-6 md:p-8">
+            <SectionHeading>開催概要</SectionHeading>
+            <dl className="mt-4 divide-y divide-slate-50">
+              {[
+                { dt: '名称', dd: '第43回 電波祭' },
+                { dt: '日程', dd: '2024年11月2日（土）・3日（日）' },
+                { dt: '時間', dd: '9:30 〜 16:30' },
+                { dt: '会場', dd: '香川高等専門学校 詫間キャンパス' },
+                { dt: '入場', dd: '無料' },
+              ].map(({ dt, dd }) => (
+                <div key={dt} className="flex gap-4 py-3">
+                  <dt className="w-16 shrink-0 text-xs text-slate-400 pt-0.5">{dt}</dt>
+                  <dd className="text-sm text-slate-700">{dd}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
+        </AnimatedSection>
 
-          {/* 実行委員長の挨拶 */}
-          <div className="w-full p-6 bg-white rounded-lg">
-            <h2 className="text-base font-bold text-gray-800 mb-3">実行委員長の挨拶</h2>
-            <p className="text-sm text-gray-700 leading-8">
+        <AnimatedSection delay={120}>
+          <div className="card-panel rounded-2xl p-6 md:p-8">
+            <SectionHeading>実行委員長の挨拶</SectionHeading>
+            <p className="text-sm text-slate-700 leading-8 mt-4">
               皆さん、こんにちは。第43回電波祭実行委員長を務めます〇〇と申します。<br /><br />
-              今年のテーマは「繋（つなぐ）」です。学生・地域・技術——異なる世界をひとつに繋ぎ、多くの人々との絆を深める場として、本年度の電波祭を開催いたします。<br /><br />
-              在学生が日々の学びの中で積み上げてきた研究・制作・演奏の成果をここに発表し、来場者のみなさまと互いの交流を通じてともに成長することを目指しています。<br /><br />
-              準備にあたっては、多くの学生スタッフ・教職員・地域の皆さまにご支援いただきました。心より感謝申し上げます。<br /><br />
-              ご来場の皆さまにとって、思い出に残る一日となりますよう、スタッフ一同精一杯おもてなしいたします。どうぞお楽しみください。
+              今年のテーマは「繋（つなぐ）」です。学生・地域・技術——異なる世界をひとつに繋ぎ、
+              多くの人々との絆を深める場として、本年度の電波祭を開催いたします。<br /><br />
+              在学生が日々の学びの中で積み上げてきた研究・制作・演奏の成果をここに発表し、
+              来場者のみなさまと互いの交流を通じてともに成長することを目指しています。<br /><br />
+              ご来場の皆さまにとって、思い出に残る一日となりますよう、スタッフ一同精一杯おもてなしいたします。
+              どうぞお楽しみください。
             </p>
-            <p className="text-sm text-gray-500 mt-4 text-right">第43回電波祭実行委員長　〇〇 〇〇</p>
+            <p className="text-xs text-slate-400 text-right mt-4">第43回電波祭実行委員長　〇〇 〇〇</p>
           </div>
+        </AnimatedSection>
 
-        </div>
-
-        <Link href="/" className="block text-center mt-8">
-          <p className="text-white"><FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る</p>
+        <Link href="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る
         </Link>
       </div>
     </main>
+  );
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-1 h-5 rounded-full bg-blue-500" />
+      <h2 className="text-base font-bold text-slate-800">{children}</h2>
+    </div>
   );
 }

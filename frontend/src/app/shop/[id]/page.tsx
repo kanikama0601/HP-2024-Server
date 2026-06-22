@@ -1,134 +1,147 @@
 "use client";
 
 interface Shop {
-    id: number;
-    name: string;
-    address: string;
-    detail: string;
-    image__image__image: string;
-    organization__name: string;
-    user__username: string;
+  id: number;
+  name: string;
+  address: string;
+  detail: string;
+  image__image__image: string;
+  organization__name: string;
+  user__username: string;
 }
-
 interface Menu {
-    id: number;
-    name: string;
-    price: number;
+  id: number;
+  name: string;
+  price: number;
 }
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faShop, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faShop, faUserGroup, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useState, useEffect, Fragment } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function Event({ params }: { params: { id: string }}) {
-    const [data, setData] = useState<Shop[]>([]);
-    const [status, setStatus] = useState(0);
-	const [loading, setLoading] = useState(true);
-    const [image, setImage] = useState<string[]>([]);
-    const [menus, setMenus] = useState<Menu[]>([]);
-    const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/shop/' + params.id + '/';
-    const csrftoken = Cookies.get('csrftoken') || '';
+export default function ShopDetail({ params }: { params: { id: string } }) {
+  const [data, setData]   = useState<Shop[]>([]);
+  const [status, setStatus] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [image, setImage] = useState<string[]>([]);
+  const [menus, setMenus] = useState<Menu[]>([]);
+  const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
+  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/shop/' + params.id + '/';
+  const csrftoken = Cookies.get('csrftoken') || '';
 
-    const fetchNews = async () => {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-						credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-            },
-        });
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            setData(data['shop']);
-            setImage(data['image']);
-            setMenus(data['menu']);
-            setStatus(response.status);
-        }
-		setLoading(false);
-    };
+  const fetchShop = async () => {
+    const response = await fetch(apiUrl, {
+      method: 'GET', credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+    });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      const data = await response.json();
+      setData(data['shop']);
+      setImage(data['image']);
+      setMenus(data['menu']);
+      setStatus(response.status);
+    }
+    setLoading(false);
+  };
 
-    useEffect(() => {
-        fetchNews(); // 関数を呼び出す
-    }, []); // コンポーネントのマウント時に実行
+  useEffect(() => { fetchShop(); }, []);
 
-    useEffect(() => {
-        if (data.length > 0) {
-            setFormattedDescription(data[0]['detail'].split(/(\n)/).map((item: string, index: number) => {
-                return <Fragment key={index}>{item.match(/\n/) ? <br /> : item}</Fragment>;
-            }));
-        }
-    }, [data]);
+  useEffect(() => {
+    if (data.length > 0) {
+      setFormattedDescription(
+        data[0]['detail'].split(/(\n)/).map((item, i) =>
+          <Fragment key={i}>{item.match(/\n/) ? <br /> : item}</Fragment>
+        )
+      );
+    }
+  }, [data]);
 
+  return (
+    <main className="pb-16">
+      <ImportantNews />
 
-    return (
-        <main>
-            <ImportantNews />
-            <div className="mx-3.5 my-10">
-                <div className="container mx-auto text-white text-center m-12">
-					<h2 className="text-3xl font-light text-shadow-md drop-shadow-[0_3px_12px_rgba(0,0,0,0.9)] m-3">
-					<FontAwesomeIcon icon={faShop} /> Shop
-					</h2>
-					<p className="text-sm mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-					模擬店情報
-					</p>
-				</div>
-				{loading ? (<Loading />) : (
-                <div className="container mx-auto text-xl md:w-6/12 w-full">
-                        <div className="w-full p-4 bg-white rounded-lg py-6 my-4 transition duration-100">
-                            {status === 200 ? ( // dataが空でないことを確認
-                                <>
-                                    {data[0]['image__image__image'] && <img src={data[0]['image__image__image']} alt={data[0]['name']} className="w-full h-40 object-cover rounded-lg mb-4" />}
-                                    <h3 className="text-base my-1.5">{data[0]['name']}</h3>
-                                    <p className="text-xs my-1.5 text-gray-700">@{data[0]['address']}</p>
-                                    <p className="text-xs my-1.5 text-gray-700"><FontAwesomeIcon icon={faUserGroup} /> {data[0]['organization__name']}</p>
-                                    <p className='text-sm my-5'>{formattedDescription}</p>
-                                    {image.map((img, index) => (
-                                        <img key={index} src={img} className="w-full h-auto my-6" />
-                                    ))}
-                                    {menus.length > 0 ? (
-                                        <div className='text-center'>
-                                            <table className="text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 w-11/12 m-auto">
-                                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-center">
-                                                    <tr>
-                                                        <th scope="col" className="px-6 py-3" style={{ width: '80%' }}>
-                                                            Menu
-                                                        </th>
-                                                        <th scope="col" className="px-6 py-3" style={{ width: '20%' }}>
-                                                            Price
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {menus.map((menu, index) => (
-                                                        <tr key={index} className='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
-                                                            <td><p className='text-sm my-1 px-2'>{menu['name']}</p></td>
-                                                            <td><p className='text-sm my-1 px-2'>¥ {menu['price']}</p></td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs my-1.5 text-gray-700 text-center">メニューが登録されていません</p>
-                                    )}
-                                </>
-                            ) : (
-                                <p className="text-xs my-1.5 text-gray-700">指定された模擬店が見つかりませんでした</p> // デフォルトメッセージ
-                            )}
-                        </div>
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faShop} className="mr-2 text-blue-300" />Shop
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">模擬店情報</p>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        {loading ? <Loading /> : (
+          <div className="card-panel rounded-2xl overflow-hidden">
+            {status === 200 ? (
+              <>
+                {data[0]['image__image__image'] && (
+                  <img src={data[0]['image__image__image']} alt={data[0]['name']}
+                    className="w-full h-56 object-cover" />
+                )}
+                <div className="p-6 md:p-8">
+                  <h2 className="text-xl font-bold text-slate-800 mb-2">{data[0]['name']}</h2>
+                  <p className="text-sm text-slate-400 mb-1">@{data[0]['address']}</p>
+                  <p className="flex items-center gap-1 text-sm text-slate-400 mb-6 pb-6 border-b border-slate-100">
+                    <FontAwesomeIcon icon={faUserGroup} /> {data[0]['organization__name']}
+                  </p>
+                  <div className="text-sm text-slate-700 leading-8 mb-6">
+                    {formattedDescription}
+                  </div>
+                  {image.map((img, i) => (
+                    <img key={i} src={img} className="w-full h-auto my-6 rounded-xl" />
+                  ))}
+
+                  {/* Menu */}
+                  {menus.length > 0 ? (
+                    <div className="mt-6">
+                      <h3 className="flex items-center gap-2 text-base font-bold text-slate-800 mb-4">
+                        <span className="w-1 h-5 rounded-full bg-blue-500" />メニュー
+                      </h3>
+                      <div className="overflow-hidden rounded-xl border border-slate-100">
+                        <table className="w-full text-sm">
+                          <thead className="bg-blue-50">
+                            <tr>
+                              <th className="px-4 py-3 text-left text-xs font-semibold text-blue-700 uppercase tracking-wider w-4/5">メニュー</th>
+                              <th className="px-4 py-3 text-right text-xs font-semibold text-blue-700 uppercase tracking-wider w-1/5">価格</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-50">
+                            {menus.map((menu, i) => (
+                              <tr key={i} className="hover:bg-slate-50 transition-colors">
+                                <td className="px-4 py-3 text-slate-700">{menu['name']}</td>
+                                <td className="px-4 py-3 text-right font-medium text-blue-700">¥{menu['price']}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-								)}
-                                <Link href={"/shop"}>
-                                    <p className="text-center text-white hover:text-gray-200 transition duration-100 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"><FontAwesomeIcon icon={faList} /> 模擬店一覧</p>
-                                </Link>
-            </div>
-        </main>
-    );
+                  ) : (
+                    <p className="text-xs text-center text-slate-400 mt-4">メニューが登録されていません</p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-slate-400 text-center py-12">指定された模擬店が見つかりませんでした</p>
+            )}
+          </div>
+        )}
+
+        <Link href="/shop" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> 模擬店一覧に戻る
+        </Link>
+      </div>
+    </main>
+  );
 }

@@ -2,84 +2,85 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRecycle, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { AnimatedSection } from "@/components/AnimatedSection";
 import Link from "next/link";
 
 const bins = [
-  {
-    color: "bg-blue-100 border-blue-300",
-    label: "燃えるゴミ",
-    emoji: "🗑️",
-    examples: ["食べ残し", "紙くず", "割り箸・爪楊枝", "汚れた紙皿・紙コップ"],
-  },
-  {
-    color: "bg-yellow-100 border-yellow-300",
-    label: "プラスチック",
-    emoji: "♻️",
-    examples: ["ペットボトルのキャップ", "レジ袋・ビニール袋", "食品トレー（軽くすすいで）", "プラマーク付き容器"],
-  },
-  {
-    color: "bg-green-100 border-green-300",
-    label: "ペットボトル",
-    emoji: "🧴",
+  { accent: "border-l-blue-400",  label: "燃えるゴミ",   emoji: "🗑️",
+    examples: ["食べ残し", "紙くず", "割り箸・爪楊枝", "汚れた紙皿・紙コップ"] },
+  { accent: "border-l-yellow-400", label: "プラスチック", emoji: "♻️",
+    examples: ["ペットボトルのキャップ", "レジ袋・ビニール袋", "食品トレー（軽くすすいで）", "プラマーク付き容器"] },
+  { accent: "border-l-green-400",  label: "ペットボトル", emoji: "🧴",
     examples: ["飲料用ペットボトル（ラベル・キャップ除く）"],
-    note: "中をすすいでからお捨てください",
-  },
-  {
-    color: "bg-gray-100 border-gray-300",
-    label: "缶・ビン",
-    emoji: "🥫",
+    note: "中をすすいでからお捨てください" },
+  { accent: "border-l-slate-400",  label: "缶・ビン",    emoji: "🥫",
     examples: ["アルミ缶・スチール缶", "ガラスビン"],
-    note: "中をすすいでからお捨てください",
-  },
-  {
-    color: "bg-red-100 border-red-300",
-    label: "燃えないゴミ",
-    emoji: "🚯",
-    examples: ["割れたガラス", "陶器のかけら", "金属類"],
-  },
+    note: "中をすすいでからお捨てください" },
+  { accent: "border-l-red-400",    label: "燃えないゴミ", emoji: "🚯",
+    examples: ["割れたガラス", "陶器のかけら", "金属類"] },
 ];
 
 export default function Recycle() {
   return (
-    <main>
-      <div className="mx-3.5 my-10">
-        <div className="container mx-auto text-white text-center m-12">
-          <h2 className="text-3xl font-light text-shadow-md m-3">
-            <FontAwesomeIcon icon={faRecycle} /> 分別について
-          </h2>
-          <p className="text-sm mb-4">ゴミの正しい分け方</p>
+    <main className="pb-16">
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.08em]">
+              <FontAwesomeIcon icon={faRecycle} className="mr-2 text-green-300" />分別について
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">ゴミの正しい分け方</p>
         </div>
-        <div className="container mx-auto md:w-6/12 w-full space-y-4">
+      </div>
 
-          <div className="w-full p-6 bg-white rounded-lg">
-            <p className="text-sm text-gray-700 leading-7">
-              電波祭ではゴミの分別にご協力をお願いしています。<br />
+      <div className="container mx-auto px-4 py-10 max-w-2xl space-y-4">
+
+        <AnimatedSection>
+          <div className="card-panel rounded-2xl p-6">
+            <p className="text-sm text-slate-700 leading-7">
+              電波祭ではゴミの分別にご協力をお願いしています。
               各ゴミ箱にはラベルを貼っていますので、正しい分別にご協力ください。
             </p>
           </div>
+        </AnimatedSection>
 
-          {bins.map(({ color, label, emoji, examples, note }) => (
-            <div key={label} className={`w-full p-6 bg-white rounded-lg border-l-4 ${color}`}>
-              <h3 className="text-base font-bold text-gray-800 mb-2">{emoji} {label}</h3>
-              <ul className="text-sm text-gray-700 list-disc list-inside space-y-1">
-                {examples.map((ex) => <li key={ex}>{ex}</li>)}
+        {bins.map(({ accent, label, emoji, examples, note }, i) => (
+          <AnimatedSection key={label} delay={(i + 1) * 50}>
+            <div className={`card-panel rounded-2xl p-6 border-l-4 ${accent}`}>
+              <div className="flex items-start gap-3 mb-2">
+                <span className="text-xl shrink-0">{emoji}</span>
+                <h2 className="text-sm font-bold text-slate-800">{label}</h2>
+              </div>
+              <ul className="space-y-1 pl-8">
+                {examples.map((ex) => (
+                  <li key={ex} className="flex items-center gap-2 text-sm text-slate-600">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
+                    {ex}
+                  </li>
+                ))}
               </ul>
-              {note && <p className="text-xs text-gray-500 mt-2">※ {note}</p>}
+              {note && <p className="mt-2 pl-8 text-xs text-slate-400">※ {note}</p>}
             </div>
-          ))}
+          </AnimatedSection>
+        ))}
 
-          <div className="w-full p-6 bg-white rounded-lg">
-            <h3 className="text-base font-bold text-gray-800 mb-2">⚠️ お願い</h3>
-            <p className="text-sm text-gray-700 leading-7">
+        <AnimatedSection delay={350}>
+          <div className="card-panel rounded-2xl p-6 border border-amber-200 bg-amber-50">
+            <h2 className="text-sm font-bold text-amber-800 mb-2">⚠️ お願い</h2>
+            <p className="text-sm text-amber-700 leading-7">
               分別が難しい場合は「燃えるゴミ」へお入れください。<br />
               案内所スタッフへお気軽にご質問ください。<br />
               皆さまのご協力をよろしくお願いいたします。
             </p>
           </div>
+        </AnimatedSection>
 
-        </div>
-        <Link href="/" className="block text-center mt-8">
-          <p className="text-white"><FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る</p>
+        <Link href="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る
         </Link>
       </div>
     </main>

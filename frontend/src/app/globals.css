@@ -3,87 +3,95 @@
 @tailwind utilities;
 
 :root {
-  --card-bg: rgba(255, 255, 255, 0.52);
-  --card-border: rgba(255, 255, 255, 0.38);
-  --ink: #111111;
-  --ink-soft: #5c5c5f;
-  --accent: #18181b;
+  --blue-primary: #1d4ed8;
+  --blue-dark:    #1e3a8a;
+  --blue-mid:     #2563eb;
+  --blue-light:   #dbeafe;
+  --bg:           #f4f8ff;
+  --card:         #ffffff;
+  --card-border:  #dde8ff;
+  --ink:          #0f172a;
+  --ink-soft:     #64748b;
 }
 
 html {
-  background:
-    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.7), transparent 20%),
-    radial-gradient(circle at 80% 10%, rgba(255, 220, 220, 0.35), transparent 16%),
-    radial-gradient(circle at 70% 80%, rgba(210, 235, 255, 0.42), transparent 20%),
-    linear-gradient(180deg, #f9fafb 0%, #e8eef7 55%, #dde8f6 100%);
+  background: var(--bg);
   color: var(--ink);
 }
 
 body {
   font-size: 16px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   color: var(--ink);
   min-height: 100vh;
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
-p, a {
-  font-size: 16px;
-}
+p, a  { font-size: 16px; }
+button, input, textarea { font-size: 16px; }
+input[type=checkbox] { width: 30px; }
+main { min-height: 78vh; }
 
-button {
-  font-size: 16px;
-}
-
-input {
-  font-size: 16px;
-}
-
-input[type=checkbox] {
-  width: 30px;
-}
-
-textarea {
-  font-size: 16px;
-}
-
-main {
-  min-height: 78vh;
-}
-
-.bg-gray-800-opacity {
-  background-color: rgba(17, 17, 17, 0.62);
-  backdrop-filter: blur(10px);
-}
-
-.glass-panel {
-  background: var(--card-bg);
+/* ───── Card ───── */
+.card-panel {
+  background: var(--card);
   border: 1px solid var(--card-border);
-  box-shadow: 0 18px 50px rgba(17, 17, 17, 0.08);
-  backdrop-filter: blur(18px);
-}
-
-.section-shell {
-  position: relative;
-}
-
-.section-shell::before {
-  content: "";
-  position: absolute;
-  inset: 0;
   border-radius: 1rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent);
-  pointer-events: none;
+  box-shadow: 0 2px 16px rgba(29, 78, 216, 0.07);
 }
 
+/* legacy alias used by old components */
+.glass-panel {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 2px 16px rgba(29, 78, 216, 0.07);
+}
+
+/* ───── Section shell ───── */
+.section-shell { position: relative; }
+
+/* ───── Dot-grid pattern (subtle) ───── */
+.bg-dots {
+  background-image: radial-gradient(circle, #c3d9f9 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ───── Blue left-accent chip ───── */
 .mono-chip {
-  border: 1px solid rgba(17, 17, 17, 0.1);
-  background: rgba(255, 255, 255, 0.7);
-  color: #1f1f1f;
+  border: 1px solid var(--card-border);
+  background: var(--card);
+  color: var(--ink-soft);
 }
 
+/* ───── Scroll reveal ───── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1),
+              transform 0.6s cubic-bezier(.4,0,.2,1);
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-28px);
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1),
+              transform 0.6s cubic-bezier(.4,0,.2,1);
+}
+.scroll-reveal-left.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ───── Utilities ───── */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-balance { text-wrap: balance; }
+  .text-shadow {
+    text-shadow: 0px 2px 3px rgba(0,0,0,0.4);
+  }
+  .text-shadow-lg {
+    text-shadow: 0px 4px 12px rgba(0,0,0,0.5);
   }
 }

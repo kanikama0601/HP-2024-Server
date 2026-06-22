@@ -1,55 +1,71 @@
 'use client';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse, faNewspaper, faShop, faCalendar, faList } from "@fortawesome/free-solid-svg-icons";
+import { faHouse, faNewspaper, faShop, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { faCopyright } from "@fortawesome/free-regular-svg-icons";
 import Link from "next/link";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export const Footer: React.FC = () => {
-    const pathname = usePathname();
+  const pathname = usePathname();
 
-    const beginNavigation = (target?: string) => {
-        if (target && target === pathname) return;
-        window.dispatchEvent(new Event("app-loading-start"));
-    };
+  const beginNavigation = (target?: string) => {
+    if (target && target === pathname) return;
+    window.dispatchEvent(new Event("app-loading-start"));
+  };
 
-    useEffect(() => {
-        window.dispatchEvent(new Event("app-loading-end"));
-    }, [pathname]);
+  useEffect(() => {
+    window.dispatchEvent(new Event("app-loading-end"));
+  }, [pathname]);
 
-    return (
-        <div className="w-full">
-            <footer className="glass-panel w-full rounded-none px-4 py-6 md:px-8 md:py-8" style={{ backgroundColor: 'rgba(175, 175, 175, 0.8)' }}>
-                <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 md:flex-row md:items-start md:justify-between">
-                    <div>
-                        <h2 className="text-3xl font-light tracking-[0.12em]">
-                        <FontAwesomeIcon icon={faList} /> Menu
-                        </h2>
-                        <p className="text-xs mb-4 mt-1 text-neutral-500">
-                        メニュー
-                        </p>
-                    </div>
-                    <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:justify-end md:gap-6">
-                        <Link href={"/"} onClick={() => beginNavigation("/")} className="text-base text-neutral-700 hover:text-neutral-950 transition-colors">
-                            <span className="inline-flex items-center gap-2"><FontAwesomeIcon icon={faHouse} /> トップ</span>
-                        </Link>
-                        <Link href={"/news"} onClick={() => beginNavigation("/news")} className="text-base text-neutral-700 hover:text-neutral-950 transition-colors">
-                            <span className="inline-flex items-center gap-2"><FontAwesomeIcon icon={faNewspaper} /> お知らせ</span>
-                        </Link>
-                        <Link href={"/shop"} onClick={() => beginNavigation("/shop")} className="text-base text-neutral-700 hover:text-neutral-950 transition-colors">
-                            <span className="inline-flex items-center gap-2"><FontAwesomeIcon icon={faShop} /> 模擬店</span>
-                        </Link>
-                        <Link href={"/event"} onClick={() => beginNavigation("/event")} className="text-base text-neutral-700 hover:text-neutral-950 transition-colors">
-                            <span className="inline-flex items-center gap-2"><FontAwesomeIcon icon={faCalendar} /> イベント</span>
-                        </Link>
-                    </div>
-                </div>
-                <p className="mx-auto mt-6 max-w-7xl text-center text-xs text-neutral-500">
-                    <FontAwesomeIcon icon={faCopyright} /> 2024 電波祭実行委員会. All Right Reserved.
-                </p>
-            </footer>
+  return (
+    <footer className="relative bg-blue-900 text-white overflow-hidden">
+      {/* Decorative shapes */}
+      <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-700/40" />
+      <div className="pointer-events-none absolute right-24 bottom-0 w-20 h-20 bg-blue-800/50 rotate-45 translate-y-10" />
+      <div className="pointer-events-none absolute left-8 top-6 w-8 h-8 bg-blue-700/40 rotate-45" />
+      <div className="pointer-events-none absolute left-32 bottom-4 w-3 h-3 rounded-full bg-blue-500/60" />
+      <div className="pointer-events-none absolute left-48 top-10 w-2 h-2 rounded-full bg-blue-400/50" />
+
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-12 pb-8">
+        {/* Logo row */}
+        <div className="mb-8 flex items-center gap-3">
+          <span className="inline-flex w-9 h-9 items-center justify-center bg-white/10 rounded-lg">
+            <span className="text-white text-sm font-bold">電</span>
+          </span>
+          <div>
+            <p className="text-base font-bold tracking-[0.12em] text-white">香川高専 電波祭</p>
+            <p className="text-xs text-blue-300 tracking-widest">DENPA-SAI 2024</p>
+          </div>
         </div>
-    );
+
+        {/* Links */}
+        <nav className="mb-10 flex flex-wrap gap-x-8 gap-y-3">
+          {[
+            { href: '/',      icon: faHouse,     label: 'トップ' },
+            { href: '/news',  icon: faNewspaper, label: 'お知らせ' },
+            { href: '/shop',  icon: faShop,      label: '模擬店' },
+            { href: '/event', icon: faCalendar,  label: 'イベント' },
+          ].map(({ href, icon, label }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => beginNavigation(href)}
+              className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
+            >
+              <FontAwesomeIcon icon={icon} className="text-xs text-blue-400" />
+              {label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="border-t border-blue-800 pt-6">
+          <p className="text-center text-xs text-blue-400">
+            <FontAwesomeIcon icon={faCopyright} /> 2024 電波祭実行委員会. All Rights Reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
 };

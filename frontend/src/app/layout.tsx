@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { Slideshow } from "@/components/Slideshow"
-import { GlobalLoading } from "@/components/GlobalLoading"
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { GlobalLoading } from "@/components/GlobalLoading";
 const inter = Inter({ subsets: ["latin"] });
-import { config } from '@fortawesome/fontawesome-svg-core'
-import '@fortawesome/fontawesome-svg-core/styles.css'
-config.autoAddCss = false
+import { config } from '@fortawesome/fontawesome-svg-core';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+config.autoAddCss = false;
 
 export const metadata: Metadata = {
   title: "香川高専 電波祭",
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#111111",
+  themeColor: "#1e3a8a",
 };
 
 export default function RootLayout({
@@ -25,11 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className="tracking-[0.08em]">
-      <body className={`${inter.className} text-neutral-900 min-h-screen flex flex-col`}>
+    <html lang="ja" className="tracking-[0.04em]">
+      <body className={`${inter.className} text-slate-900 min-h-screen flex flex-col bg-[#f4f8ff]`}>
         <GlobalLoading />
         <Header />
-        <Slideshow />
         <div className="flex-1">
           {children}
         </div>

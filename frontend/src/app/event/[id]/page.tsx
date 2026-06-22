@@ -1,198 +1,231 @@
 "use client";
 
 interface Event {
-    id: number;
-    title: string;
-    place: string;
-    detail: string;
-    start: string;
-    end: string;
-    organization__name: string;
-    user__username: string;
+  id: number;
+  title: string;
+  place: string;
+  detail: string;
+  start: string;
+  end: string;
+  organization__name: string;
+  user__username: string;
 }
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faNewspaper, faBuilding, faList, faCirclePlay, faCircleStop, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faBuilding, faCalendar, faChevronLeft, faCirclePlay, faCircleStop, faClock, faList } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 import { useState, useEffect, Fragment } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function Event({ params }: { params: { id: string }}) {
-    const [now, setNow] = useState(new Date());
-    const [data, setData] = useState<Event[]>([]);
-    const [status, setStatus] = useState(0);
-	const [loading, setLoading] = useState(true);
-    const [image, setImage] = useState<string[]>([]);
-    const [karaoke, setKaraoke] = useState<any[]>([]);
-    const [brassband, setBrassband] = useState<any[]>([]);
-    const [band, setBand] = useState<any[]>([]);
-    const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/event/' + params.id + '/';
-    const csrftoken = Cookies.get('csrftoken') || '';
+export default function EventDetail({ params }: { params: { id: string } }) {
+  const [now, setNow]       = useState(new Date());
+  const [data, setData]     = useState<Event[]>([]);
+  const [status, setStatus] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [image, setImage]   = useState<string[]>([]);
+  const [karaoke, setKaraoke]     = useState<any[]>([]);
+  const [brassband, setBrassband] = useState<any[]>([]);
+  const [band, setBand]           = useState<any[]>([]);
+  const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
+  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/event/' + params.id + '/';
+  const csrftoken = Cookies.get('csrftoken') || '';
 
-    const fetchNews = async () => {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-						credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken,
-            },
-        });
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-            const data = await response.json();
-            setData(data['event']);
-            setImage(data['image']);
-            setKaraoke(data['karaoke'] || []);
-            setBrassband(data['brassband'] || []);
-            setBand(data['band'] || []);
-            setStatus(response.status);
-            setNow(new Date(data['now']));
-        }
-		setLoading(false);
-    };
+  const fetchEvent = async () => {
+    const response = await fetch(apiUrl, {
+      method: 'GET', credentials: 'include',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+    });
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      const d = await response.json();
+      setData(d['event']);
+      setImage(d['image']);
+      setKaraoke(d['karaoke'] || []);
+      setBrassband(d['brassband'] || []);
+      setBand(d['band'] || []);
+      setStatus(response.status);
+      setNow(new Date(d['now']));
+    }
+    setLoading(false);
+  };
 
-    useEffect(() => {
-        fetchNews(); // 関数を呼び出す
-    }, []); // コンポーネントのマウント時に実行
+  useEffect(() => { fetchEvent(); }, []);
 
-    useEffect(() => {
-        if (data.length > 0) {
-            setFormattedDescription(data[0]['detail'].split(/(\n)/).map((item: string, index: number) => {
-                return <Fragment key={index}>{item.match(/\n/) ? <br /> : item}</Fragment>;
-            }));
-        }
-    }, [data]);
+  useEffect(() => {
+    if (data.length > 0) {
+      setFormattedDescription(
+        data[0]['detail'].split(/(\n)/).map((item, i) =>
+          <Fragment key={i}>{item.match(/\n/) ? <br /> : item}</Fragment>
+        )
+      );
+    }
+  }, [data]);
 
+  return (
+    <main className="pb-16">
+      <ImportantNews />
 
-    return (
-        <main>
-            <ImportantNews />
-            <div className="mx-3.5 my-10">
-                <div className="container mx-auto text-white text-center m-12">
-                    <h2 className="text-3xl font-light text-shadow-md m-3">
-					<FontAwesomeIcon icon={faNewspaper} /> Event
-					</h2>
-					<p className="text-sm mb-4">
-					イベント情報
-					</p>
-                </div>
-				{loading ? (<Loading />) : (
-                <div className="container mx-auto text-xl md:w-6/12 w-full">
-                        <div className="w-full p-4 bg-white rounded-lg py-6 my-4 transition duration-100">
-                            {status === 200 ? ( // dataが空でないことを確認
-                                <>
-                                    <p className="text-xs my-1.5 text-gray-700">
-                                        {new Date(data[0]['start']).toLocaleDateString('ja-JP')} {new Date(data[0]['start']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})} ~ {new Date(data[0]['end']).toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}
-                                        {new Date(data[0]['start']) < now && now < new Date(data[0]['end']) && <span className="text-green-600">　<FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
-                                        {now < new Date(data[0]['start']) && now < new Date(data[0]['end']) && <span className="text-gray-600">　<FontAwesomeIcon icon={faClock} /> 開始前</span>}
-                                        {new Date(data[0]['start']) < now && new Date(data[0]['end']) < now && <span className="text-red-600">　<FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
-                                    </p>
-                                    <h3 className="text-base mb-2">{data[0]['title']}</h3>
-                                    <p className="text-xs text-gray-700">@{data[0]['place']}</p>
-                                    <p className='text-sm my-5'>{formattedDescription}</p>
-                                    {image.map((img, index) => (
-                                        <img key={index} src={img} className="w-full h-auto my-6" />
-                                    ))}
+      {/* Page hero */}
+      <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+        <div className="pointer-events-none absolute -right-12 -top-12 w-48 h-48 rounded-full border-[3px] border-blue-600/30" />
+        <div className="pointer-events-none absolute left-8 bottom-0 w-14 h-14 rotate-45 bg-blue-700/30 translate-y-7" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="w-1 h-6 rounded-full bg-blue-400" />
+            <h1 className="text-3xl font-bold tracking-[0.1em]">
+              <FontAwesomeIcon icon={faCalendar} className="mr-2 text-blue-300" />Event
+            </h1>
+          </div>
+          <p className="text-sm text-blue-300 tracking-widest">イベント情報</p>
+        </div>
+      </div>
 
-                                    {karaoke.length > 0 && (
-                                        <div className='mt-10 border-t pt-10 text-left'>
-                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> カラオケ大会 楽曲リスト</h4>
-                                            <table className='w-full text-sm text-left text-gray-500'>
-                                                <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
-                                                    <tr>
-                                                        <th className='px-4 py-2'>順番</th>
-                                                        <th className='px-4 py-2'>曲名</th>
-                                                        <th className='px-4 py-2'>アーティスト</th>
-                                                        <th className='px-4 py-2'>歌唱者</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {karaoke.map((song) => (
-                                                        <tr key={song.id} className='bg-white border-b'>
-                                                            <td className='px-4 py-2'>{song.order}</td>
-                                                            <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
-                                                            <td className='px-4 py-2'>{song.artist || '-'}</td>
-                                                            <td className='px-4 py-2'>{song.sing_user}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-
-                                    {brassband.length > 0 && (
-                                        <div className='mt-10 border-t pt-10 text-left'>
-                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> 吹奏楽 楽曲リスト</h4>
-                                            <table className='w-full text-sm text-left text-gray-500'>
-                                                <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
-                                                    <tr>
-                                                        <th className='px-4 py-2'>順番</th>
-                                                        <th className='px-4 py-2'>曲名</th>
-                                                        <th className='px-4 py-2'>アーティスト</th>
-                                                        <th className='px-4 py-2'>演奏開始時刻</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {brassband.map((song) => (
-                                                        <tr key={song.id} className='bg-white border-b'>
-                                                            <td className='px-2 py-2'>{song.order}</td>
-                                                            <td className='px-4 py-2 font-bold text-gray-900'>{song.name}</td>
-                                                            <td className='px-4 py-2'>{song.artist}</td>
-                                                            <td className='px-4 py-2'>{song.performance_time ? song.performance_time.slice(0, 5) : '-'}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    )}
-
-                                    {band.length > 0 && (
-                                        <div className='mt-10 border-t pt-10 text-left'>
-                                            <h4 className='text-lg font-bold mb-4'><FontAwesomeIcon icon={faList} /> 軽音楽 バンド・楽曲リスト</h4>
-                                            {band.map((b) => (
-                                                <div key={b.id} className='bg-gray-100 p-4 my-4 rounded'>
-                                                    <h5 className='text-base font-bold mb-2'>[{b.order}] {b.name}{b.performance_time ? <span className='ml-2 text-sm font-normal text-gray-600'>開始: {b.performance_time}</span> : ''}</h5>
-                                                    <div className='pl-4 border-l-2 border-gray-300'>
-                                                        <table className='w-full text-xs text-left text-gray-500'>
-                                                            <thead className='text-xs text-gray-700 uppercase bg-gray-50'>
-                                                                <tr>
-                                                                    <th className='px-2 py-1'>順番</th>
-                                                                    <th className='px-2 py-1'>曲名</th>
-                                                                    <th className='px-2 py-1'>アーティスト</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {b.songs.map((song: any) => (
-                                                                    <tr key={song.id} className='bg-white border-b'>
-                                                                        <td className='px-2 py-1'>{song.order}</td>
-                                                                        <td className='px-2 py-1 font-bold text-gray-900'>{song.name}</td>
-                                                                        <td className='px-2 py-1'>{song.artist || '-'}</td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    <p className="text-xs my-1.5 text-gray-700 mt-6"><FontAwesomeIcon icon={faUser} /> {data[0]['user__username']}　<FontAwesomeIcon icon={faBuilding} /> {data[0]['organization__name']}</p>
-                                </>
-                            ) : (
-                                <p className="text-xs my-1.5 text-gray-700">指定されたイベントが見つかりませんでした</p> // デフォルトメッセージ
-                            )}
-                        </div>
+      <div className="container mx-auto px-4 py-10 max-w-2xl">
+        {loading ? <Loading /> : (
+          <div className="card-panel rounded-2xl p-6 md:p-8">
+            {status === 200 ? (
+              <>
+                {/* Status & time */}
+                {(() => {
+                  const start = new Date(data[0]['start']);
+                  const end   = new Date(data[0]['end']);
+                  const live  = start < now && now < end;
+                  const ended = end < now;
+                  return (
+                    <div className="mb-4">
+                      <p className="text-xs text-slate-400 mb-2">
+                        {start.toLocaleDateString('ja-JP')}{' '}
+                        {start.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })} 〜{' '}
+                        {end.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                      {live  && <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-100 rounded-full px-2.5 py-1"><FontAwesomeIcon icon={faCirclePlay} /> 進行中</span>}
+                      {!live && !ended && <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-full px-2.5 py-1"><FontAwesomeIcon icon={faClock} /> 開始前</span>}
+                      {ended && <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 bg-slate-100 rounded-full px-2.5 py-1"><FontAwesomeIcon icon={faCircleStop} /> 終了済み</span>}
                     </div>
-								)}
-                                <Link href={"/event"}>
-                                    <p className="text-center text-white hover:text-gray-200 transition duration-100"><FontAwesomeIcon icon={faList} /> イベント一覧</p>
-                                </Link>
-            </div>
-        </main>
-    );
+                  );
+                })()}
+
+                <h2 className="text-xl font-bold text-slate-800 mb-1">{data[0]['title']}</h2>
+                <p className="text-sm text-slate-400 mb-6 pb-6 border-b border-slate-100">@{data[0]['place']}</p>
+
+                <div className="text-sm text-slate-700 leading-8 mb-6">
+                  {formattedDescription}
+                </div>
+
+                {image.map((img, i) => (
+                  <img key={i} src={img} className="w-full h-auto my-6 rounded-xl" />
+                ))}
+
+                {/* Karaoke list */}
+                {karaoke.length > 0 && (
+                  <MusicTable title="カラオケ大会 楽曲リスト" headers={['順番', '曲名', 'アーティスト', '歌唱者']}>
+                    {karaoke.map((s) => (
+                      <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-3 py-2 text-slate-400 text-center">{s.order}</td>
+                        <td className="px-3 py-2 font-semibold text-slate-800">{s.name}</td>
+                        <td className="px-3 py-2 text-slate-500">{s.artist || '-'}</td>
+                        <td className="px-3 py-2 text-slate-500">{s.sing_user}</td>
+                      </tr>
+                    ))}
+                  </MusicTable>
+                )}
+
+                {/* Brass band list */}
+                {brassband.length > 0 && (
+                  <MusicTable title="吹奏楽 楽曲リスト" headers={['順番', '曲名', 'アーティスト', '開始時刻']}>
+                    {brassband.map((s) => (
+                      <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-3 py-2 text-slate-400 text-center">{s.order}</td>
+                        <td className="px-3 py-2 font-semibold text-slate-800">{s.name}</td>
+                        <td className="px-3 py-2 text-slate-500">{s.artist}</td>
+                        <td className="px-3 py-2 text-slate-500">{s.performance_time ? s.performance_time.slice(0, 5) : '-'}</td>
+                      </tr>
+                    ))}
+                  </MusicTable>
+                )}
+
+                {/* Band list */}
+                {band.length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-slate-100">
+                    <h3 className="flex items-center gap-2 text-base font-bold text-slate-800 mb-4">
+                      <span className="w-1 h-5 rounded-full bg-blue-500" />
+                      <FontAwesomeIcon icon={faList} className="text-blue-400" /> 軽音楽 バンド・楽曲リスト
+                    </h3>
+                    <div className="space-y-4">
+                      {band.map((b) => (
+                        <div key={b.id} className="rounded-xl border border-blue-100 bg-blue-50/40 overflow-hidden">
+                          <div className="px-4 py-3 bg-blue-50 border-b border-blue-100">
+                            <h4 className="text-sm font-bold text-blue-900">
+                              [{b.order}] {b.name}
+                              {b.performance_time && (
+                                <span className="ml-2 text-xs font-normal text-blue-600">開始: {b.performance_time}</span>
+                              )}
+                            </h4>
+                          </div>
+                          <table className="w-full text-xs">
+                            <thead className="bg-slate-50">
+                              <tr>
+                                <th className="px-3 py-2 text-left text-slate-400 font-medium">#</th>
+                                <th className="px-3 py-2 text-left text-slate-400 font-medium">曲名</th>
+                                <th className="px-3 py-2 text-left text-slate-400 font-medium">アーティスト</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50">
+                              {b.songs.map((song: any) => (
+                                <tr key={song.id} className="hover:bg-slate-50">
+                                  <td className="px-3 py-2 text-slate-400">{song.order}</td>
+                                  <td className="px-3 py-2 font-semibold text-slate-700">{song.name}</td>
+                                  <td className="px-3 py-2 text-slate-500">{song.artist || '-'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-8 pt-6 border-t border-slate-100 flex flex-wrap gap-3 text-xs text-slate-400">
+                  <span className="flex items-center gap-1"><FontAwesomeIcon icon={faUser} /> {data[0]['user__username']}</span>
+                  <span className="flex items-center gap-1"><FontAwesomeIcon icon={faBuilding} /> {data[0]['organization__name']}</span>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-slate-400 text-center py-12">指定されたイベントが見つかりませんでした</p>
+            )}
+          </div>
+        )}
+
+        <Link href="/event" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧に戻る
+        </Link>
+      </div>
+    </main>
+  );
+}
+
+function MusicTable({ title, headers, children }: { title: string; headers: string[]; children: React.ReactNode }) {
+  return (
+    <div className="mt-8 pt-8 border-t border-slate-100">
+      <h3 className="flex items-center gap-2 text-base font-bold text-slate-800 mb-4">
+        <span className="w-1 h-5 rounded-full bg-blue-500" />
+        <FontAwesomeIcon icon={faList} className="text-blue-400" /> {title}
+      </h3>
+      <div className="overflow-hidden rounded-xl border border-slate-100">
+        <table className="w-full text-sm">
+          <thead className="bg-blue-50">
+            <tr>
+              {headers.map((h) => (
+                <th key={h} className="px-3 py-2.5 text-left text-xs font-semibold text-blue-700">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-50">{children}</tbody>
+        </table>
+      </div>
+    </div>
+  );
 }

@@ -9,12 +9,13 @@ interface LoadingProps {
 
 export const Loading: React.FC<LoadingProps> = ({ fullPage = false }) => {
   const content = (
-      <div className="glass-panel box-border flex h-40 w-56 flex-col items-center justify-center rounded-2xl text-center text-base leading-none shadow-xl transform-none scale-100">
-        <p className="m-4 text-neutral-900">
-          <FontAwesomeIcon icon={faSpinner} className="text-5xl fa-spin-pulse" />
-        </p>
-        <p className="m-4 text-neutral-600">Loading...</p>
+    <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-blue-100 bg-white px-10 py-8 shadow-lg shadow-blue-100/50">
+      <div className="relative">
+        <div className="w-12 h-12 rounded-full border-[3px] border-blue-100" />
+        <div className="absolute inset-0 w-12 h-12 rounded-full border-[3px] border-blue-600 border-t-transparent animate-spin" />
       </div>
+      <p className="text-sm font-medium text-blue-700 tracking-widest">Loading...</p>
+    </div>
   );
 
   if (fullPage) {
