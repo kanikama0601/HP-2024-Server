@@ -15,7 +15,10 @@ import Image from "next/image";
 import Cookies from 'js-cookie';
 import { fetchJsonCached } from "@/utils/api";
 
-const HERO_IMAGES = ['/1.jpg','/2.jpg','/3.jpg','/4.jpg','/5.jpg','/6.jpg','/7.jpg','/8.jpg'];
+const HERO_IMAGES = [
+  '/slideshow/1.jpg', '/slideshow/2.jpg', '/slideshow/3.jpg', '/slideshow/4.jpg',
+  '/slideshow/5.jpg', '/slideshow/6.jpg', '/slideshow/7.jpg', '/slideshow/8.jpg',
+];
 
 /* ── Geometric decoration primitives ── */
 const Ring = ({ cls }: { cls: string }) => (
@@ -88,7 +91,7 @@ export default function Top() {
       {/* ══════════════════════════════════════════════
           HERO — random background photo
       ══════════════════════════════════════════════ */}
-      <section className="relative min-h-[80vh] flex flex-col items-center justify-center overflow-hidden">
+      <section className="relative -mt-[60px] min-h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background photo */}
         <Image
           src={heroImage}
@@ -124,7 +127,7 @@ export default function Top() {
           </h1>
           <div className="mx-auto mb-6 w-16 h-[2px] bg-white/60" />
           <p className="text-xl md:text-2xl font-light tracking-[0.15em] text-white/90 mb-3 drop-shadow">
-            第43回
+            第54回
           </p>
           <p className="text-sm text-white/70 tracking-[0.2em] drop-shadow">
             2024年11月2日（土）・3日（日）
@@ -136,12 +139,15 @@ export default function Top() {
           <FontAwesomeIcon icon={faArrowDown} className="text-sm" />
           <span className="text-[10px] tracking-widest">SCROLL</span>
         </div>
+
+        {/* Fade to white at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent to-white pointer-events-none z-10" />
       </section>
 
       {/* ══════════════════════════════════════════════
           NEWS — full-width stripe
       ══════════════════════════════════════════════ */}
-      <section className="bg-white border-b border-slate-100 py-12 px-5 md:px-10">
+      <section className="bg-white border-b border-slate-100 py-16 px-5 md:px-10">
         <AnimatedSection>
           <div className="max-w-5xl mx-auto">
             <SectionHeader icon={faNewspaper} title="News" sub="運営からのお知らせ" href="/news" />
@@ -171,7 +177,7 @@ export default function Top() {
       {/* ══════════════════════════════════════════════
           SHOP & EVENT — full-width stripe
       ══════════════════════════════════════════════ */}
-      <section className="bg-[#f4f8ff] border-b border-slate-100 py-12 px-5 md:px-10">
+      <section className="bg-[#f4f8ff] border-b border-slate-100 py-16 px-5 md:px-10">
         <div className="max-w-5xl mx-auto">
           <div className="grid gap-8 md:grid-cols-2">
 
@@ -236,7 +242,7 @@ export default function Top() {
       {/* ══════════════════════════════════════════════
           INFORMATION — full-width stripe
       ══════════════════════════════════════════════ */}
-      <section className="bg-white border-b border-slate-100 py-12 px-5 md:px-10">
+      <section className="bg-white border-b border-slate-100 py-16 px-5 md:px-10">
         <AnimatedSection>
           <div className="max-w-5xl mx-auto">
             <SectionHeader icon={faCircleInfo} title="Information" sub="ご案内" />
@@ -269,33 +275,39 @@ export default function Top() {
       {/* ══════════════════════════════════════════════
           THEME — full-width dark stripe
       ══════════════════════════════════════════════ */}
-      <section className="relative bg-blue-900 border-b border-blue-800 py-12 px-5 md:px-10 overflow-hidden">
+      <section className="relative border-b border-blue-800 py-16 px-5 md:px-10 overflow-hidden">
+        {/* Background image */}
+        <Image src="/theme-bg.jpg" alt="" fill className="object-cover" />
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-blue-950/60" />
         {/* Decorative shapes */}
-        <div className="pointer-events-none absolute -right-10 -top-10 w-48 h-48 rounded-full border-[3px] border-blue-700/40" />
-        <div className="pointer-events-none absolute left-12 bottom-0 w-16 h-16 rotate-45 bg-blue-800/60 translate-y-8" />
+        <div className="pointer-events-none absolute -right-10 -top-10 w-48 h-48 rounded-full border-[3px] border-blue-700/40 z-10" />
+        <div className="pointer-events-none absolute left-12 bottom-0 w-16 h-16 rotate-45 bg-blue-800/60 translate-y-8 z-10" />
 
-        <AnimatedSection delay={60}>
+        <AnimatedSection delay={60} className="relative z-10">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="w-1 h-5 rounded-full bg-blue-400" />
-                  <h2 className="text-xl font-bold tracking-[0.08em] text-white">
-                    <FontAwesomeIcon icon={faFlag} className="mr-2 text-blue-400" />
-                    Theme
-                  </h2>
-                </div>
-                <p className="text-xs text-blue-400 pl-3">第43回電波祭テーマ</p>
-              </div>
-              <Link href="/theme" className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-200 transition-colors shrink-0">
-                詳しく見る <FontAwesomeIcon icon={faChevronRight} />
-              </Link>
+            <div className="flex items-center gap-2 mb-0.5">
+              <span className="w-1 h-5 rounded-full bg-blue-600" />
+              <h2 className="text-xl font-bold tracking-[0.08em] text-blue-900">
+                <FontAwesomeIcon icon={faFlag} className="mr-2 text-blue-500" />
+                Theme
+              </h2>
             </div>
-            <div className="mt-8 text-center">
+            <p className="text-xs text-slate-300 pl-3 mb-20">第54回電波祭テーマ</p>
+
+            <div className="text-center mb-20">
               <p className="text-7xl font-bold text-white tracking-widest
-                drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] mb-4">繋</p>
+                drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] mb-6">繋</p>
               <p className="text-sm text-blue-300 tracking-widest">— つなぐ、ひろがる、でんぱさい —</p>
             </div>
+
+            <p className="text-sm text-blue-100 leading-8 max-w-2xl mx-auto text-center">
+              今年の電波祭のテーマは「繋（つなぐ）」です。<br />
+              学生・地域・技術——異なる世界をひとつに繋ぎ、多くの人々との絆を深める場として、
+              第54回電波祭を開催します。<br />
+              在学生が日々の学びの中で積み上げてきた研究・制作・演奏の成果をここに発表し、
+              来場者のみなさまと互いの交流を通じてともに成長することを目指しています。
+            </p>
           </div>
         </AnimatedSection>
       </section>
@@ -303,7 +315,7 @@ export default function Top() {
       {/* ══════════════════════════════════════════════
           ABOUT — full-width stripe
       ══════════════════════════════════════════════ */}
-      <section className="bg-white py-12 px-5 md:px-10">
+      <section className="bg-white py-16 px-5 md:px-10">
         <AnimatedSection delay={60}>
           <div className="max-w-5xl mx-auto">
             <SectionHeader icon={faGraduationCap} title="About" sub="電波祭について" href="/about" hrefLabel="詳しく見る" />

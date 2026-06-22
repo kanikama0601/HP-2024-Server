@@ -28,7 +28,7 @@ export default function RootLayout({
       <body className={`${inter.className} text-slate-900 min-h-screen flex flex-col bg-[#f4f8ff]`}>
         <GlobalLoading />
         <Header />
-        <div className="flex-1">
+        <div className="flex-1 pt-[60px]">
           {children}
         </div>
         <Footer />

@@ -31,9 +31,7 @@ export const Footer: React.FC = () => {
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-12 pb-8">
         {/* Logo row */}
         <div className="mb-8 flex items-center gap-3">
-          <span className="inline-flex w-9 h-9 items-center justify-center bg-white/10 rounded-lg">
-            <span className="text-white text-sm font-bold">電</span>
-          </span>
+          <img src="/icon.jpg" alt="電波祭" className="w-9 h-9 rounded-lg object-cover" />
           <div>
             <p className="text-base font-bold tracking-[0.12em] text-white">香川高専 電波祭</p>
             <p className="text-xs text-blue-300 tracking-widest">DENPA-SAI 2024</p>
