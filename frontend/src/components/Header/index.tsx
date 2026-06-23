@@ -58,6 +58,7 @@ export const Header: React.FC = () => {
   }, []);
 
   const isTopPage = pathname === '/';
+  const isTransparent = isTopPage && scrollY < 100;
 
   return (
     <div className="w-full fixed top-0 z-40">
@@ -73,7 +74,7 @@ export const Header: React.FC = () => {
         <Link href="/" onClick={() => beginNavigation("/")}>
           <div className="flex items-center gap-2">
             <img src="/icon.jpg" alt="電波祭" className="w-7 h-7 rounded-md object-cover" />
-            <h1 className="text-base font-bold tracking-[0.12em] text-blue-900">
+            <h1 className={`text-base font-bold tracking-[0.12em] transition-colors duration-300 ${isTransparent ? 'text-white' : 'text-blue-900'}`}>
               香川高専 電波祭
             </h1>
           </div>
@@ -86,9 +87,9 @@ export const Header: React.FC = () => {
           aria-label="メニュー"
           className="z-10 space-y-[5px] md:hidden p-2"
         >
-          <span className={`block w-6 h-[2px] bg-blue-800 transition-all duration-300 ${openMenu ? 'translate-y-[7px] rotate-45' : ''}`} />
-          <span className={`block w-6 h-[2px] bg-blue-800 transition-all duration-300 ${openMenu ? 'opacity-0' : ''}`} />
-          <span className={`block w-6 h-[2px] bg-blue-800 transition-all duration-300 ${openMenu ? '-translate-y-[7px] -rotate-45' : ''}`} />
+          <span className={`block w-6 h-[2px] transition-all duration-300 ${isTransparent ? 'bg-white' : 'bg-blue-800'} ${openMenu ? 'translate-y-[7px] rotate-45' : ''}`} />
+          <span className={`block w-6 h-[2px] transition-all duration-300 ${isTransparent ? 'bg-white' : 'bg-blue-800'} ${openMenu ? 'opacity-0' : ''}`} />
+          <span className={`block w-6 h-[2px] transition-all duration-300 ${isTransparent ? 'bg-white' : 'bg-blue-800'} ${openMenu ? '-translate-y-[7px] -rotate-45' : ''}`} />
         </button>
 
         {/* Desktop nav */}
@@ -100,9 +101,12 @@ export const Header: React.FC = () => {
                 key={href}
                 href={href}
                 onClick={() => beginNavigation(href)}
-                className="text-sm font-medium text-slate-600 hover:text-blue-700 transition-colors
+                className={`text-sm font-medium transition-colors duration-300
                   relative after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-0
-                  after:bg-blue-600 after:transition-all hover:after:w-full"
+                  after:transition-all hover:after:w-full
+                  ${isTransparent
+                    ? 'text-white hover:text-white/80 after:bg-white'
+                    : 'text-slate-600 hover:text-blue-700 after:bg-blue-600'}`}
               >
                 {labels[i]}
               </Link>
@@ -134,7 +138,7 @@ export const Header: React.FC = () => {
           ) : (
             <div className="flex items-center gap-3">
               <Link href="/login" onClick={() => beginNavigation("/login")}
-                className="text-sm font-medium text-slate-600 hover:text-blue-700 transition-colors">
+                className={`text-sm font-medium transition-colors duration-300 ${isTransparent ? 'text-white hover:text-white/80' : 'text-slate-600 hover:text-blue-700'}`}>
                 Login
               </Link>
               <Link href="/register" onClick={() => beginNavigation("/register")}

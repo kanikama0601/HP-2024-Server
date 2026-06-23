@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faUserGroup, faNewspaper, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faUserGroup, faNewspaper, faChevronRight, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { Loading } from "@/components/Loading";
@@ -75,6 +75,11 @@ const NewsPage = () => {
               <p className="text-sm text-slate-400">お知らせはありません</p>
             </div>
           )}
+        </div>
+        <div className="mt-10 flex justify-center">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <FontAwesomeIcon icon={faHouse} /> トップページへ戻る
+          </Link>
         </div>
       </div>
     </main>

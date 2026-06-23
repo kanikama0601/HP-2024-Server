@@ -1,7 +1,7 @@
 "use client";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShop, faUserGroup } from "@fortawesome/free-solid-svg-icons";
+import { faShop, faUserGroup, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { Loading } from "@/components/Loading";
@@ -80,6 +80,11 @@ const ShopPage = () => {
               <p className="text-sm text-slate-400">模擬店情報はありません</p>
             </div>
           )}
+        </div>
+        <div className="mt-10 flex justify-center">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <FontAwesomeIcon icon={faHouse} /> トップページへ戻る
+          </Link>
         </div>
       </div>
     </main>
