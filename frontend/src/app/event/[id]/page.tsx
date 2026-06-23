@@ -14,12 +14,13 @@ interface Event {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faCalendar, faChevronLeft, faCirclePlay, faCircleStop, faClock, faList } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, use } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function EventDetail({ params }: { params: { id: string } }) {
+export default function EventDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [now, setNow]       = useState(new Date());
   const [data, setData]     = useState<Event[]>([]);
   const [status, setStatus] = useState(0);
@@ -29,7 +30,7 @@ export default function EventDetail({ params }: { params: { id: string } }) {
   const [brassband, setBrassband] = useState<any[]>([]);
   const [band, setBand]           = useState<any[]>([]);
   const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/event/' + params.id + '/';
+  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/event/' + id + '/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchEvent = async () => {

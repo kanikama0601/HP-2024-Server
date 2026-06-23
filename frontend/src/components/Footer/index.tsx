@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
           <img src="/icon.jpg" alt="電波祭" className="w-9 h-9 rounded-lg object-cover" />
           <div>
             <p className="text-base font-bold tracking-[0.12em] text-white">香川高専 電波祭</p>
-            <p className="text-xs text-blue-300 tracking-widest">DENPA-SAI 2024</p>
+            <p className="text-xs text-blue-300 tracking-widest">DENPA-SAI 2026</p>
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
 
         <div className="border-t border-blue-800 pt-6">
           <p className="text-center text-xs text-blue-400">
-            <FontAwesomeIcon icon={faCopyright} /> 2024 電波祭実行委員会. All Rights Reserved.
+            <FontAwesomeIcon icon={faCopyright} /> 2026 電波祭実行委員会. All Rights Reserved.
           </p>
         </div>
       </div>

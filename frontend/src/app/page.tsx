@@ -345,8 +345,8 @@ export default function Top() {
 
             <div className="text-center mb-20">
               <p className="text-7xl font-bold text-white tracking-widest
-                drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] mb-6">繋</p>
-              <p className="text-sm text-blue-300 tracking-widest">— つなぐ、ひろがる、でんぱさい —</p>
+                drop-shadow-[0_4px_24px_rgba(0,0,0,0.5)] mb-6">電波すぎて滅！</p>
+              <p className="text-sm text-blue-300 tracking-widest">— 周波数はみるみる上昇中 —</p>
             </div>
 
             <p className="text-sm text-blue-100 leading-8 max-w-2xl mx-auto text-center">

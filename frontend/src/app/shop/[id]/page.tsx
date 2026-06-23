@@ -18,19 +18,20 @@ interface Menu {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShop, faUserGroup, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, use } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function ShopDetail({ params }: { params: { id: string } }) {
+export default function ShopDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [data, setData]   = useState<Shop[]>([]);
   const [status, setStatus] = useState(0);
   const [loading, setLoading] = useState(true);
   const [image, setImage] = useState<string[]>([]);
   const [menus, setMenus] = useState<Menu[]>([]);
   const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/shop/' + params.id + '/';
+  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/shop/' + id + '/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchShop = async () => {

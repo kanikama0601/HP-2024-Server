@@ -35,20 +35,22 @@ export const ImportantNews = () => {
   if (loading || data.length === 0) return null;
 
   return (
-    <div className="container mx-auto px-3 pt-3 sticky top-[57px] z-30">
-      <div className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 shadow-sm shadow-amber-100">
-        <p className="mb-1 flex items-center gap-2 text-xs font-bold text-amber-700">
-          <FontAwesomeIcon icon={faTriangleExclamation} />
-          重要なお知らせ
-        </p>
-        <div className="space-y-1">
-          {data.map((news) => (
-            <Link key={news['id']} href={`/news/${news['id']}`}>
-              <p className="text-sm text-amber-800 hover:text-amber-950 transition-colors leading-relaxed">
-                {news['title']}
-              </p>
-            </Link>
-          ))}
+    <div className="fixed left-0 right-0 top-[57px] z-[35] px-3">
+      <div className="container mx-auto">
+        <div className="w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 shadow-sm shadow-amber-100">
+          <p className="mb-1 flex items-center gap-2 text-xs font-bold text-amber-700">
+            <FontAwesomeIcon icon={faTriangleExclamation} />
+            重要なお知らせ
+          </p>
+          <div className="space-y-1">
+            {data.map((news) => (
+              <Link key={news['id']} href={`/news/${news['id']}`}>
+                <p className="text-sm text-amber-800 hover:text-amber-950 transition-colors leading-relaxed">
+                  {news['title']}
+                </p>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>
