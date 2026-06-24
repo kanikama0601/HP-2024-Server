@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type PropsWithChildren } from "react";
 
 // ─────────────────────────────────────────
 // Primitives
 // ─────────────────────────────────────────
-function Tag({ children, className = "" }) {
+type PropsWithClassName = PropsWithChildren & { className?: string };
+
+function Tag({ children, className }: PropsWithClassName) {
   return (
     <div
       className={`inline-block bg-black text-white px-4 py-1 text-xs font-bold tracking-widest uppercase rounded-sm ${className}`}
@@ -13,15 +15,15 @@ function Tag({ children, className = "" }) {
   );
 }
 
-function GlitchText({ children, className = "" }) {
-  return (
-    <span className={className} style={{ textShadow: "2px 0 #00FFFF, -2px 0 #FF00FF" }}>
-      {children}
-    </span>
-  );
+function GlitchText({ children }: PropsWithClassName) {
+  return <span style={{ textShadow: "2px 0 #00FFFF, -2px 0 #FF00FF" }}>{children}</span>;
 }
 
-function HardShadowBtn({ children, className = "", rotate = "" }) {
+function HardShadowBtn({
+  children,
+  className = "",
+  rotate = "",
+}: PropsWithClassName & { rotate?: string }) {
   return (
     <button
       className={`border-4 border-black font-bold rounded-xl transition-all active:translate-x-1 active:translate-y-1 active:shadow-none ${rotate} ${className}`}
@@ -356,9 +358,7 @@ function MissionSection() {
     >
       {/* Left: statement */}
       <div className="p-12 flex flex-col justify-center border-b-4 md:border-b-0 md:border-r-4 border-black">
-        <Tag className="-rotate-1 mb-8 self-start" style={{ background: "#FF00FF" }}>
-          STATEMENT
-        </Tag>
+        <Tag className="-rotate-1 mb-8 self-start">STATEMENT</Tag>
         <h2 className="text-5xl font-extrabold leading-tight mb-10">
           <GlitchText>境界線を、</GlitchText>
           <br />
