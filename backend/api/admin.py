@@ -4,11 +4,10 @@ from .models import (
     OrganizationPermissionInspectionData, PermissionData, NewsData,
     NewsImageData, NewsInspectionData, EventData, EventImageData,
     EventInspectionData, ShopData, ShopImageData, ShopInspectionData,
-    MenuData, MenuInspectionData, BandData, BandInspectionData, BandSongData,
-    BandSongInspectionData, KaraokeData, KaraokeInspectionData, BrassBandData, BrassBandInspectionData, ImageData
+    MenuData, MenuInspectionData, BandData, BandSongData,
+    KaraokeData, BrassBandData, ImageData
 )
 
-# 各モデルを管理サイトに登録
 admin.site.register(UserData)
 admin.site.register(OrganizationData)
 admin.site.register(OrganizationPermissionData)
@@ -26,11 +25,7 @@ admin.site.register(ShopInspectionData)
 admin.site.register(MenuData)
 admin.site.register(MenuInspectionData)
 admin.site.register(BandData)
-admin.site.register(BandInspectionData)
 admin.site.register(BandSongData)
-admin.site.register(BandSongInspectionData)
 admin.site.register(KaraokeData)
-admin.site.register(KaraokeInspectionData)
 admin.site.register(BrassBandData)
-admin.site.register(BrassBandInspectionData)
 admin.site.register(ImageData)

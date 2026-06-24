@@ -39,7 +39,7 @@ def newBrassBand(request, id, event_id):
         # 既存の順番を一つ後ろにずらす
         BrassBandData.objects.filter(event=event, order__gte=new_order).update(order=F('order') + 1)
 
-        brassband = BrassBandData.objects.create(
+        BrassBandData.objects.create(
             name=data['name'],
             artist=data['artist'],
             order=new_order,
@@ -48,9 +48,6 @@ def newBrassBand(request, id, event_id):
             organization=organization,
             user=request.user
         )
-        # 楽曲情報の編集に関しては管理者への申請は不要
-        BrassBandInspectionData.objects.create(brassband=brassband, inspected=True, ai=False, deleted=False, user=request.user)
-        
         return JsonResponse({'message': 'success'})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 

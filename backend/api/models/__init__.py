@@ -8,7 +8,7 @@ from .organization import (
 from .news import NewsData, NewsImageData, NewsInspectionData
 from .event import EventData, EventImageData, EventInspectionData
 from .shop import ShopData, ShopImageData, ShopInspectionData, MenuData, MenuInspectionData
-from .band import BandData, BandInspectionData, BandSongData, BandSongInspectionData
-from .karaoke import KaraokeData, KaraokeInspectionData
-from .brassband import BrassBandData, BrassBandInspectionData
+from .band import BandData, BandSongData
+from .karaoke import KaraokeData
+from .brassband import BrassBandData
 

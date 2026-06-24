@@ -59,18 +59,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='BandInspectionData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inspected', models.BooleanField(default=False)),
-                ('ai', models.BooleanField(default=False)),
-                ('deleted', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('band', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='band_inspection', to='api.banddata')),
-                ('user', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='band_inspections', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
             name='BandSongData',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -80,18 +68,6 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('band', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='songs', to='api.banddata')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='BandSongInspectionData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inspected', models.BooleanField(default=False)),
-                ('ai', models.BooleanField(default=False)),
-                ('deleted', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('song', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='song_inspection', to='api.bandsongdata')),
-                ('user', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='song_inspections', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -141,18 +117,6 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='karaokes', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='KaraokeInspectionData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inspected', models.BooleanField(default=False)),
-                ('ai', models.BooleanField(default=False)),
-                ('deleted', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('karaoke', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='karaoke_inspection', to='api.karaokedata')),
-                ('user', models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, related_name='karaoke_inspections', to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(

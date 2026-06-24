@@ -29,18 +29,6 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='brassbands', to=settings.AUTH_USER_MODEL)),
             ],
         ),
-        migrations.CreateModel(
-            name='BrassBandInspectionData',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('inspected', models.BooleanField(default=False)),
-                ('ai', models.BooleanField(default=False)),
-                ('deleted', models.BooleanField(default=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('brassband', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='brassband_inspection', to='api.brassbanddata')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='brassband_inspections', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
         migrations.AlterField(
             model_name='organizationpermissiondata',
             name='permission_type',

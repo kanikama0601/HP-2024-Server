@@ -16,10 +16,3 @@ class KaraokeData(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class KaraokeInspectionData(models.Model):
-    karaoke = models.OneToOneField(KaraokeData, on_delete=models.CASCADE, related_name='karaoke_inspection')
-    inspected = models.BooleanField(default=False)
-    ai = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='karaoke_inspections', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)

@@ -15,14 +15,6 @@ class BandData(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class BandInspectionData(models.Model):
-    band = models.OneToOneField(BandData, on_delete=models.CASCADE, related_name='band_inspection')
-    inspected = models.BooleanField(default=False)
-    ai = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='band_inspections', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
 class BandSongData(models.Model):
     name = models.CharField(max_length=100)
     artist = models.CharField(max_length=100, blank=True)
@@ -33,10 +25,3 @@ class BandSongData(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class BandSongInspectionData(models.Model):
-    song = models.OneToOneField(BandSongData, on_delete=models.CASCADE, related_name='song_inspection')
-    inspected = models.BooleanField(default=False)
-    ai = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='song_inspections', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)

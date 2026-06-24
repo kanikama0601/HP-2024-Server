@@ -52,8 +52,6 @@ def newBand(request, id, event_id):
             user=request.user,
             event=event
         )
-        BandInspectionData.objects.create(band=band, inspected=True, ai=False, deleted=False, user=request.user)
-        
         return JsonResponse({'message': 'success', 'band_id': band.id})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
@@ -95,7 +93,7 @@ def newBandSong(request, id, event_id, band_id):
         # 既存の順番を一つ後ろにずらす
         BandSongData.objects.filter(band=band, order__gte=new_order).update(order=F('order') + 1)
 
-        song = BandSongData.objects.create(
+        BandSongData.objects.create(
             name=data['name'],
             artist=data.get('artist', ''),
             band=band,
@@ -103,8 +101,6 @@ def newBandSong(request, id, event_id, band_id):
             image=data.get('image', ''),
             order=new_order
         )
-        BandSongInspectionData.objects.create(song=song, inspected=True, ai=False, deleted=False, user=request.user)
-        
         return JsonResponse({'message': 'success'})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 

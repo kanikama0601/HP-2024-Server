@@ -39,7 +39,7 @@ def newKaraoke(request, id, event_id):
         # 既存の順番を一つ後ろにずらす
         KaraokeData.objects.filter(event=event, order__gte=new_order).update(order=F('order') + 1)
 
-        karaoke = KaraokeData.objects.create(
+        KaraokeData.objects.create(
             name=data['name'],
             artist=data.get('artist', ''),
             sing_user=data['sing_user'],
@@ -50,9 +50,6 @@ def newKaraoke(request, id, event_id):
             user=request.user,
             event=event
         )
-        # 楽曲情報の編集に関しては管理者への申請は不要
-        KaraokeInspectionData.objects.create(karaoke=karaoke, inspected=True, ai=False, deleted=False, user=request.user)
-        
         return JsonResponse({'message': 'success'})
     return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
