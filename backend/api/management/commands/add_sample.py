@@ -1,11 +1,29 @@
 from django.core.management.base import BaseCommand
 import datetime
+import os
+import requests
 
 JST = datetime.timezone(datetime.timedelta(hours=9), 'JST')
+
+SAMPLE_IMAGES_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'sampledata')
 
 
 def jst(year, month, day, hour=0, minute=0):
     return datetime.datetime(year, month, day, hour, minute, tzinfo=JST)
+
+
+def upload_image(filename):
+    path = os.path.join(SAMPLE_IMAGES_DIR, filename)
+    if not os.path.exists(path):
+        return None
+    storage_url = os.environ.get('STORAGE_SERVER_URL', 'http://storage:5000')
+    with open(path, 'rb') as f:
+        resp = requests.post(f'{storage_url}/upload', files={'file': (filename, f, 'image/png')})
+    if resp.status_code != 201:
+        return None
+    uuid_filename = resp.json()['filename']
+    backend_url = os.environ.get('BACKEND_URL', 'http://localhost:8000')
+    return f'{backend_url}/image/{uuid_filename}'
 
 
 SAMPLE_USERS = [
@@ -65,6 +83,7 @@ SAMPLE_SHOPS = [
     {
         'org': 'ティン研究室',
         'user': 'sample_tin',
+        'photo': 'yaesan.png',
         'name': '八重バーガー III 〜そして伝説へ〜',
         'address': '大通り10番テント',
         'detail': (
@@ -85,6 +104,7 @@ SAMPLE_SHOPS = [
     {
         'org': '金澤研究室',
         'user': 'sample_keizo',
+        'photo': 'keizo.png',
         'name': 'KE1Z0 Presents - Let\'s study C language!',
         'address': 'A204',
         'detail': (
@@ -214,6 +234,7 @@ class Command(BaseCommand):
             ShopData, ShopInspectionData, MenuData, MenuInspectionData,
             EventData, EventInspectionData,
             BandData, BandSongData, KaraokeData, BrassBandData,
+            ImageData, ShopImageData,
         )
 
         self.stdout.write('=== サンプルデータ挿入開始 ===')
@@ -293,6 +314,15 @@ class Command(BaseCommand):
             )
             # frontendと同様: inspection作成 → ai=True(審査待ち) → 承認
             ShopInspectionData.objects.create(shop=shop, ai=True, inspected=True, deleted=False)
+
+            photo_filename = shop_data.get('photo')
+            if photo_filename:
+                image_url = upload_image(photo_filename)
+                if image_url:
+                    image_data = ImageData.objects.create(image=image_url)
+                    shop_image = ShopImageData.objects.create(shop=shop, image=image_data)
+                    shop.image = shop_image
+                    shop.save()
 
             for menu_data in shop_data['menus']:
                 menu = MenuData.objects.create(
