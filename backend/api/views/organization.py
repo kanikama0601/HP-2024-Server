@@ -114,7 +114,7 @@ def getOrganizationUsers(request, id):
               'permissions': permissions
           })
       
-      add = request.user.permissions.filter(Q(organization=organization.first()), Q(permission_type='admin') | Q(permission_type='invite_user')).exists()
+      add = request.user.permissions.filter(Q(organization=organization.first()), Q(permission_type='invite_user')).exists()
       
       return JsonResponse({'organizations': organization_list, 'users': user_list, 'add': add })
     
@@ -135,7 +135,7 @@ def getOrganizationUsers(request, id):
 @permission_classes([IsAuthenticated])
 def getOrganizationUsersPermission(request, id, user_id):
   
-  add = checkPermission(request.user, id, ['admin', 'invite_user'])
+  add = checkPermission(request.user, id, ['invite_user'])
   
   if request.method == 'GET':
     
@@ -176,7 +176,7 @@ def getOrganizationUsersPermission(request, id, user_id):
     
     data = json.loads(request.body)
     
-    if checkPermission(request.user, id, ['admin', 'invite_user']):
+    if checkPermission(request.user, id, ['invite_user']):
       
       organization = request.user.organization.filter(id=id)
       
@@ -242,7 +242,7 @@ def addOrganizationUser(request, id):
     
     organization = request.user.organization.filter(id=id)
     
-    if checkPermission(request.user, id, ['admin', 'invite_user']) and organization.exists():
+    if checkPermission(request.user, id, ['invite_user']) and organization.exists():
       
       new_user = data['username']
       

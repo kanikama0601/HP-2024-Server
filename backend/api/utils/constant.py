@@ -2,7 +2,6 @@ from datetime import datetime, timezone, timedelta
 import os, random, string
 JST = timezone(timedelta(hours=+9), 'JST')
 
-PERMISSION_ADMIN = 'admin'
 PERMISSION_SHOP = 'shop'
 PERMISSION_NEWS = 'news'
 PERMISSION_MENU = 'menu'
@@ -11,7 +10,6 @@ PERMISSION_BAND = 'band'
 PERMISSION_KARAOKE = 'karaoke'
 PERMISSION_BRASSBAND = 'brassband'
 PERMISSION_INVITE_USER = 'invite_user'
-PERMISSION_INSPECTION = 'inspection'
 
 HTTP_RESPONSE_CODE_SUCCESS = 200
 HTTP_RESPONSE_CODE_CREATED = 201

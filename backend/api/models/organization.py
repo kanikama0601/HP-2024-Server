@@ -16,7 +16,6 @@ class OrganizationPermissionData(models.Model):
         ('band', 'band'),
         ('karaoke', 'karaoke'),
         ('brassband', 'brassband'),
-        ('inspection', 'inspection'),
     )
     organization = models.ForeignKey(OrganizationData, on_delete=models.CASCADE, related_name='organization_permissions')
     permission_type = models.CharField(max_length=20, choices=PERMISSION_TYPE)
@@ -31,7 +30,6 @@ class OrganizationPermissionInspectionData(models.Model):
 
 class PermissionData(models.Model):
     PERMISSION_TYPE = (
-        ('admin', 'admin'),
         ('shop', 'shop'),
         ('news', 'news'),
         ('menu', 'menu'),
@@ -40,7 +38,6 @@ class PermissionData(models.Model):
         ('karaoke', 'karaoke'),
         ('brassband', 'brassband'),
         ('invite_user', 'invite_user'),
-        ('inspection', 'inspection'),
     )
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='permissions')
     organization = models.ForeignKey(OrganizationData, on_delete=models.CASCADE, related_name='permissions')

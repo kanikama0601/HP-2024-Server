@@ -1,0 +1,3 @@
+[tasks.add-sample]
+description = "Insert sample data into the database"
+run = "docker compose exec backend python manage.py add_sample"

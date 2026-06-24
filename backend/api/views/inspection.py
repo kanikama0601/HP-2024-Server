@@ -37,7 +37,7 @@ def perform_inspection(category, item_id):
 @permission_classes([IsAuthenticated])
 def inspection(request):
   
-  if checkPermission(request.user, None, [PERMISSION_ADMIN, PERMISSION_INSPECTION]):
+  if request.user.is_superuser:
     
     if request.method == 'GET':
       
@@ -82,7 +82,7 @@ def allInspection(request):
 @permission_classes([IsAuthenticated])
 def inspect(request, category, item_id):
 
-    if not (request.user.is_superuser or request.user.groups.filter(name=PERMISSION_ADMIN).exists() or request.user.groups.filter(name=PERMISSION_INSPECTION).exists()):
+    if not request.user.is_superuser:
         return HttpResponse(status=HTTP_RESPONSE_CODE_FORBIDDEN)
 
     if request.method == 'GET':

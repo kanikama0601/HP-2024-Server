@@ -32,11 +32,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organizationpermissiondata',
             name='permission_type',
-            field=models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('brassband', 'brassband'), ('inspection', 'inspection')], max_length=20),
+            field=models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('brassband', 'brassband')], max_length=20),
         ),
         migrations.AlterField(
             model_name='permissiondata',
             name='permission_type',
-            field=models.CharField(choices=[('admin', 'admin'), ('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('brassband', 'brassband'), ('invite_user', 'invite_user'), ('inspection', 'inspection')], max_length=20),
+            field=models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('brassband', 'brassband'), ('invite_user', 'invite_user')], max_length=20),
         ),
     ]

@@ -217,7 +217,7 @@ class Migration(migrations.Migration):
             name='OrganizationPermissionData',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('permission_type', models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('inspection', 'inspection')], max_length=20)),
+                ('permission_type', models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke')], max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organization_permissions', to='api.organizationdata')),
@@ -237,7 +237,7 @@ class Migration(migrations.Migration):
             name='PermissionData',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('permission_type', models.CharField(choices=[('admin', 'admin'), ('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('invite_user', 'invite_user'), ('inspection', 'inspection')], max_length=20)),
+                ('permission_type', models.CharField(choices=[('shop', 'shop'), ('news', 'news'), ('menu', 'menu'), ('event', 'event'), ('band', 'band'), ('karaoke', 'karaoke'), ('invite_user', 'invite_user')], max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='permissions', to='api.organizationdata')),
