@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper, faPlus, faUser, faCircleCheck, faCircleExclamation, faCircleXmark, faSpinner, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useEffect, useState, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
@@ -18,12 +16,12 @@ interface News {
   updated_at: string;
 }
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [newsData, setNewsData] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/news/`;
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/news/`;
 
   useEffect(() => {
 		const fetchData = async () => {
@@ -62,7 +60,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
         {loading ? (<Loading />) : (
           <>
             {newsData && newsData.map((news) => (
-              <Link key={news['id']} href={`/organization/${id}/news/${news['id']}`}>
+              <Link key={news['id']} to={`/organization/${id}/news/${news['id']}`}>
                 <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
                   <p className="text-xs mb-1 text-slate-500">{new Date(news['created_at']).toLocaleDateString('ja-JP')}</p>
                   <h3 className="text-base font-medium text-slate-800">{news['title']}</h3>
@@ -88,10 +86,10 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
             ))}
           </>
         )}
-        <Link href={`/organization/${id}/news/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/news/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faPlus} /> お知らせの追加
         </Link>
-        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
         </Link>
       </div>

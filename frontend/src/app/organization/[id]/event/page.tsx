@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faPlus, faUser, faCircleCheck, faCircleExclamation, faCircleXmark, faSpinner, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useEffect, useState, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
@@ -22,12 +20,12 @@ interface Event {
   created_at: string;
 }
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [eventData, setEventData] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/`;
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/event/`;
 
   useEffect(() => {
 		const fetchData = async () => {
@@ -66,7 +64,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
         {loading ? (<Loading />) : (
           <>
             {eventData && eventData.map((event) => (
-              <Link key={event['id']} href={`/organization/${id}/event/${event['id']}`}>
+              <Link key={event['id']} to={`/organization/${id}/event/${event['id']}`}>
                 <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
                   <p className="text-xs mb-1 text-slate-500">{new Date(event['created_at']).toLocaleDateString('ja-JP')}</p>
                   <h3 className="text-base font-medium text-slate-800">{event['title']}</h3>
@@ -92,10 +90,10 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
             ))}
           </>
         )}
-        <Link href={`/organization/${id}/event/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/event/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faPlus} /> イベントの追加
         </Link>
-        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
         </Link>
       </div>

@@ -1,25 +1,23 @@
-"use client";
-
-import Link from 'next/link';
-import { useState, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
 import { fetchWithAuth } from '@/utils/api';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { Loading } from '@/components/Loading';
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState('');
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/member/new/`;
-  const router = useRouter();
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/member/new/`;
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
         const data = await fetchWithAuth(url, 'POST', { 'username': user });
-        router.push(`/organization/${id}/member`);
+        navigate(`/organization/${id}/member`);
     } catch (error) {
         console.error('データ取得エラー:', error);
         setLoading(false);
@@ -72,7 +70,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/member`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/member`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> メンバー管理へ戻る
         </Link>
       </div>

@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { AnimatedSection } from "@/components/AnimatedSection";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 const items = [
   { emoji: "📍", heading: "案内所の場所",
@@ -58,7 +56,7 @@ export default function Guide() {
           </AnimatedSection>
         ))}
 
-        <Link href="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る
         </Link>
       </div>

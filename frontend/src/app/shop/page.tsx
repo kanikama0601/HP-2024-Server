@@ -1,5 +1,3 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShop, faUserGroup, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
@@ -7,13 +5,13 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 import { Loading } from "@/components/Loading";
 import { useState, useEffect } from "react";
 import Cookies from 'js-cookie';
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { fetchJsonCached } from "@/utils/api";
 
 const ShopPage = () => {
   const [data, setData]       = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/shop/';
+  const apiUrl    = import.meta.env.VITE_API_URL + '/shop/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchShop = async () => {
@@ -52,7 +50,7 @@ const ShopPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
           {data.map((shop, i) => (
             <AnimatedSection key={shop['id']} delay={i * 40}>
-              <Link href={`/shop/${shop['id']}`} className="block group h-full">
+              <Link to={`/shop/${shop['id']}`} className="block group h-full">
                 <div className="card-panel rounded-2xl overflow-hidden h-full transition-all hover:shadow-md hover:shadow-blue-100 hover:-translate-y-0.5">
                   {shop['image__image__image'] ? (
                     <img src={shop['image__image__image']} alt={shop['name']}
@@ -82,7 +80,7 @@ const ShopPage = () => {
           )}
         </div>
         <div className="mt-10 flex justify-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faHouse} /> トップページへ戻る
           </Link>
         </div>

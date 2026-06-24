@@ -5,9 +5,9 @@ import {
   faHouse, faNewspaper, faShop, faCalendar, faBuilding,
   faArrowRightToBracket, faArrowRightFromBracket, faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useLocation } from 'react-router-dom';
 import Cookies from "js-cookie";
 
 export const Header: React.FC = () => {
@@ -16,7 +16,7 @@ export const Header: React.FC = () => {
   const [openAccountMenu, setOpenAccountMenu] = useState(false);
   const [accountName, setAccountName]         = useState("Account");
   const [scrollY, setScrollY]                 = useState(0);
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   /* scrollY → 0〜150px でヘッダー背景を透明→白に変化 */
   const bgOpacity = Math.min(scrollY / 150, 1);
@@ -71,7 +71,7 @@ export const Header: React.FC = () => {
         }}
       >
         {/* Logo */}
-        <Link href="/" onClick={() => beginNavigation("/")}>
+        <Link to="/" onClick={() => beginNavigation("/")}>
           <div className="flex items-center gap-2">
             <img src="/icon.jpg" alt="電波祭" className="w-7 h-7 rounded-md object-cover" />
             <h1 className={`text-base font-bold tracking-[0.12em] transition-colors duration-300 ${isTransparent ? 'text-white' : 'text-blue-900'}`}>
@@ -99,7 +99,7 @@ export const Header: React.FC = () => {
             return (
               <Link
                 key={href}
-                href={href}
+                to={href}
                 onClick={() => beginNavigation(href)}
                 className={`text-sm font-medium transition-colors duration-300
                   relative after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-0
@@ -124,11 +124,11 @@ export const Header: React.FC = () => {
               </button>
               {openAccountMenu && (
                 <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-xl border border-blue-100 bg-white shadow-lg shadow-blue-100/60">
-                  <Link href="/organization" onClick={() => { beginNavigation("/organization"); setOpenAccountMenu(false); }}
+                  <Link to="/organization" onClick={() => { beginNavigation("/organization"); setOpenAccountMenu(false); }}
                     className="flex items-center gap-2 px-4 py-3 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                     <FontAwesomeIcon icon={faBuilding} className="w-4" /> Organization
                   </Link>
-                  <Link href="/logout" onClick={() => { beginNavigation("/logout"); setOpenAccountMenu(false); }}
+                  <Link to="/logout" onClick={() => { beginNavigation("/logout"); setOpenAccountMenu(false); }}
                     className="flex items-center gap-2 px-4 py-3 text-sm text-slate-600 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                     <FontAwesomeIcon icon={faArrowRightFromBracket} className="w-4" /> Logout
                   </Link>
@@ -137,11 +137,11 @@ export const Header: React.FC = () => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/login" onClick={() => beginNavigation("/login")}
+              <Link to="/login" onClick={() => beginNavigation("/login")}
                 className={`text-sm font-medium transition-colors duration-300 ${isTransparent ? 'text-white hover:text-white/80' : 'text-slate-600 hover:text-blue-700'}`}>
                 Login
               </Link>
-              <Link href="/register" onClick={() => beginNavigation("/register")}
+              <Link to="/register" onClick={() => beginNavigation("/register")}
                 className="rounded-full bg-blue-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-blue-800 transition-colors">
                 Register
               </Link>
@@ -169,7 +169,7 @@ export const Header: React.FC = () => {
                 { href: '/event', icon: faCalendar,  en: 'Event', ja: 'イベント情報' },
               ].map(({ href, icon, en, ja }) => (
                 <li key={href}>
-                  <Link href={href} onClick={() => beginNavigation(href)}
+                  <Link to={href} onClick={() => beginNavigation(href)}
                     className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-blue-50 group transition-colors">
                     <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 text-blue-600 transition-colors">
                       <FontAwesomeIcon icon={icon} className="text-sm" />
@@ -184,7 +184,7 @@ export const Header: React.FC = () => {
               {isLoggedIn ? (
                 <>
                   <li>
-                    <Link href="/organization" onClick={() => { beginNavigation("/organization"); setOpenMenu(false); }}
+                    <Link to="/organization" onClick={() => { beginNavigation("/organization"); setOpenMenu(false); }}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-blue-50 group transition-colors">
                       <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 text-blue-600 transition-colors">
                         <FontAwesomeIcon icon={faBuilding} className="text-sm" />
@@ -196,7 +196,7 @@ export const Header: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/logout" onClick={() => { beginNavigation("/logout"); setOpenMenu(false); }}
+                    <Link to="/logout" onClick={() => { beginNavigation("/logout"); setOpenMenu(false); }}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-red-50 group transition-colors">
                       <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 group-hover:bg-red-100 text-red-500 transition-colors">
                         <FontAwesomeIcon icon={faArrowRightFromBracket} className="text-sm" />
@@ -211,7 +211,7 @@ export const Header: React.FC = () => {
               ) : (
                 <>
                   <li>
-                    <Link href="/login" onClick={() => beginNavigation("/login")}
+                    <Link to="/login" onClick={() => beginNavigation("/login")}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-blue-50 group transition-colors">
                       <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 text-blue-600 transition-colors">
                         <FontAwesomeIcon icon={faArrowRightToBracket} className="text-sm" />
@@ -223,7 +223,7 @@ export const Header: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/register" onClick={() => beginNavigation("/register")}
+                    <Link to="/register" onClick={() => beginNavigation("/register")}
                       className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-blue-50 group transition-colors">
                       <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100 text-blue-600 transition-colors">
                         <FontAwesomeIcon icon={faUserPlus} className="text-sm" />

@@ -1,28 +1,26 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPencil, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [organization, setOrganization] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sendLoading, setSendLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/edit/`;
+  const apiUrl = import.meta.env.VITE_API_URL + `/organization/${id}/edit/`;
 
   type OrganizationName = {
     name: string;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -46,7 +44,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
       setSendLoading(false);
       return;
     }
-    router.push(`/organization/${id}`);
+    navigate(`/organization/${id}`);
   };
 
   useEffect(() => {
@@ -107,10 +105,10 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
             </form>
           </div>
         )}
-        <Link href={`/organization/${id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+        <Link to={`/organization/${id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
           <FontAwesomeIcon icon={faTrashCan} /> オーガナイゼーションを削除
         </Link>
-        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
         </Link>
       </div>

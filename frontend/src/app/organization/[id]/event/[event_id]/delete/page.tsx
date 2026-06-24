@@ -1,25 +1,23 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
 
-export default function Event({ params }: { params: Promise<{ id: string, event_id: string }>}) {
-  const { id, event_id } = use(params);
+export default function Event() {
+  const { id, event_id } = useParams<{ id: string; event_id: string }>();
 
   const [loading, setLoading] = useState(false);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/${event_id}/delete/`;
-  const router = useRouter();
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/event/${event_id}/delete/`;
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
         await fetchWithAuth(url, 'POST', { 'delete': true });
         alert('削除しました');
-        router.push(`/organization/${id}/event`);
+        navigate(`/organization/${id}/event`);
     } catch (error) {
         console.error('データ取得エラー:', error);
         setLoading(false);
@@ -62,7 +60,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/event/${event_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/event/${event_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> イベントへ戻る
         </Link>
       </div>

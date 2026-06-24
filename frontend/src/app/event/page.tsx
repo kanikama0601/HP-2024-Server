@@ -1,5 +1,3 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendar, faCirclePlay, faClock, faCircleStop, faCircleCheck, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
@@ -7,14 +5,14 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 import { Loading } from "@/components/Loading";
 import { useState, useEffect } from "react";
 import Cookies from 'js-cookie';
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { fetchJsonCached } from "@/utils/api";
 
 const EventPage = () => {
   const [now, setNow]         = useState(new Date());
   const [data, setData]       = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/event/';
+  const apiUrl    = import.meta.env.VITE_API_URL + '/event/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchEvent = async () => {
@@ -68,7 +66,7 @@ const EventPage = () => {
 
             return (
               <AnimatedSection key={event['id']} delay={i * 40}>
-                <Link href={`/event/${event['id']}`} className="block group">
+                <Link to={`/event/${event['id']}`} className="block group">
                   <div className={`card-panel rounded-xl p-5 transition-all hover:shadow-md hover:-translate-y-0.5
                     ${live ? 'ring-2 ring-green-400 ring-offset-1' : ended ? 'opacity-60' : ''}`}>
                     <div className="flex items-start gap-4">
@@ -107,7 +105,7 @@ const EventPage = () => {
           )}
         </div>
         <div className="mt-10 flex justify-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faHouse} /> トップページへ戻る
           </Link>
         </div>

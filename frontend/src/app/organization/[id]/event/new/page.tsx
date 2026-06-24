@@ -1,13 +1,11 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faCalendar, faPaperPlane, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 interface Event {
   id: number;
@@ -20,11 +18,11 @@ interface Event {
   user__username: string;
 }
 
-export default function Event({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function Event() {
+  const { id } = useParams<{ id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/new/`;
+  const apiUrl = import.meta.env.VITE_API_URL + `/organization/${id}/event/new/`;
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [permissions, setPermissions] = useState<string[]>([]);
   const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
@@ -41,12 +39,12 @@ export default function Event({ params }: { params: Promise<{ id: string }>}) {
     is_brassband: boolean;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/`, 'GET');
+        const data = await fetchWithAuth(import.meta.env.VITE_API_URL + `/organization/${id}/`, 'GET');
         setPermissions(data['permissions']);
         setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
@@ -76,7 +74,7 @@ export default function Event({ params }: { params: Promise<{ id: string }>}) {
       alert('エラー:' + error);
       setSendLoading(false);
     } finally {
-      router.push(`/organization/${id}/event`);
+      navigate(`/organization/${id}/event`);
     }
   };
 
@@ -90,7 +88,7 @@ export default function Event({ params }: { params: Promise<{ id: string }>}) {
       formData.append('file', files[i]);
 
       try {
-        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/image/`, 'POST', formData);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/image/`, 'POST', formData);
         setImageUrls(prevUrls => [...prevUrls, response['image']]);
       } catch (error) {
         alert('画像アップロードエラー:' + error);
@@ -244,7 +242,7 @@ export default function Event({ params }: { params: Promise<{ id: string }>}) {
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/event`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/event`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧へ戻る
         </Link>
       </div>

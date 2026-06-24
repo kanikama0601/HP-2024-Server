@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMap, faChevronLeft, faTrain, faBus, faCar, faPersonWalking } from "@fortawesome/free-solid-svg-icons";
 import { AnimatedSection } from "@/components/AnimatedSection";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 const transportItems = [
   { icon: faTrain,         color: "bg-blue-100 text-blue-600",   heading: "電車でお越しの方",
@@ -85,7 +83,7 @@ export default function Access() {
           </AnimatedSection>
         ))}
 
-        <Link href="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る
         </Link>
       </div>

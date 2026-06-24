@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserGroup, faUserPlus, faCrown, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useEffect, useState, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
@@ -13,14 +11,14 @@ interface Member {
   permissions: string[];
 }
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [addData, setAddData] = useState([]);
   const [memberData, setMemberData] = useState<Member[]>([]);
   const [organizationData, setOrganizationData] = useState([]);
   const [organizationLoading, setOrganizationLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/member/`;
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/member/`;
 
   useEffect(() => {
 		const fetchData = async () => {
@@ -62,7 +60,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
         {organizationLoading ? (<Loading />) : (
           <>
             {memberData && memberData.map((member) => (
-              <Link key={member['id']} href={`/organization/${id}/member/${member['id']}`}>
+              <Link key={member['id']} to={`/organization/${id}/member/${member['id']}`}>
                 <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all mb-4">
                   <h3 className="text-base font-medium text-slate-800">{member['username']}</h3>
                   {organizationData[0]['owner_id'] === member['id'] && (
@@ -77,11 +75,11 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
           </>
         )}
         {addData && (
-          <Link href={`/organization/${id}/member/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to={`/organization/${id}/member/new`} className="mt-2 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faUserPlus} /> メンバーを招待
           </Link>
         )}
-        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
         </Link>
       </div>

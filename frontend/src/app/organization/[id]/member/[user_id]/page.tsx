@@ -1,16 +1,14 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faCrown, faTrashCan, faRotate, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
 
-export default function News({ params }: { params: Promise<{ id: string, user_id: string }>}) {
-  const { id, user_id } = use(params);
+export default function News() {
+  const { id, user_id } = useParams<{ id: string; user_id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
   const [addData, setAddData] = useState(false);
@@ -20,8 +18,8 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
   const [organizationPermissions, setOrganizationPermissions] = useState<string[]>([]);
   const [owner, setOwner] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/member/${user_id}/`;
-  const router = useRouter();
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/member/${user_id}/`;
+  const navigate = useNavigate();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = event.target;
@@ -39,7 +37,7 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
     } catch (error) {
         console.error('データ取得エラー:', error);
     } finally {
-      router.push(`/organization/${id}/member`);
+      navigate(`/organization/${id}/member`);
     }
 };
 
@@ -234,12 +232,12 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
             </form>
 
             {addData && !isOwner && (
-              <Link href={`/organization/${id}/member/${user_id}/delete`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+              <Link to={`/organization/${id}/member/${user_id}/delete`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
                 <FontAwesomeIcon icon={faTrashCan} /> オーガナイゼーションから退会
               </Link>
             )}
             {owner && !isOwner && (
-              <Link href={`/organization/${id}/member/${user_id}/change_owner`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+              <Link to={`/organization/${id}/member/${user_id}/change_owner`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
                 <FontAwesomeIcon icon={faCrown} /> オーナーの譲渡
               </Link>
             )}
@@ -250,7 +248,7 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
             )}
           </>
         )}
-        <Link href={`/organization/${id}/member`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/member`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> メンバー管理へ戻る
         </Link>
       </div>

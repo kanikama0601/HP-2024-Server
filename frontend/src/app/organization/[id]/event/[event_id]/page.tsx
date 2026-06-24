@@ -1,14 +1,12 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faPaperPlane, faTrashCan, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { set, useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 interface Event {
   id: number;
@@ -24,8 +22,8 @@ interface Event {
   user__username: string;
 }
 
-export default function Event({ params }: { params: Promise<{ id: string, event_id: string }>}) {
-  const { id, event_id } = use(params);
+export default function Event() {
+  const { id, event_id } = useParams<{ id: string; event_id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
   const [eventData, setEventData] = useState<Event[]>([]);
@@ -39,7 +37,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
   const [logs, setLogs] = useState<{message: string, type: 'success' | 'error'}[]>([]);
   const [modalOpen, setModalOpen] = useState<'karaoke' | 'brassband' | 'band' | 'bandSong' | null>(null);
   const [modalData, setModalData] = useState<any>({});
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/event/${event_id}/`;
+  const apiUrl = import.meta.env.VITE_API_URL + `/organization/${id}/event/${event_id}/`;
 
   const addLog = (message: string, type: 'success' | 'error' = 'success') => {
     setLogs(prev => [{message, type}, ...prev].slice(0, 5));
@@ -57,7 +55,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
     is_band: boolean;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -77,7 +75,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
     try {
       const send_data = { ...data, imageUrls: imageUrls };
       const response = await fetchWithAuth(apiUrl, 'POST', send_data);
-      router.push(`/organization/${id}/event`);
+      navigate(`/organization/${id}/event`);
     } catch (error) {
       alert('エラー:' + error);
       setSendLoading(false);
@@ -119,7 +117,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
 
     const fetchPermissions = async () => {
       try {
-        const data = await fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/`, 'GET');
+        const data = await fetchWithAuth(import.meta.env.VITE_API_URL + `/organization/${id}/`, 'GET');
         setPermissions(data['permissions']);
         setOrganizationPermissions(data['organization_permissions'] || []);
       } catch (error) {
@@ -141,7 +139,7 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
       formData.append('file', files[i]);
 
       try {
-        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/image/`, 'POST', formData);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/image/`, 'POST', formData);
         setImageUrls(prevUrls => [...prevUrls, response['image']]);
       } catch (error) {
         alert('画像アップロードエラー:' + error);
@@ -699,10 +697,10 @@ export default function Event({ params }: { params: Promise<{ id: string, event_
               </div>
             )}
 
-            <Link href={`/organization/${id}/event/${event_id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+            <Link to={`/organization/${id}/event/${event_id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
               <FontAwesomeIcon icon={faTrashCan} /> イベントを削除
             </Link>
-            <Link href={`/organization/${id}/event`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <Link to={`/organization/${id}/event`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
               <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧へ戻る
             </Link>
           </>

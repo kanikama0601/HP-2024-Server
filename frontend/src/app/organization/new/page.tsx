@@ -1,17 +1,15 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBuilding, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
 
 export default function Top() {
   const [organization, setOrganization] = useState('');
   const [loading, setLoading] = useState(false);
-	const url = process.env.NEXT_PUBLIC_API_URL + '/organization/new/';
-  const router = useRouter();
+	const url = import.meta.env.VITE_API_URL + '/organization/new/';
+  const navigate = useNavigate();
 
   const fetchData = async () => {
       try {
@@ -19,7 +17,7 @@ export default function Top() {
       } catch (error) {
 
       } finally {
-        router.push('/organization');
+        navigate('/organization');
       }
   };
 

@@ -1,19 +1,17 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrown, faArrowRightArrowLeft, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
+import { Link, useParams } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
-import { useRouter } from 'next/navigation';
-import { useState, use } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Loading } from '@/components/Loading';
 
-export default function News({ params }: { params: Promise<{ id: string, user_id: string }>}) {
-  const { id, user_id } = use(params);
+export default function News() {
+  const { id, user_id } = useParams<{ id: string; user_id: string }>();
 
   const [loading, setLoading] = useState(false);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/member/${user_id}/change_owner/`;
-  const router = useRouter()
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/member/${user_id}/change_owner/`;
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     try {
@@ -21,7 +19,7 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
     } catch (error) {
         console.error('データ取得エラー:', error);
     } finally {
-      router.push(`/organization/${id}/member`);
+      navigate(`/organization/${id}/member`);
     }
   };
 
@@ -59,7 +57,7 @@ export default function News({ params }: { params: Promise<{ id: string, user_id
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/member/${user_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/member/${user_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> メンバーへ戻る
         </Link>
       </div>

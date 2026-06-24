@@ -1,12 +1,10 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faCircleXmark, faSpinner, faClockRotateLeft, faPaperPlane, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useEffect, useState, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
 interface Permission {
   id: number;
@@ -16,16 +14,16 @@ interface Permission {
   organization_permission_inspection__deleted: boolean;
 }
 
-export default function News({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function News() {
+  const { id } = useParams<{ id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
   const [permission, setPermission] = useState('');
   const [nowPermission, setNowPermission] = useState<Permission[]>([]);
   const [havePermission, setHavePermission] = useState<string[]>([]);
   const [organizationLoading, setOrganizationLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/permission/`;
-  const router = useRouter();
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/permission/`;
+  const navigate = useNavigate();
 
   useEffect(() => {
 		const fetchData = async () => {
@@ -48,7 +46,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
         if (permission !== '') {
           const data = await fetchWithAuth(url, 'POST', { 'permission': permission });
         }
-        router.push(`/organization/${id}`);
+        navigate(`/organization/${id}`);
     } catch (error) {
         console.error('データ取得エラー:', error);
         setSendLoading(false);
@@ -126,7 +124,7 @@ export default function News({ params }: { params: Promise<{ id: string }>}) {
             ))}
           </>
         )}
-        <Link href={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーションメニューへ戻る
         </Link>
       </div>

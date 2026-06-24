@@ -1,10 +1,8 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserPlus, faArrowRightToBracket } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { Loading } from '@/components/Loading';
 import { useState } from 'react';
@@ -17,7 +15,7 @@ export default function RegisterPage() {
     password2: string;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
   const {
@@ -30,7 +28,7 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/register/';
+    const apiUrl = import.meta.env.VITE_API_URL + '/register/';
     const csrftoken = Cookies.get('csrftoken') || '';
 
     try {
@@ -47,7 +45,7 @@ export default function RegisterPage() {
       const contentType = response.headers.get('content-type');
       if (response.ok) {
         alert('登録が完了しました。ログインしてください。');
-        router.push('/login');
+        navigate('/login');
       } else if (contentType && contentType.includes('application/json')) {
         const responseData = await response.json();
         alert('登録に失敗しました: ' + JSON.stringify(responseData));
@@ -159,7 +157,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 border-t border-slate-100 pt-5 text-center">
-            <Link href="/login" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <Link to="/login" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
               <FontAwesomeIcon icon={faArrowRightToBracket} className="text-xs" />
               すでにアカウントをお持ちの場合
             </Link>

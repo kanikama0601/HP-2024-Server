@@ -2,11 +2,11 @@
 
 import { Loading } from "@/components/Loading";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useLocation } from 'react-router-dom';
 
 export const GlobalLoading: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const begin = () => setLoading(true);

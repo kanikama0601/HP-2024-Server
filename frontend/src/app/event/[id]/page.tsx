@@ -1,5 +1,3 @@
-"use client";
-
 interface Event {
   id: number;
   title: string;
@@ -13,14 +11,14 @@ interface Event {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faBuilding, faCalendar, faChevronLeft, faCirclePlay, faCircleStop, faClock, faList } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useState, useEffect, Fragment, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect, Fragment } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function EventDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EventDetail() {
+  const { id } = useParams<{ id: string }>();
   const [now, setNow]       = useState(new Date());
   const [data, setData]     = useState<Event[]>([]);
   const [status, setStatus] = useState(0);
@@ -30,7 +28,7 @@ export default function EventDetail({ params }: { params: Promise<{ id: string }
   const [brassband, setBrassband] = useState<any[]>([]);
   const [band, setBand]           = useState<any[]>([]);
   const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/event/' + id + '/';
+  const apiUrl    = import.meta.env.VITE_API_URL + '/event/' + id + '/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchEvent = async () => {
@@ -200,7 +198,7 @@ export default function EventDetail({ params }: { params: Promise<{ id: string }
           </div>
         )}
 
-        <Link href="/event" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/event" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> イベント一覧に戻る
         </Link>
       </div>

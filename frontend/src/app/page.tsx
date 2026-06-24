@@ -1,5 +1,3 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faNewspaper, faUser, faUserGroup, faShop, faCalendar, faChevronRight,
@@ -10,8 +8,7 @@ import { ImportantNews } from "@/components/ImportantNews";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import { useState, useEffect } from "react";
 import { Loading } from "@/components/Loading";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { fetchJsonCached } from "@/utils/api";
 
@@ -80,7 +77,7 @@ function FestBadge({
         <p className="text-xs text-slate-500">{sub}</p>
       </div>
       {href && (
-        <Link href={href} className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-700 transition-colors shrink-0">
+        <Link to={href} className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-700 transition-colors shrink-0">
           {hrefLabel} <FontAwesomeIcon icon={faChevronRight} />
         </Link>
       )}
@@ -102,9 +99,9 @@ export default function Top() {
   const [eventLoading, setEventLoading] = useState(true);
   const [shopLoading, setShopLoading]   = useState(true);
 
-  const newsApiUrl  = process.env.NEXT_PUBLIC_API_URL + '/news/?top=true';
-  const eventApiUrl = process.env.NEXT_PUBLIC_API_URL + '/event/?top=true';
-  const shopApiUrl  = process.env.NEXT_PUBLIC_API_URL + '/shop/?top=true';
+  const newsApiUrl  = import.meta.env.VITE_API_URL + '/news/?top=true';
+  const eventApiUrl = import.meta.env.VITE_API_URL + '/event/?top=true';
+  const shopApiUrl  = import.meta.env.VITE_API_URL + '/shop/?top=true';
   const csrftoken   = Cookies.get('csrftoken') || '';
 
   const fetchNews = async () => {
@@ -141,12 +138,10 @@ export default function Top() {
       ══════════════════════════════════════════════ */}
       <section className="relative -mt-[60px] min-h-screen flex flex-col items-center justify-center overflow-hidden">
         {/* Background photo */}
-        <Image
+        <img
           src={heroImage}
           alt=""
-          fill
-          priority
-          className="object-cover"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Blue-tinted dark overlay */}
         <div className="absolute inset-0 bg-blue-950/55" />
@@ -201,7 +196,7 @@ export default function Top() {
             <SectionHeader icon={faNewspaper} title="News" sub="運営からのお知らせ" href="/news" />
             <div className="mt-6 space-y-3">
               {newsData.length > 0 ? newsData.map((news) => (
-                <Link key={news['id']} href={`/news/${news['id']}`} className="block group">
+                <Link key={news['id']} to={`/news/${news['id']}`} className="block group">
                   <div className="flex items-start gap-4 rounded-xl border border-slate-100 bg-slate-50/60
                     p-4 transition-all hover:border-blue-200 hover:bg-blue-50 hover:shadow-sm">
                     <div className="mt-1.5 w-1 self-stretch rounded-full bg-blue-400 shrink-0" />
@@ -233,7 +228,7 @@ export default function Top() {
               <SectionHeader icon={faShop} title="Shop" sub="模擬店情報" href="/shop" />
               <div className="mt-6 space-y-3">
                 {shopData.length > 0 ? shopData.map((shop) => (
-                  <Link key={shop['id']} href={`/shop/${shop['id']}`} className="block group">
+                  <Link key={shop['id']} to={`/shop/${shop['id']}`} className="block group">
                     <div className="flex items-start gap-3 rounded-xl border border-white bg-white
                       p-4 shadow-sm transition-all hover:border-blue-200 hover:shadow-md">
                       {shop['image__image__image'] ? (
@@ -264,7 +259,7 @@ export default function Top() {
                   const live  = start <= now && now < end;
                   const soon  = now < start && start <= new Date(now.getTime() + 3600000);
                   return (
-                    <Link key={event['id']} href={`/event/${event['id']}`} className="block group">
+                    <Link key={event['id']} to={`/event/${event['id']}`} className="block group">
                       <div className={`rounded-xl border p-4 shadow-sm transition-all hover:shadow-md
                         ${live ? 'border-green-200 bg-green-50' : 'border-white bg-white hover:border-blue-200'}`}>
                         <p className="text-xs text-slate-400 mb-1">
@@ -301,7 +296,7 @@ export default function Top() {
                 { href: '/information/recycle', icon: faRecycle,             label: '分別について',    sub: 'ゴミの正しい分け方',          color: 'text-green-600 bg-green-50' },
                 { href: '/information/access',  icon: faMap,                 label: 'アクセスマップ',  sub: '会場へのアクセス方法',        color: 'text-sky-600 bg-sky-50' },
               ].map(({ href, icon, label, sub, color }) => (
-                <Link key={href} href={href} className="block group">
+                <Link key={href} to={href} className="block group">
                   <div className="flex items-center gap-4 rounded-xl border border-slate-100 bg-slate-50/60 p-4
                     transition-all hover:border-blue-200 hover:bg-blue-50 hover:shadow-sm">
                     <span className={`w-10 h-10 flex items-center justify-center rounded-xl text-lg shrink-0 ${color}`}>
@@ -325,7 +320,7 @@ export default function Top() {
       ══════════════════════════════════════════════ */}
       <section className="relative border-b border-blue-800 py-16 px-5 md:px-10 overflow-hidden">
         {/* Background image */}
-        <Image src="/theme-bg.jpg" alt="" fill className="object-cover" />
+        <img src="/theme-bg.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-blue-950/60" />
         {/* Decorative shapes */}
@@ -448,7 +443,7 @@ function SectionHeader({
         <p className="text-xs text-slate-400 pl-3">{sub}</p>
       </div>
       {href && (
-        <Link href={href} className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 transition-colors shrink-0">
+        <Link to={href} className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 transition-colors shrink-0">
           {hrefLabel} <FontAwesomeIcon icon={faChevronRight} />
         </Link>
       )}

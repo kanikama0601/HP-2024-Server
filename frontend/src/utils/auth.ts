@@ -12,7 +12,7 @@ export const refreshAccessToken = async (): Promise<string> => {
     }
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/jwt/refresh`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/jwt/refresh`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

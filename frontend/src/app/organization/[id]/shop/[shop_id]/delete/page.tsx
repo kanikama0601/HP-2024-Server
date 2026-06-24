@@ -1,20 +1,18 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+import { Link, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
 
-export default function Shop({ params }: { params: Promise<{ id: string, shop_id: string }>}) {
-  const { id, shop_id } = use(params);
+export default function Shop() {
+  const { id, shop_id } = useParams<{ id: string; shop_id: string }>();
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState(0);
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/shop/${shop_id}/delete/`;
-  const router = useRouter();
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/shop/${shop_id}/delete/`;
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -27,7 +25,7 @@ export default function Shop({ params }: { params: Promise<{ id: string, shop_id
       } else if (status === 403) {
         alert('権限がありません');
       }
-      router.push(`/organization/${id}/shop`);
+      navigate(`/organization/${id}/shop`);
     }
   };
 
@@ -65,7 +63,7 @@ export default function Shop({ params }: { params: Promise<{ id: string, shop_id
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/shop/${shop_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/shop/${shop_id}`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> 模擬店へ戻る
         </Link>
       </div>

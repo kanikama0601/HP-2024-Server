@@ -1,16 +1,12 @@
-"use client";
-
-import { use } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper, faUserGroup, faShop, faCalendar, faCircleCheck, faGear, faBuilding, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
+import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
 import { Loading } from '@/components/Loading';
 import { fetchWithAuth } from '@/utils/api';
 
-export default function OrganizationPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function OrganizationPage() {
+  const { id } = useParams<{ id: string }>();
 
   const [organizationData, setOrganizationData] = useState([]);
   const [permissions, setPermissions] = useState<string[]>([]);
@@ -18,7 +14,7 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
   const [organizationLoading, setOrganizationLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
-  const url = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/`;
+  const url = import.meta.env.VITE_API_URL + `/organization/${id}/`;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +36,23 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
     fetchData();
   }, [id, url]);
 
-  if (errorStatus === 404) notFound();
+  if (errorStatus === 404) {
+    return (
+      <main className="pb-16">
+        <div className="relative bg-blue-900 text-white py-14 overflow-hidden">
+          <div className="relative z-10 container mx-auto px-4 text-center">
+            <h1 className="text-3xl font-bold tracking-[0.1em]">404 Not Found</h1>
+            <p className="text-sm text-blue-300 mt-2">指定されたオーガナイゼーションが見つかりませんでした。</p>
+          </div>
+        </div>
+        <div className="container mx-auto px-4 py-10 max-w-2xl text-center">
+          <Link to="/organization" className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーション選択へ戻る
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (errorStatus === 403) {
     return (
@@ -52,7 +64,7 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
         <div className="container mx-auto px-4 py-10 max-w-2xl text-center">
-          <Link href="/organization" className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to="/organization" className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーション選択へ戻る
           </Link>
         </div>
@@ -65,12 +77,12 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
   const orgName = organizationData.length > 0 ? organizationData[0]['name'] : '';
 
   const menuItems = [
-    { show: permissions.includes('news'),  href: `/organization/${id}/news`,       icon: faNewspaper,   label: 'お知らせ' },
-    { show: permissions.includes('shop'),  href: `/organization/${id}/shop`,       icon: faShop,        label: '模擬店' },
-    { show: permissions.includes('event'), href: `/organization/${id}/event`,      icon: faCalendar,    label: 'イベント' },
-    { show: true,                          href: `/organization/${id}/member`,     icon: faUserGroup,   label: 'オーガナイゼーションメンバー' },
-    { show: owner,                         href: `/organization/${id}/permission`, icon: faCircleCheck, label: '新規権限申請' },
-    { show: owner,                         href: `/organization/${id}/edit`,       icon: faGear,        label: 'オーガナイゼーションの編集' },
+    { show: permissions.includes('news'),  to: `/organization/${id}/news`,       icon: faNewspaper,   label: 'お知らせ' },
+    { show: permissions.includes('shop'),  to: `/organization/${id}/shop`,       icon: faShop,        label: '模擬店' },
+    { show: permissions.includes('event'), to: `/organization/${id}/event`,      icon: faCalendar,    label: 'イベント' },
+    { show: true,                          to: `/organization/${id}/member`,     icon: faUserGroup,   label: 'オーガナイゼーションメンバー' },
+    { show: owner,                         to: `/organization/${id}/permission`, icon: faCircleCheck, label: '新規権限申請' },
+    { show: owner,                         to: `/organization/${id}/edit`,       icon: faGear,        label: 'オーガナイゼーションの編集' },
   ];
 
   return (
@@ -94,8 +106,8 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
       {/* Content */}
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <div className="space-y-3">
-          {menuItems.filter(item => item.show).map(({ href, icon, label }) => (
-            <Link key={href} href={href}>
+          {menuItems.filter(item => item.show).map(({ to, icon, label }) => (
+            <Link key={to} to={to}>
               <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:border-blue-200 hover:shadow-md transition-all flex items-center gap-3">
                 <FontAwesomeIcon icon={icon} className="text-blue-400 w-4" />
                 <span className="text-sm font-medium text-slate-800">{label}</span>
@@ -103,7 +115,7 @@ export default function OrganizationPage({ params }: { params: Promise<{ id: str
             </Link>
           ))}
         </div>
-        <Link href="/organization" className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/organization" className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> オーガナイゼーション選択へ戻る
         </Link>
       </div>

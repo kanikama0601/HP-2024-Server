@@ -1,11 +1,9 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRightToBracket, faUserPlus, faLockOpen } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { Loading } from '@/components/Loading';
 
@@ -17,7 +15,7 @@ export default function Login() {
     password: string;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors } } = useForm<LoginDataType>({
     reValidateMode: 'onSubmit',
@@ -25,7 +23,7 @@ export default function Login() {
 
   const onSubmit = async (data: any) => {
     setLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth/jwt/create/';
+    const apiUrl = import.meta.env.VITE_API_URL + '/auth/jwt/create/';
     const csrftoken = Cookies.get('csrftoken') || '';
 
     try {
@@ -42,7 +40,7 @@ export default function Login() {
           Cookies.set('refresh', responseData['refresh'], { expires: 7, path: '/' });
           Cookies.set('username', data['username'], { expires: 7, path: '/' });
           window.dispatchEvent(new Event('auth-changed'));
-          router.push('/organization');
+          navigate('/organization');
         } else {
           alert('ログインに失敗しました');
         }
@@ -121,7 +119,7 @@ export default function Login() {
           </form>
 
           <div className="mt-6 border-t border-slate-100 pt-5 text-center">
-            <Link href="/register" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <Link to="/register" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
               <FontAwesomeIcon icon={faUserPlus} className="text-xs" />
               アカウントをお持ちでない場合
             </Link>

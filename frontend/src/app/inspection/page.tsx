@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from 'react';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
@@ -13,13 +11,13 @@ export default function InspectionDashboard() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWithAuth(process.env.NEXT_PUBLIC_API_URL + '/inspection/', 'GET')
+    fetchWithAuth(import.meta.env.VITE_API_URL + '/inspection/', 'GET')
       .then(d => setData(d))
       .finally(() => setLoading(false));
   }, []);
 
   const handleAction = async (category: string, id: number, approve: boolean) => {
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/inspection/${category}/${id}/`;
+    const url = `${import.meta.env.VITE_API_URL}/inspection/${category}/${id}/`;
     await fetchWithAuth(url, 'POST', { approve });
     window.location.reload();
   };

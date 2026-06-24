@@ -1,14 +1,12 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faNewspaper, faPaperPlane, faTrashCan, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { set, useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useParams } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 interface News {
   id: number;
@@ -23,14 +21,14 @@ interface News {
   images__image__image: string[];
 }
 
-export default function News({ params }: { params: Promise<{ id: string, news_id: string }>}) {
-  const { id, news_id } = use(params);
+export default function News() {
+  const { id, news_id } = useParams<{ id: string; news_id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
   const [newsData, setNewsData] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/news/${news_id}/`;
+  const apiUrl = import.meta.env.VITE_API_URL + `/organization/${id}/news/${news_id}/`;
 
   type LoginDataType = {
     title: string;
@@ -40,7 +38,7 @@ export default function News({ params }: { params: Promise<{ id: string, news_id
     imageUrls: string;
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -63,7 +61,7 @@ export default function News({ params }: { params: Promise<{ id: string, news_id
       console.error('エラー:', error);
       alert('エラー:' + error);
     } finally {
-      router.push(`/organization/${id}/news`);
+      navigate(`/organization/${id}/news`);
     }
   };
 
@@ -97,7 +95,7 @@ export default function News({ params }: { params: Promise<{ id: string, news_id
       formData.append('file', files[i]);
 
       try {
-        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/image/`, 'POST', formData);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/image/`, 'POST', formData);
         setImageUrls(prevUrls => [...prevUrls, response['image']]);
       } catch (error) {
         alert('画像アップロードエラー:' + error);
@@ -215,10 +213,10 @@ export default function News({ params }: { params: Promise<{ id: string, news_id
               </form>
             </div>
 
-            <Link href={`/organization/${id}/news/${news_id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
+            <Link to={`/organization/${id}/news/${news_id}/delete`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-red-500 hover:text-red-700 transition-colors">
               <FontAwesomeIcon icon={faTrashCan} /> お知らせを削除
             </Link>
-            <Link href={`/organization/${id}/news`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+            <Link to={`/organization/${id}/news`} className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
               <FontAwesomeIcon icon={faChevronLeft} /> お知らせ一覧へ戻る
             </Link>
           </>

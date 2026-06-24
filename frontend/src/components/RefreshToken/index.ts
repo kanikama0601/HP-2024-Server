@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 
 export default function RefreshToken() {
   const refreshAccessToken = async () => {
-    const refreshApiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth/jwt/refresh';
+    const refreshApiUrl = import.meta.env.VITE_API_URL + '/auth/jwt/refresh';
     const refreshToken = Cookies.get('refresh') || '';
     const response = await fetch(refreshApiUrl, {
       method: 'POST',

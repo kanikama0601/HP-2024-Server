@@ -1,5 +1,3 @@
-"use client";
-
 interface News {
   id: number;
   title: string;
@@ -11,20 +9,20 @@ interface News {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faNewspaper, faBuilding, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Link from 'next/link';
-import { useState, useEffect, Fragment, use } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect, Fragment } from 'react';
 import Cookies from 'js-cookie';
 import { ImportantNews } from '@/components/ImportantNews';
 import { Loading } from '@/components/Loading';
 
-export default function NewsDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function NewsDetail() {
+  const { id } = useParams<{ id: string }>();
   const [data, setData]   = useState<News[]>([]);
   const [image, setImage] = useState<string[]>([]);
   const [status, setStatus] = useState(0);
   const [loading, setLoading] = useState(true);
   const [formattedDescription, setFormattedDescription] = useState<JSX.Element[] | null>(null);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/news/' + id + '/';
+  const apiUrl    = import.meta.env.VITE_API_URL + '/news/' + id + '/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchNews = async () => {
@@ -107,7 +105,7 @@ export default function NewsDetail({ params }: { params: Promise<{ id: string }>
           </div>
         )}
 
-        <Link href="/news" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/news" className="mt-6 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> お知らせ一覧に戻る
         </Link>
       </div>

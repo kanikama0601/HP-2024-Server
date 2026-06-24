@@ -1,6 +1,3 @@
-'use client'
-
-import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export const Slideshow: React.FC = () => {
@@ -19,15 +16,13 @@ export const Slideshow: React.FC = () => {
     return (
         <div className="fixed top-0 left-0 w-full h-screen z-[-1]">
             {images.map((image: string, index: number) => (
-                <Image
+                <img
                     key={index}
                     src={image}
                     alt={`Slide ${index}`}
-                    fill
-                    className={`absolute transition duration-500 ease-linear brightness-90 contrast-100 saturate-100 object-cover ${
+                    className={`absolute w-full h-full transition duration-500 ease-linear brightness-90 contrast-100 saturate-100 object-cover ${
                         index === currentImageIndex ? "opacity-100" : "opacity-0"
                     }`}
-                    style={{ objectFit: 'cover' }}
                 />
             ))}
         </div>

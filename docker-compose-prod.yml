@@ -32,13 +32,13 @@ services:
         condition: service_healthy
 
   frontend:
-    container_name: next-frontend
-    image: next-frontend:production
+    container_name: vite-frontend
+    image: vite-frontend:production
     build:
       context: ./frontend
       dockerfile: Dockerfile-prod
     ports:
-      - "3000:3000"
+      - "3000:80"
     environment:
       - NODE_ENV=production
   

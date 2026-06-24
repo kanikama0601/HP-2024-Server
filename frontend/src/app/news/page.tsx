@@ -1,5 +1,3 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faUserGroup, faNewspaper, faChevronRight, faHouse } from "@fortawesome/free-solid-svg-icons";
 import { ImportantNews } from "@/components/ImportantNews";
@@ -7,13 +5,13 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 import { Loading } from "@/components/Loading";
 import { useState, useEffect } from "react";
 import Cookies from 'js-cookie';
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { fetchJsonCached } from "@/utils/api";
 
 const NewsPage = () => {
   const [data, setData]       = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl    = process.env.NEXT_PUBLIC_API_URL + '/news/';
+  const apiUrl    = import.meta.env.VITE_API_URL + '/news/';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchNews = async () => {
@@ -52,7 +50,7 @@ const NewsPage = () => {
         <div className="space-y-3">
           {data.map((news, i) => (
             <AnimatedSection key={news['id']} delay={i * 40}>
-              <Link href={`/news/${news['id']}`} className="block group">
+              <Link to={`/news/${news['id']}`} className="block group">
                 <div className="card-panel rounded-xl p-5 transition-all hover:shadow-md hover:shadow-blue-100 hover:-translate-y-0.5">
                   <div className="flex items-start gap-4">
                     <div className="mt-1 w-1 self-stretch rounded-full bg-blue-400 shrink-0" />
@@ -77,7 +75,7 @@ const NewsPage = () => {
           )}
         </div>
         <div className="mt-10 flex justify-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faHouse} /> トップページへ戻る
           </Link>
         </div>

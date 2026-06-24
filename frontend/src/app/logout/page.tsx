@@ -1,15 +1,13 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from 'react-router-dom';
 import { Loading } from "@/components/Loading";
 import Cookies from "js-cookie";
 
 export default function Login() {
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const logout = async () => {
       Cookies.remove('access');
@@ -17,7 +15,7 @@ export default function Login() {
       Cookies.remove('username');
       window.dispatchEvent(new Event('auth-changed'));
       setLoading(false);
-      router.push('/login');
+      navigate('/login');
   };
 
   useEffect(() => {

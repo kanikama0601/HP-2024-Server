@@ -3,12 +3,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faNewspaper, faShop, faCalendar } from "@fortawesome/free-solid-svg-icons";
 import { faCopyright } from "@fortawesome/free-regular-svg-icons";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { useLocation } from 'react-router-dom';
 
 export const Footer: React.FC = () => {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   const beginNavigation = (target?: string) => {
     if (target && target === pathname) return;
@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
           ].map(({ href, icon, label }) => (
             <Link
               key={href}
-              href={href}
+              to={href}
               onClick={() => beginNavigation(href)}
               className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
             >

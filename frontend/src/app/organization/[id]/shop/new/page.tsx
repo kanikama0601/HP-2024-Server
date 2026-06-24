@@ -1,13 +1,11 @@
-"use client";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPaperPlane, faShop, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { useState, use } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 import { Loading } from '@/components/Loading';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 interface Shop {
   id: number;
@@ -24,11 +22,11 @@ interface Menu {
   price: number;
 }
 
-export default function Shop({ params }: { params: Promise<{ id: string }>}) {
-  const { id } = use(params);
+export default function Shop() {
+  const { id } = useParams<{ id: string }>();
 
   const [sendLoading, setSendLoading] = useState(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + `/organization/${id}/shop/new/`;
+  const apiUrl = import.meta.env.VITE_API_URL + `/organization/${id}/shop/new/`;
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [menus, setMenus] = useState<Menu[]>([]);
 
@@ -39,7 +37,7 @@ export default function Shop({ params }: { params: Promise<{ id: string }>}) {
     imageUrls: string[];
   };
 
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -76,7 +74,7 @@ export default function Shop({ params }: { params: Promise<{ id: string }>}) {
       return;
     } finally {
     }
-    router.push(`/organization/${id}/shop`);
+    navigate(`/organization/${id}/shop`);
   };
 
   const handleImageUpload = async (Shop: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +87,7 @@ export default function Shop({ params }: { params: Promise<{ id: string }>}) {
       formData.append('file', files[i]);
 
       try {
-        const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/image/`, 'POST', formData);
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_URL}/image/`, 'POST', formData);
         setImageUrls(prevUrls => [...prevUrls, response['image']]);
       } catch (error) {
         alert('画像アップロードエラー:' + error);
@@ -218,7 +216,7 @@ export default function Shop({ params }: { params: Promise<{ id: string }>}) {
             </button>
           </form>
         </div>
-        <Link href={`/organization/${id}/shop`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to={`/organization/${id}/shop`} className="mt-6 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> 模擬店一覧へ戻る
         </Link>
       </div>

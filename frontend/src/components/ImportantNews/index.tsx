@@ -1,15 +1,13 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import Cookies from 'js-cookie';
 
 export const ImportantNews = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/news/?important=true';
+  const apiUrl = import.meta.env.VITE_API_URL + '/news/?important=true';
   const csrftoken = Cookies.get('csrftoken') || '';
 
   const fetchNews = async () => {
@@ -44,7 +42,7 @@ export const ImportantNews = () => {
           </p>
           <div className="space-y-1">
             {data.map((news) => (
-              <Link key={news['id']} href={`/news/${news['id']}`}>
+              <Link key={news['id']} to={`/news/${news['id']}`}>
                 <p className="text-sm text-amber-800 hover:text-amber-950 transition-colors leading-relaxed">
                   {news['title']}
                 </p>

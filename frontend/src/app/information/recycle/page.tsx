@@ -1,9 +1,7 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRecycle, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { AnimatedSection } from "@/components/AnimatedSection";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 const bins = [
   { accent: "border-l-blue-400",  label: "燃えるゴミ",   emoji: "🗑️",
@@ -79,7 +77,7 @@ export default function Recycle() {
           </div>
         </AnimatedSection>
 
-        <Link href="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+        <Link to="/" className="mt-2 flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
           <FontAwesomeIcon icon={faChevronLeft} /> トップへ戻る
         </Link>
       </div>

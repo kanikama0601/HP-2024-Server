@@ -1,11 +1,9 @@
-"use client";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBuilding, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'react-router-dom';
 import { useState, useEffect, Suspense } from "react";
 import { Loading } from "@/components/Loading";
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 import { fetchWithAuth } from '@/utils/api';
 
 export default function Top() {
@@ -31,7 +29,7 @@ export default function Top() {
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <Suspense fallback={<Loading />}>
           <SearchParamsComponent />
-          <Link href="/organization/new" className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to="/organization/new" className="mt-4 flex items-center justify-center gap-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors">
             <FontAwesomeIcon icon={faPlus} /> 新規作成
           </Link>
         </Suspense>
@@ -44,7 +42,7 @@ function SearchParamsComponent() {
   const [status, setStatus] = useState(0);
   const [organizationData, setOrganizationData] = useState([]);
   const [organizationLoading, setOrganizationLoading] = useState(true);
-  const url = process.env.NEXT_PUBLIC_API_URL + '/organization/';
+  const url = import.meta.env.VITE_API_URL + '/organization/';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +58,7 @@ function SearchParamsComponent() {
     fetchData();
   }, []);
 
-  const searchParams = useSearchParams();
+  const [searchParams] = useSearchParams();
   let next = searchParams.get('next');
   if (next === null) next = '';
 
@@ -74,7 +72,7 @@ function SearchParamsComponent() {
         </div>
       )}
       {organizationData.map((organization) => (
-        <Link key={organization['id']} href={`/organization/${organization['id']}${next}`}>
+        <Link key={organization['id']} to={`/organization/${organization['id']}${next}`}>
           <div className="rounded-xl border border-slate-100 bg-white p-5 my-3 shadow-sm hover:border-blue-200 hover:shadow-md transition-all">
             <h3 className="text-base font-medium text-slate-800">{organization['name']}</h3>
           </div>
